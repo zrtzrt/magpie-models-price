@@ -38,7 +38,8 @@
     "permissions": [
       "usage:summary",
       "providers:list"
-    ]
+    ],
+    "kind": "page"
   },
   "files": [
     "index.js",
@@ -53,5 +54,6 @@
   "homepage": "https://github.com/zrtzrt/magpie-models-price#readme",
   "bugs": {
     "url": "https://github.com/zrtzrt/magpie-models-price/issues"
-  }
+  },
+  "kind": "page"
 }

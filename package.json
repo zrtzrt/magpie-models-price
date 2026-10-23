@@ -1,0 +1,55 @@
+{
+  "name": "magpie-models-price",
+  "version": "1.0.0",
+  "description": "Auto-match and custom-price Magpie models with models.dev official pricing database & real API spend switch",
+  "main": "index.js",
+  "bin": {
+    "magpie-models-price": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js ui",
+    "list": "node index.js list",
+    "sync": "node index.js sync",
+    "sync:dry": "node index.js sync --dry-run",
+    "test": "node check.js"
+  },
+  "keywords": [
+    "magpie",
+    "models.dev",
+    "pricing",
+    "llm-costs"
+  ],
+  "author": "zrtzrt <519539110@qq.com>",
+  "license": "MIT",
+  "magpie": {
+    "page": {
+      "title": "Model Prices",
+      "titles": {
+        "zh": "模型价格",
+        "zh-TW": "模型價格",
+        "ja": "モデル価格",
+        "de": "Modellpreise"
+      },
+      "file": "page/index.html",
+      "icon": "page/icon.svg"
+    },
+    "permissions": [
+      "usage:summary",
+      "providers:list"
+    ]
+  },
+  "files": [
+    "index.js",
+    "matcher.js",
+    "page",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zrtzrt/magpie-models-price.git"
+  },
+  "homepage": "https://github.com/zrtzrt/magpie-models-price#readme",
+  "bugs": {
+    "url": "https://github.com/zrtzrt/magpie-models-price/issues"
+  }
+}

@@ -2,7 +2,6 @@
 const fs = require('fs');
 const path = require('path');
 const matcher = require('./matcher');
-const { startServer } = require('./server');
 
 const SETTINGS_PATH = path.join(process.env.HOME || '', '.config/magpie/settings.json');
 
@@ -162,6 +161,7 @@ if (require.main === module) {
     }
 
     if (command === 'ui' || command === 'serve') {
+      const { startServer } = require('./server');
       const portArg = args.find(a => a.startsWith('--port='));
       const port = portArg ? parseInt(portArg.split('=')[1]) : 3456;
       await startServer(port);

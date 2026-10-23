@@ -14,10 +14,12 @@
     "test": "node check.js"
   },
   "keywords": [
+    "magpie-plugin",
     "magpie",
     "models.dev",
     "pricing",
-    "llm-costs"
+    "llm-costs",
+    "magpie-page"
   ],
   "author": "zrtzrt <519539110@qq.com>",
   "license": "MIT",

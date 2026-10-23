@@ -4,7 +4,7 @@
   "description": "Auto-match and custom-price Magpie models with models.dev official pricing database & real API spend switch",
   "main": "index.js",
   "bin": {
-    "magpie-models-price": "./index.js"
+    "magpie-models-price": "index.js"
   },
   "scripts": {
     "start": "node index.js ui",

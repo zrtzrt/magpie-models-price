@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write
+      id-token: write # Required for npm Trusted Publishing (OIDC Provenance)
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -21,10 +21,10 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Run Tests
+      - name: Run Test Suite
         run: npm test
 
-      - name: Publish to NPM
-        run: npm publish --access public
+      - name: Publish to NPM (with OIDC Provenance)
+        run: npm publish --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

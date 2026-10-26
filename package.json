@@ -1,6 +1,6 @@
 {
   "name": "magpie-models-price",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Auto-match and custom-price Magpie models with models.dev official pricing database & real API spend switch",
   "main": "index.js",
   "bin": {
@@ -14,6 +14,8 @@
     "test": "node check.js"
   },
   "keywords": [
+    "opencode",
+    "opencode-plugin",
     "magpie-plugin",
     "magpie",
     "models.dev",
@@ -39,7 +41,8 @@
       "usage:summary",
       "providers:list"
     ],
-    "kind": "page"
+    "kind": "page",
+    "icon": "page/icon.svg"
   },
   "files": [
     "index.js",

@@ -1,43 +1,26 @@
-# Magpie Models Price (Magpie 模型价格自动匹配与自定义调价插件)
+# 模型价格 (Model Prices)
 
-基于 [models.dev](https://models.dev) 官方公价数据库与 Magpie 原版账单系统，自动识别未定价模型、提供原厂公价匹配、支持按特定渠道或全网通配自定义设价，并支持一键切换【只记录真实 API 支出】或【显示所有渠道等值公价】。
+一个 Magpie 页面插件，基于 [models.dev](https://models.dev) 官方公价数据库与 Magpie 原版账单系统，自动匹配模型官方价格、自定义设价，并支持一键切换真实 API 花费口径。
 
----
+![模型价格界面](docs/images/screenshot.png)
 
-## ✨ 核心特性
+## 功能特性
 
-- 🖥️ **Magpie 原生 Page 页面插件**：直接嵌入 Magpie 侧边栏「模型价格」标签页，100% 贴合 macOS 原生设计质感；
-- ⚡ **超轻量零开销**：纯文件直读直写架构（零子进程、零死锁、零 CPU 占用）；
-- 🔄 **账单无缝联动**：设价后即时同步写入 Magpie 底层 `settings.json.modelPrices`，每日用量看板、会话统计与托盘花费实时重载；
-- 💳 **全局统计口径总开关**：
-  - **只记录 API 真实花费**：包月、会员及免费额度渠道（如 Trae, WorkBuddy, Antigravity）免计费（$0.00），只记录掏现金的 API 支出；
-  - **显示所有渠道等值公价**：所有模型换算为市场市值，清晰掌握抵扣价值；
-- 🛠️ **精细化调价与通配支持**：支持「仅当前渠道」或「任何供应商 (\*/model)」通配规则，并提供「一键填充 models.dev 建议」及「重置」功能；
-- 📱 **响应式窄屏自适应**：在宽屏、分屏窄屏及极窄视口下自动换行流式布局，不遮挡任何操作按钮。
+- **侧边栏独立页面**：无缝嵌入 Magpie 侧边栏「模型价格」标签页，界面完全贴合 Magpie 原生风格与主题。
+- **账单统计口径切换**：
+  - **只记录真实 API 花费**：包月、订阅与免费额度渠道（如 Trae, WorkBuddy, Antigravity）免计费（$0.00），精准记录掏现金的 API 支出；
+  - **显示所有渠道等值公价**：将所有模型消耗按市场公价换算等值市值，清晰掌握各渠道抵扣价值。
+- **公价自动匹配**：自动比对识别未定价模型，提供原厂官方公价参考并支持一键全量应用。
+- **灵活自定义定价**：
+  - 支持指定特定渠道独立调价（如 `antigravity/claude-sonnet-4-6`）；
+  - 支持全网通配调价（如 `*/claude-sonnet-4-6`）。
+- **即时生效与账单联动**：设定即时写入底层配置，每日用量看板、会话统计与托盘花费实时更新生效。
+- **轻量纯静态架构**：脱离子进程与外部命令，纯本地文件直读直写，零内存与 CPU 额外开销。
+- **响应式布局**：完美适配窄屏与极窄窗口，按钮与内容流式自适应排版。
 
----
+## 命令行工具（可选）
 
-## 🚀 安装与挂载
-
-### 方式一：在 Magpie 客户端内通过 CLI 挂载
-```bash
-magpie plugin add magpie-models-price
-# 或者通过 GitHub 地址直接挂载：
-magpie plugin add github:zrtzrt/magpie-models-price
-```
-
-### 方式二：本地开发挂载
-```bash
-git clone https://github.com/zrtzrt/magpie-models-price.git
-cd magpie-models-price
-magpie plugin add $(pwd)
-```
-
----
-
-## 💻 命令行维护（可选）
-
-除在软件侧边栏图形界面操作外，也支持作为命令行工具独立维护：
+页面主要通过图形界面直接操作，同时也支持在终端作为轻量 CLI 脚本运行：
 
 ```bash
 # 查看所有模型匹配与定价状态
@@ -54,12 +37,7 @@ node index.js sync
 
 # 预览拟同步的设价命令（不实际写入）
 node index.js sync --dry-run
-
-# 运行自动化单元测试
-npm test
 ```
 
----
-
-## 📄 License
+## 许可证
 MIT License © zrtzrt

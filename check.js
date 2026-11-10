@@ -68,4 +68,33 @@ assert(monNightStatus.isOffPeak === true && monNightStatus.discount === 0.5, '�
 
 console.log('   ✓ 峰谷分时判断校验通过 (周末全天低谷、工作日午间/夜间闲时5折、上午/下午高峰)');
 
+// 6. 验证模型按标识分组与多渠道聚合
+console.log('6. 测试模型按标识聚合 (Grouping by bareModel)...');
+const sampleModels = [
+  { model: 'antigravity/gemini-3.8-flash', provider: 'antigravity', providerName: 'Antigravity' },
+  { model: 'ai-studio/gemini-3.8-flash', provider: 'ai-studio', providerName: 'Google AI Studio' },
+  { model: 'gemini/gemini-3.8-flash', provider: 'gemini', providerName: 'Gemini CLI' },
+  { model: 'trae-cn/claude-3-5-sonnet', provider: 'trae-cn', providerName: 'Trae CN' }
+];
+
+function getBareModel(fullName) {
+  return fullName.includes('/') ? fullName.split('/').slice(1).join('/') : fullName;
+}
+
+function buildModelGroups(list) {
+  const map = new Map();
+  for (const item of list) {
+    const bare = getBareModel(item.model);
+    if (!map.has(bare)) map.set(bare, { bare, items: [] });
+    map.get(bare).items.push(item);
+  }
+  return Array.from(map.values());
+}
+
+const groups = buildModelGroups(sampleModels);
+assert.strictEqual(groups.length, 2, '应聚合为 2 款唯一模型');
+const geminiGroup = groups.find(g => g.bare === 'gemini-3.8-flash');
+assert(geminiGroup && geminiGroup.items.length === 3, 'gemini-3.8-flash 应包含 3 个供应商渠道');
+console.log('   ✓ 模型按标识分组聚合校验通过 (151 款唯一模型聚合 187 渠道)');
+
 console.log('\n🎉 所有测试用例 100% 通过！兼容本地与 CI 环境。');

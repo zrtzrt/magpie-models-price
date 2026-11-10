@@ -326,12 +326,313 @@ h1 {
   opacity: .9;
 }
 
-/* 响应式模型列表 */
+/* 响应式模型卡片与分组流式布局 */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.provider-select {
+  background: var(--card);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  height: 32px;
+  min-width: 140px;
+  transition: border-color .15s ease;
+}
+
+.provider-select:focus {
+  border-color: var(--accent);
+}
+
 .model-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.model-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.model-card:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+[data-theme="light"] .model-card:hover {
+  border-color: rgba(0, 0, 0, 0.25);
+}
+
+.card-header {
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s ease;
+}
+
+.card-header:hover {
+  background: var(--card-2);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.vendor-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  padding: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-theme="light"] .vendor-icon {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.vendor-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.model-title-block {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.model-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  line-height: 1.3;
+}
+
+.m-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.m-id-code {
+  font-family: var(--code);
+  font-size: 11px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+[data-theme="light"] .m-id-code {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.provider-pill-list {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 1px;
+}
+
+.provider-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.2;
+  border: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.p-antigravity { background: rgba(99, 102, 241, 0.15); color: #818cf8; border-color: rgba(99, 102, 241, 0.3); }
+.p-aistudio { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-color: rgba(56, 189, 248, 0.3); }
+.p-gemini, .p-geminiweb { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border-color: rgba(59, 130, 246, 0.3); }
+.p-workbuddy { background: rgba(14, 165, 233, 0.15); color: #38bdf8; border-color: rgba(14, 165, 233, 0.3); }
+.p-trae { background: rgba(52, 211, 153, 0.15); color: #34d399; border-color: rgba(52, 211, 153, 0.3); }
+.p-codex { background: rgba(168, 85, 247, 0.15); color: #c084fc; border-color: rgba(168, 85, 247, 0.3); }
+.p-qwen { background: rgba(236, 72, 153, 0.15); color: #f472b6; border-color: rgba(236, 72, 153, 0.3); }
+.p-zen { background: rgba(251, 146, 60, 0.15); color: #fb923c; border-color: rgba(251, 146, 60, 0.3); }
+.p-generic { background: rgba(255, 255, 255, 0.07); color: var(--fg-2); }
+[data-theme="light"] .p-generic { background: rgba(0, 0, 0, 0.05); }
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.price-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.price-summary .main-rate {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--fg);
+  font-variant-numeric: tabular-nums;
+}
+
+.price-summary .sub-cache {
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.expand-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--muted);
+  border: 1px solid var(--line);
+  white-space: nowrap;
+  transition: all .15s ease;
+  cursor: pointer;
+}
+
+[data-theme="light"] .expand-toggle {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.expand-toggle:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.expand-toggle.is-custom {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+/* 展开子渠道详情列表 */
+.card-expand-body {
+  border-top: 1px solid var(--line-2);
+  background: rgba(0, 0, 0, 0.22);
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+[data-theme="light"] .card-expand-body {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.provider-subrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--line-2);
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.provider-subrow:last-child {
+  border-bottom: none;
+}
+
+.subrow-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.subrow-pname {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg);
+  white-space: nowrap;
+}
+
+.subrow-model-id {
+  font-family: var(--code);
+  font-size: 11px;
+  color: var(--muted);
+  word-break: break-all;
+}
+
+.subrow-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.subrow-price {
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+}
+
+@media (max-width: 580px) {
+  .card-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .header-right {
+    justify-content: space-between;
+    width: 100%;
+    padding-top: 6px;
+    border-top: 1px solid var(--line-2);
+  }
+  .price-summary {
+    align-items: flex-start;
+  }
+  .provider-subrow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+  .subrow-right {
+    justify-content: space-between;
+    width: 100%;
+  }
 }
 
 .model-item {

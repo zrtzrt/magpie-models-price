@@ -88,6 +88,9 @@
       if (data.dark !== undefined) {
         root.dataset.theme = data.dark ? "dark" : "light";
       }
+      const bg = data.tokens?.bg || (data.dark === false ? "#f5f5f7" : "#121214");
+      root.style.backgroundColor = bg;
+      if (document.body) document.body.style.backgroundColor = bg;
       if (data.tokens) {
         for (const [k, v] of Object.entries(data.tokens)) {
           if (v) root.style.setProperty("--" + k, v);

@@ -191,7 +191,28 @@
 
   function sortGroups(list, sortType) {
     const sorted = [...list];
-    if (sortType === "price-asc") {
+    if (sortType === "default" || sortType === "usage-desc" || sortType === "tokens-desc") {
+      // 默认用量降序：优先按总 Token 消耗降序，相同时按调用次数降序，最后按名称
+      sorted.sort((a, b) => {
+        const tb = b.usage?.totalTokens || 0;
+        const ta = a.usage?.totalTokens || 0;
+        if (tb !== ta) return tb - ta;
+        const cb = b.usage?.requests || 0;
+        const ca = a.usage?.requests || 0;
+        if (cb !== ca) return cb - ca;
+        return (a.name || a.bare).localeCompare(b.name || b.bare);
+      });
+    } else if (sortType === "calls-desc") {
+      sorted.sort((a, b) => {
+        const cb = b.usage?.requests || 0;
+        const ca = a.usage?.requests || 0;
+        if (cb !== ca) return cb - ca;
+        const tb = b.usage?.totalTokens || 0;
+        const ta = a.usage?.totalTokens || 0;
+        if (tb !== ta) return tb - ta;
+        return (a.name || a.bare).localeCompare(b.name || b.bare);
+      });
+    } else if (sortType === "price-asc") {
       sorted.sort((a, b) => {
         const pa = getGroupRepresentativeInputPrice(a);
         const pb = getGroupRepresentativeInputPrice(b);
@@ -209,10 +230,6 @@
         if (pb === null) return -1;
         return pb - pa;
       });
-    } else if (sortType === "calls-desc") {
-      sorted.sort((a, b) => (b.usage?.requests || 0) - (a.usage?.requests || 0));
-    } else if (sortType === "tokens-desc") {
-      sorted.sort((a, b) => (b.usage?.totalTokens || 0) - (a.usage?.totalTokens || 0));
     } else if (sortType === "channels-desc") {
       sorted.sort((a, b) => b.items.length - a.items.length);
     } else if (sortType === "name-asc") {

@@ -13,29 +13,29 @@
       "supported": false
     },
     "usage": {
-      "requests": 6459,
-      "inputTokens": 72556913,
-      "outputTokens": 3446651,
+      "requests": 6458,
+      "inputTokens": 72556668,
+      "outputTokens": 3445527,
       "cacheRead": 689115765,
       "cacheWrite": 0,
-      "totalTokens": 76003564,
+      "totalTokens": 76002195,
       "lastAt": "2026-11-09T14:29:03.017067+08:00"
     },
     "bareUsage": {
-      "requests": 6898,
-      "inputTokens": 76724298,
-      "outputTokens": 3734870,
+      "requests": 6889,
+      "inputTokens": 76724053,
+      "outputTokens": 3733746,
       "cacheRead": 736000591,
       "cacheWrite": 0,
-      "totalTokens": 80459168,
+      "totalTokens": 80457799,
       "lastAt": "2026-11-09T14:29:03.017067+08:00"
     },
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3.8-flash",
       "name": "Gemini 3.8 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.75,
         "output": 3.75,
@@ -150,18 +150,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "groq",
+      "provider": "vercel",
       "model": "openai/gpt-oss-120b",
       "name": "GPT OSS 120B",
       "confidence": "medium",
-      "reason": "模糊推荐匹配 (groq)",
+      "reason": "模糊推荐匹配 (vercel)",
       "cost": {
-        "input": 0.15,
-        "output": 0.6,
-        "cache_read": 0.075,
+        "input": 0.1,
+        "output": 0.5,
+        "cache_read": 0.1,
         "cache_write": 0
       },
-      "priceString": "0.15,0.6,0.075,0"
+      "priceString": "0.1,0.5,0.1,0"
     }
   },
   {
@@ -179,18 +179,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google",
-      "model": "gemini-2.5-flash-preview-tts",
-      "name": "Gemini 2.5 Flash Preview TTS",
+      "provider": "google-vertex",
+      "model": "gemini-2.5-flash",
+      "name": "Gemini 2.5 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
-        "input": 0.5,
-        "output": 10,
-        "cache_read": 0,
+        "input": 0.3,
+        "output": 2.5,
+        "cache_read": 0.03,
         "cache_write": 0
       },
-      "priceString": "0.5,10,0,0"
+      "priceString": "0.3,2.5,0.03,0"
     }
   },
   {
@@ -208,11 +208,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-2.5-flash-lite",
       "name": "Gemini 2.5 Flash-Lite",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.1,
         "output": 0.4,
@@ -237,11 +237,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3-flash-preview",
       "name": "Gemini 3 Flash Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.5,
         "output": 3,
@@ -264,28 +264,20 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:03:45.596822+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3.1-flash-image",
       "name": "Nano Banana 2",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.5,
         "output": 60,
-        "cache_read": 0,
+        "cache_read": 0.05,
         "cache_write": 0
       },
-      "priceString": "0.5,60,0,0"
+      "priceString": "0.5,60,0.05,0"
     }
   },
   {
@@ -301,21 +293,13 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:03:51.85515+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "google",
-      "model": "gemini-3.1-flash-lite-preview",
-      "name": "Gemini 3.1 Flash Lite Preview",
+      "provider": "google-vertex",
+      "model": "gemini-3.1-flash-lite",
+      "name": "Gemini 3.1 Flash Lite",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.25,
         "output": 1.5,
@@ -338,21 +322,13 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:46:46.795284+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3.5-flash-lite",
       "name": "Gemini 3.5 Flash Lite",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.3,
         "output": 2.5,
@@ -393,11 +369,11 @@
       "lastAt": "2026-11-02T14:27:53.129928+08:00"
     },
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3.8-flash",
       "name": "Gemini 3.8 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.75,
         "output": 3.75,
@@ -429,7 +405,7 @@
       "lastAt": "2026-11-10T11:26:28.583561+08:00"
     },
     "bareUsage": {
-      "requests": 358,
+      "requests": 356,
       "inputTokens": 4537468,
       "outputTokens": 212418,
       "cacheRead": 20774617,
@@ -438,11 +414,11 @@
       "lastAt": "2026-11-10T11:26:28.583561+08:00"
     },
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-4-argon",
       "name": "Gemini 4 Argon",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 2,
         "output": 10,
@@ -474,20 +450,20 @@
       "lastAt": "2026-11-09T12:10:23.287929+08:00"
     },
     "bareUsage": {
-      "requests": 6898,
-      "inputTokens": 76724298,
-      "outputTokens": 3734870,
+      "requests": 6889,
+      "inputTokens": 76724053,
+      "outputTokens": 3733746,
       "cacheRead": 736000591,
       "cacheWrite": 0,
-      "totalTokens": 80459168,
+      "totalTokens": 80457799,
       "lastAt": "2026-11-09T14:29:03.017067+08:00"
     },
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3.8-flash",
       "name": "Gemini 3.8 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.75,
         "output": 3.75,
@@ -510,21 +486,13 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:46:46.795284+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3.5-flash-lite",
       "name": "Gemini 3.5 Flash Lite",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.3,
         "output": 2.5,
@@ -547,21 +515,13 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:03:53.257763+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "google",
-      "model": "gemini-3.1-pro-preview-customtools",
-      "name": "Gemini 3.1 Pro Preview Custom Tools",
+      "provider": "google-vertex",
+      "model": "gemini-3.1-pro-preview",
+      "name": "Gemini 3.1 Pro Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 2,
         "output": 12,
@@ -584,21 +544,13 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:46:46.795279+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3.6-flash",
       "name": "Gemini 3.6 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.75,
         "output": 3.75,
@@ -621,21 +573,13 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:03:51.85515+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "google",
-      "model": "gemini-3.1-flash-lite-preview",
-      "name": "Gemini 3.1 Flash Lite Preview",
+      "provider": "google-vertex",
+      "model": "gemini-3.1-flash-lite",
+      "name": "Gemini 3.1 Flash Lite",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.25,
         "output": 1.5,
@@ -658,21 +602,13 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:03:55.375256+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3-flash-preview",
       "name": "Gemini 3 Flash Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.5,
         "output": 3,
@@ -695,15 +631,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:03:38.463863+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "google-vertex",
       "model": "gemini-nano-banana-2.1",
@@ -732,28 +660,20 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:03:45.039728+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3.1-flash-lite-image",
       "name": "Nano Banana 2 Lite",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.25,
         "output": 30,
-        "cache_read": 0,
+        "cache_read": 0.025,
         "cache_write": 0
       },
-      "priceString": "0.25,30,0,0"
+      "priceString": "0.25,30,0.025,0"
     }
   },
   {
@@ -769,28 +689,20 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:03:45.596822+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3.1-flash-image",
       "name": "Nano Banana 2",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.5,
         "output": 60,
-        "cache_read": 0,
+        "cache_read": 0.05,
         "cache_write": 0
       },
-      "priceString": "0.5,60,0,0"
+      "priceString": "0.5,60,0.05,0"
     }
   },
   {
@@ -806,28 +718,20 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:03:43.390863+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3-pro-image",
       "name": "Nano Banana Pro",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 2,
         "output": 120,
-        "cache_read": 0,
+        "cache_read": 0.2,
         "cache_write": 0
       },
-      "priceString": "2,120,0,0"
+      "priceString": "2,120,0.2,0"
     }
   },
   {
@@ -843,28 +747,20 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:03:48.783584+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-2.5-flash-image",
       "name": "Nano Banana",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.3,
         "output": 30,
-        "cache_read": 0.075,
+        "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "0.3,30,0.075,0"
+      "priceString": "0.3,30,0,0"
     }
   },
   {
@@ -880,15 +776,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:03:46.335973+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "google",
       "model": "gemini-pro-latest",
@@ -917,15 +805,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:03:51.117263+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "google",
       "model": "gemini-flash-latest",
@@ -954,15 +834,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:03:38.500401+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "google",
       "model": "gemini-flash-lite-latest",
@@ -991,21 +863,13 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:03:53.257763+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "google",
-      "model": "gemini-3.1-pro-preview-customtools",
-      "name": "Gemini 3.1 Pro Preview Custom Tools",
+      "provider": "google-vertex",
+      "model": "gemini-3.1-pro-preview",
+      "name": "Gemini 3.1 Pro Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 2,
         "output": 12,
@@ -1030,18 +894,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "qihang-ai",
+      "provider": "302ai",
       "model": "gemini-3-pro-preview",
-      "name": "Gemini 3 Pro Preview",
+      "name": "gemini-3-pro-preview",
       "confidence": "exact",
-      "reason": "渠道精准匹配 (qihang-ai)",
+      "reason": "渠道精准匹配 (302ai)",
       "cost": {
-        "input": 0.57,
-        "output": 3.43,
+        "input": 2,
+        "output": 12,
         "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "0.57,3.43,0,0"
+      "priceString": "2,12,0,0"
     }
   },
   {
@@ -1057,21 +921,13 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:03:55.375256+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3-flash-preview",
       "name": "Gemini 3 Flash Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.5,
         "output": 3,
@@ -1095,20 +951,20 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 6898,
-      "inputTokens": 76724298,
-      "outputTokens": 3734870,
+      "requests": 6889,
+      "inputTokens": 76724053,
+      "outputTokens": 3733746,
       "cacheRead": 736000591,
       "cacheWrite": 0,
-      "totalTokens": 80459168,
+      "totalTokens": 80457799,
       "lastAt": "2026-11-09T14:29:03.017067+08:00"
     },
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3.8-flash",
       "name": "Gemini 3.8 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.75,
         "output": 3.75,
@@ -1133,11 +989,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3.5-flash",
       "name": "Gemini 3.5 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 1.5,
         "output": 9,
@@ -1160,21 +1016,13 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:46:46.795284+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3.5-flash-lite",
       "name": "Gemini 3.5 Flash Lite",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.3,
         "output": 2.5,
@@ -1197,21 +1045,13 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:03:51.85515+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "google",
-      "model": "gemini-3.1-flash-lite-preview",
-      "name": "Gemini 3.1 Flash Lite Preview",
+      "provider": "google-vertex",
+      "model": "gemini-3.1-flash-lite",
+      "name": "Gemini 3.1 Flash Lite",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.25,
         "output": 1.5,
@@ -1236,18 +1076,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google",
-      "model": "gemini-2.5-pro-preview-tts",
-      "name": "Gemini 2.5 Pro Preview TTS",
+      "provider": "google-vertex",
+      "model": "gemini-2.5-pro",
+      "name": "Gemini 2.5 Pro",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
-        "input": 1,
-        "output": 20,
-        "cache_read": 0,
+        "input": 1.25,
+        "output": 10,
+        "cache_read": 0.125,
         "cache_write": 0
       },
-      "priceString": "1,20,0,0"
+      "priceString": "1.25,10,0.125,0"
     }
   },
   {
@@ -1265,18 +1105,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google",
-      "model": "gemini-2.5-flash-preview-tts",
-      "name": "Gemini 2.5 Flash Preview TTS",
+      "provider": "google-vertex",
+      "model": "gemini-2.5-flash",
+      "name": "Gemini 2.5 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
-        "input": 0.5,
-        "output": 10,
-        "cache_read": 0,
+        "input": 0.3,
+        "output": 2.5,
+        "cache_read": 0.03,
         "cache_write": 0
       },
-      "priceString": "0.5,10,0,0"
+      "priceString": "0.3,2.5,0.03,0"
     }
   },
   {
@@ -1294,11 +1134,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-2.5-flash-lite",
       "name": "Gemini 2.5 Flash-Lite",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.1,
         "output": 0.4,
@@ -1375,18 +1215,18 @@
       "lastAt": "2026-11-04T13:12:54.230795+08:00"
     },
     "bareUsage": {
-      "requests": 2,
+      "requests": 1,
       "inputTokens": 54,
       "outputTokens": 10,
       "cacheRead": 0,
       "cacheWrite": 0,
       "totalTokens": 64,
-      "lastAt": "2026-11-05T13:41:42.431973+08:00"
+      "lastAt": "2026-11-04T13:12:54.230795+08:00"
     },
     "matched": {
       "provider": "tencent-token-plan",
-      "model": "hy4",
-      "name": "Hy4",
+      "model": "hy4-preview",
+      "name": "Hy4 preview",
       "confidence": "medium",
       "reason": "关联厂商模型 (tencent-token-plan)",
       "cost": {
@@ -1420,7 +1260,7 @@
       "lastAt": "2026-11-07T07:38:56.971941+08:00"
     },
     "bareUsage": {
-      "requests": 42,
+      "requests": 41,
       "inputTokens": 41941,
       "outputTokens": 36251,
       "cacheRead": 37504,
@@ -1430,8 +1270,8 @@
     },
     "matched": {
       "provider": "tencent-token-plan",
-      "model": "hy4",
-      "name": "Hy4",
+      "model": "hy4-preview",
+      "name": "Hy4 preview",
       "confidence": "medium",
       "reason": "关联厂商模型 (tencent-token-plan)",
       "cost": {
@@ -1456,15 +1296,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 3,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T13:41:45.979184+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "tencent-token-plan",
       "model": "hy3",
@@ -1535,7 +1367,7 @@
       "lastAt": "2026-11-10T11:27:59.422821+08:00"
     },
     "bareUsage": {
-      "requests": 3108,
+      "requests": 3105,
       "inputTokens": 20025810,
       "outputTokens": 1759588,
       "cacheRead": 728580466,
@@ -1580,13 +1412,13 @@
       "lastAt": "2026-11-04T13:13:08.047491+08:00"
     },
     "bareUsage": {
-      "requests": 5,
+      "requests": 1,
       "inputTokens": 20,
       "outputTokens": 5,
       "cacheRead": 0,
       "cacheWrite": 0,
       "totalTokens": 25,
-      "lastAt": "2026-11-05T13:41:38.657195+08:00"
+      "lastAt": "2026-11-04T13:13:08.047491+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -1616,15 +1448,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 4,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T13:41:38.657221+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-5.3-flash",
@@ -1653,15 +1477,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:45.44668+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-5.2",
@@ -1719,15 +1535,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 3,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T13:41:40.610666+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "minimax",
       "model": "MiniMax-M3.1-Flash",
@@ -1765,7 +1573,7 @@
       "lastAt": "2026-11-07T07:37:20.155916+08:00"
     },
     "bareUsage": {
-      "requests": 238,
+      "requests": 234,
       "inputTokens": 705148,
       "outputTokens": 103028,
       "cacheRead": 9900544,
@@ -1910,18 +1718,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "stepfun-ai",
+      "provider": "stepfun",
       "model": "step-5-preview",
       "name": "Step 5 Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (stepfun-ai)",
+      "reason": "原厂规约匹配 (stepfun)",
       "cost": {
-        "input": 1,
-        "output": 2.7,
-        "cache_read": 0.1,
+        "input": 1.04613,
+        "output": 2.98895,
+        "cache_read": 0.10461,
         "cache_write": 0
       },
-      "priceString": "1,2.7,0.1,0"
+      "priceString": "1.04613,2.98895,0.10461,0"
     }
   },
   {
@@ -1966,15 +1774,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T13:41:41.044343+08:00"
-    },
+    "bareUsage": null,
     "matched": null
   },
   {
@@ -1990,15 +1790,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T13:41:41.559014+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "opencode",
       "model": "x-preview-f-free",
@@ -2028,18 +1820,18 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 2,
+      "requests": 1,
       "inputTokens": 54,
       "outputTokens": 10,
       "cacheRead": 0,
       "cacheWrite": 0,
       "totalTokens": 64,
-      "lastAt": "2026-11-05T13:41:42.431973+08:00"
+      "lastAt": "2026-11-04T13:12:54.230795+08:00"
     },
     "matched": {
       "provider": "tencent-token-plan",
-      "model": "hy4",
-      "name": "Hy4",
+      "model": "hy4-preview",
+      "name": "Hy4 preview",
       "confidence": "medium",
       "reason": "关联厂商模型 (tencent-token-plan)",
       "cost": {
@@ -2065,7 +1857,7 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 42,
+      "requests": 41,
       "inputTokens": 41941,
       "outputTokens": 36251,
       "cacheRead": 37504,
@@ -2075,8 +1867,8 @@
     },
     "matched": {
       "provider": "tencent-token-plan",
-      "model": "hy4",
-      "name": "Hy4",
+      "model": "hy4-preview",
+      "name": "Hy4 preview",
       "confidence": "medium",
       "reason": "关联厂商模型 (tencent-token-plan)",
       "cost": {
@@ -2101,15 +1893,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 3,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T13:41:45.979184+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "tencent-token-plan",
       "model": "hy3",
@@ -2151,13 +1935,13 @@
       "lastAt": "2026-10-28T14:18:54.171638+08:00"
     },
     "bareUsage": {
-      "requests": 355,
+      "requests": 352,
       "inputTokens": 4330409,
       "outputTokens": 134466,
       "cacheRead": 117564288,
       "cacheWrite": 0,
       "totalTokens": 4464875,
-      "lastAt": "2026-11-05T13:41:38.657284+08:00"
+      "lastAt": "2026-10-29T09:52:33.133626+08:00"
     },
     "matched": {
       "provider": "deepseek",
@@ -2187,15 +1971,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T13:41:43.932347+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "openai",
       "model": "gpt-6-astra",
@@ -2224,15 +2000,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T13:41:44.522744+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "openai",
       "model": "gpt-6.1-sol",
@@ -2261,15 +2029,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T13:41:44.560598+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "openai",
       "model": "gpt-6-sol",
@@ -2299,13 +2059,13 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 4,
+      "requests": 2,
       "inputTokens": 18645,
       "outputTokens": 19,
       "cacheRead": 3456,
       "cacheWrite": 0,
       "totalTokens": 18664,
-      "lastAt": "2026-11-05T13:41:44.923541+08:00"
+      "lastAt": "2026-10-22T14:24:31.403756+08:00"
     },
     "matched": {
       "provider": "openai",
@@ -2335,15 +2095,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T13:41:44.959949+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "openai",
       "model": "gpt-5.6-sol",
@@ -2373,7 +2125,7 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 4,
+      "requests": 2,
       "inputTokens": 0,
       "outputTokens": 0,
       "cacheRead": 0,
@@ -2409,15 +2161,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T13:41:45.368779+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "openai",
       "model": "gpt-5.6-luna",
@@ -2446,28 +2190,20 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T13:41:45.538156+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "aihubmix",
+      "provider": "requesty",
       "model": "grok-4.7",
       "name": "Grok 4.7",
       "confidence": "exact",
-      "reason": "渠道精准匹配 (aihubmix)",
+      "reason": "渠道精准匹配 (requesty)",
       "cost": {
         "input": 2,
         "output": 6,
         "cache_read": 0.5,
-        "cache_write": 0
+        "cache_write": 2
       },
-      "priceString": "2,6,0.5,0"
+      "priceString": "2,6,0.5,2"
     }
   },
   {
@@ -2484,20 +2220,20 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 6898,
-      "inputTokens": 76724298,
-      "outputTokens": 3734870,
+      "requests": 6889,
+      "inputTokens": 76724053,
+      "outputTokens": 3733746,
       "cacheRead": 736000591,
       "cacheWrite": 0,
-      "totalTokens": 80459168,
+      "totalTokens": 80457799,
       "lastAt": "2026-11-09T14:29:03.017067+08:00"
     },
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3.8-flash",
       "name": "Gemini 3.8 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.75,
         "output": 3.75,
@@ -2521,13 +2257,13 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 5,
+      "requests": 1,
       "inputTokens": 20,
       "outputTokens": 5,
       "cacheRead": 0,
       "cacheWrite": 0,
       "totalTokens": 25,
-      "lastAt": "2026-11-05T13:41:38.657195+08:00"
+      "lastAt": "2026-11-04T13:13:08.047491+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -2557,15 +2293,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 4,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T13:41:38.657221+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-5.3-flash",
@@ -2603,7 +2331,7 @@
       "lastAt": "2026-11-02T14:42:38.107535+08:00"
     },
     "bareUsage": {
-      "requests": 238,
+      "requests": 234,
       "inputTokens": 705148,
       "outputTokens": 103028,
       "cacheRead": 9900544,
@@ -2639,15 +2367,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T13:41:45.965365+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "moonshotai-cn",
       "model": "kimi-k3.1-pro-highspeed",
@@ -2676,15 +2396,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T13:41:38.657307+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "moonshotai-cn",
       "model": "kimi-k3",
@@ -2713,15 +2425,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 3,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T13:41:40.610666+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "minimax",
       "model": "MiniMax-M3.1-Flash",
@@ -2750,15 +2454,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:41.48454+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "volcengine-coding-plan",
       "model": "doubao-seed-2.1-turbo",
@@ -2787,15 +2483,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:41.484642+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "ofox",
       "model": "volcengine/doubao-seed-2.1-pro",
@@ -2824,15 +2512,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:41.484784+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "ofox",
       "model": "volcengine/doubao-seed-2.1-pro",
@@ -2861,15 +2541,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:46.088429+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "volcengine",
       "model": "doubao-seed-evolving",
@@ -2898,15 +2570,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:41.484799+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "volcengine",
       "model": "doubao-seed-evolving",
@@ -2935,15 +2599,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:42.424201+08:00"
-    },
+    "bareUsage": null,
     "matched": null
   },
   {
@@ -2959,15 +2615,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:42.585423+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "zenmux",
       "model": "bytedance/doubao-seed-code",
@@ -2996,15 +2644,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:42.070355+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-5.2",
@@ -3033,15 +2673,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 4,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T13:41:38.657221+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-5.3-flash",
@@ -3070,15 +2702,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:42.906185+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-5.3-flash",
@@ -3107,15 +2731,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:43.198608+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-5.3-flash",
@@ -3144,15 +2760,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:43.959631+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-5.3-flash",
@@ -3182,13 +2790,13 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 5,
+      "requests": 1,
       "inputTokens": 20,
       "outputTokens": 5,
       "cacheRead": 0,
       "cacheWrite": 0,
       "totalTokens": 25,
-      "lastAt": "2026-11-05T13:41:38.657195+08:00"
+      "lastAt": "2026-11-04T13:13:08.047491+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -3218,15 +2826,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:43.083315+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-5.3",
@@ -3255,15 +2855,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:44.905092+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-5.1",
@@ -3292,15 +2884,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:44.617104+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-5",
@@ -3329,15 +2913,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:45.44668+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-5.2",
@@ -3366,15 +2942,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:45.447002+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-5.2",
@@ -3407,15 +2975,7 @@
       "name": "DeepSeek 官方峰谷 (闲时5折)"
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:46.70915+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "deepseek",
       "model": "deepseek-v4-flash",
@@ -3449,7 +3009,7 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 2,
+      "requests": 1,
       "inputTokens": 0,
       "outputTokens": 0,
       "cacheRead": 0,
@@ -3485,15 +3045,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:46.710378+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-4.7",
@@ -3522,15 +3074,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:47.696731+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-4.6",
@@ -3559,15 +3103,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:27:47.773237+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "moonshotai-cn",
       "model": "kimi-k2.7-code",
@@ -3601,7 +3137,7 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 3108,
+      "requests": 3105,
       "inputTokens": 20025810,
       "outputTokens": 1759588,
       "cacheRead": 728580466,
@@ -3650,7 +3186,7 @@
       "lastAt": "2026-11-02T09:17:29.359465+08:00"
     },
     "bareUsage": {
-      "requests": 3,
+      "requests": 2,
       "inputTokens": 17788,
       "outputTokens": 453,
       "cacheRead": 0,
@@ -3914,7 +3450,7 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 238,
+      "requests": 234,
       "inputTokens": 705148,
       "outputTokens": 103028,
       "cacheRead": 9900544,
@@ -3950,15 +3486,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:31:12.307421+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "moonshotai-cn",
       "model": "kimi-k3.1-pro",
@@ -3987,15 +3515,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T13:41:38.657307+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "moonshotai-cn",
       "model": "kimi-k3",
@@ -4084,11 +3604,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "llmgateway",
-      "model": "kimi-k2.8-preview",
-      "name": "Kimi K2.8 Preview",
+      "provider": "llmgateway-providers",
+      "model": "tencent/kimi-k2.8-preview",
+      "name": "Kimi K2.8 Preview (Tencent Cloud)",
       "confidence": "high",
-      "reason": "渠道规格匹配 (llmgateway)",
+      "reason": "渠道规格匹配 (llmgateway-providers)",
       "cost": {
         "input": 1,
         "output": 4,
@@ -4113,18 +3633,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "llmgateway",
+      "provider": "qiniu-ai",
       "model": "kimi-k2",
       "name": "Kimi K2",
       "confidence": "exact",
-      "reason": "渠道精准匹配 (llmgateway)",
+      "reason": "渠道精准匹配 (qiniu-ai)",
       "cost": {
-        "input": 0.57,
-        "output": 2.3,
-        "cache_read": 0.5,
+        "input": 0.57971014,
+        "output": 2.31884058,
+        "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "0.57,2.3,0.5,0"
+      "priceString": "0.57971014,2.31884058,0,0"
     }
   },
   {
@@ -4169,15 +3689,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:32:30.62483+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "xiaomi",
       "model": "mimo-v2.6-flash",
@@ -4273,7 +3785,7 @@
       "lastAt": "2026-11-02T09:19:32.899515+08:00"
     },
     "bareUsage": {
-      "requests": 3,
+      "requests": 2,
       "inputTokens": 17157,
       "outputTokens": 207,
       "cacheRead": 0,
@@ -4309,15 +3821,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 3,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T13:41:40.610666+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "minimax",
       "model": "MiniMax-M3.1-Flash",
@@ -4346,15 +3850,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-29T14:28:49.29392+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "minimax",
       "model": "MiniMax-M3.1-Flash",
@@ -4530,18 +4026,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "stepfun-ai",
+      "provider": "stepfun",
       "model": "step-5-preview",
       "name": "Step 5 Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (stepfun-ai)",
+      "reason": "原厂规约匹配 (stepfun)",
       "cost": {
-        "input": 1,
-        "output": 2.7,
-        "cache_read": 0.1,
+        "input": 1.04613,
+        "output": 2.98895,
+        "cache_read": 0.10461,
         "cache_write": 0
       },
-      "priceString": "1,2.7,0.1,0"
+      "priceString": "1.04613,2.98895,0.10461,0"
     }
   },
   {
@@ -4559,18 +4055,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "stepfun-ai",
+      "provider": "stepfun",
       "model": "step-5-preview",
       "name": "Step 5 Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (stepfun-ai)",
+      "reason": "原厂规约匹配 (stepfun)",
       "cost": {
-        "input": 1,
-        "output": 2.7,
-        "cache_read": 0.1,
+        "input": 1.04613,
+        "output": 2.98895,
+        "cache_read": 0.10461,
         "cache_write": 0
       },
-      "priceString": "1,2.7,0.1,0"
+      "priceString": "1.04613,2.98895,0.10461,0"
     }
   },
   {
@@ -4823,18 +4319,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "opencode",
+      "provider": "helicone",
       "model": "qwen3-coder",
-      "name": "Qwen3 Coder",
+      "name": "Qwen3 Coder 480B A35B Instruct Turbo",
       "confidence": "exact",
-      "reason": "渠道精准匹配 (opencode)",
+      "reason": "渠道精准匹配 (helicone)",
       "cost": {
-        "input": 0.45,
-        "output": 1.8,
+        "input": 0.22,
+        "output": 0.95,
         "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "0.45,1.8,0,0"
+      "priceString": "0.22,0.95,0,0"
     }
   },
   {
@@ -4929,18 +4425,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "zai",
+      "provider": "302ai",
       "model": "glm-5-turbo",
-      "name": "GLM-5-Turbo",
+      "name": "glm-5-turbo",
       "confidence": "exact",
-      "reason": "渠道精准匹配 (zai)",
+      "reason": "渠道精准匹配 (302ai)",
       "cost": {
-        "input": 1.2,
-        "output": 4,
-        "cache_read": 0.24,
+        "input": 0.72,
+        "output": 3.2,
+        "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "1.2,4,0.24,0"
+      "priceString": "0.72,3.2,0,0"
     }
   },
   {
@@ -5151,18 +4647,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "kilo",
-      "model": "bytedance-seed/seed-2.0-code",
+      "provider": "ofox",
+      "model": "volcengine/doubao-seed-2.0-code",
       "name": "Seed 2.0 Code",
       "confidence": "medium",
-      "reason": "模糊推荐匹配 (kilo)",
+      "reason": "模糊推荐匹配 (ofox)",
       "cost": {
-        "input": 0.5,
-        "output": 3,
-        "cache_read": 0,
-        "cache_write": 0
+        "input": 0.67,
+        "output": 3.36,
+        "cache_read": 0.14,
+        "cache_write": 0.0024
       },
-      "priceString": "0.5,3,0,0"
+      "priceString": "0.67,3.36,0.14,0.0024"
     }
   },
   {
@@ -5363,17 +4859,17 @@
     "bareUsage": null,
     "matched": {
       "provider": "moonshotai-cn",
-      "model": "kimi-k3.1-pro",
-      "name": "Kimi K3.1 Pro",
+      "model": "kimi-k3",
+      "name": "Kimi K3",
       "confidence": "medium",
       "reason": "关联厂商模型 (moonshotai-cn)",
       "cost": {
-        "input": 1.9437,
-        "output": 10.1671,
-        "cache_read": 0.1944,
-        "cache_write": 1.9437
+        "input": 2.9879,
+        "output": 14.9395,
+        "cache_read": 0.2988,
+        "cache_write": 2.9879
       },
-      "priceString": "1.9437,10.1671,0.1944,1.9437"
+      "priceString": "2.9879,14.9395,0.2988,2.9879"
     }
   },
   {
@@ -5392,17 +4888,17 @@
     "bareUsage": null,
     "matched": {
       "provider": "moonshotai-cn",
-      "model": "kimi-k3.1-pro",
-      "name": "Kimi K3.1 Pro",
+      "model": "kimi-k3",
+      "name": "Kimi K3",
       "confidence": "medium",
       "reason": "关联厂商模型 (moonshotai-cn)",
       "cost": {
-        "input": 1.9437,
-        "output": 10.1671,
-        "cache_read": 0.1944,
-        "cache_write": 1.9437
+        "input": 2.9879,
+        "output": 14.9395,
+        "cache_read": 0.2988,
+        "cache_write": 2.9879
       },
-      "priceString": "1.9437,10.1671,0.1944,1.9437"
+      "priceString": "2.9879,14.9395,0.2988,2.9879"
     }
   },
   {
@@ -5984,17 +5480,17 @@
     "bareUsage": null,
     "matched": {
       "provider": "alibaba",
-      "model": "qwen3-coder-flash",
-      "name": "Qwen3 Coder Flash",
+      "model": "qwen3.6-flash",
+      "name": "Qwen3.6 Flash",
       "confidence": "medium",
       "reason": "关联厂商模型 (alibaba)",
       "cost": {
-        "input": 0.3,
+        "input": 0.25,
         "output": 1.5,
-        "cache_read": 0.06,
-        "cache_write": 0.375
+        "cache_read": 0.025,
+        "cache_write": 0.3125
       },
-      "priceString": "0.3,1.5,0.06,0.375"
+      "priceString": "0.25,1.5,0.025,0.3125"
     }
   },
   {
@@ -6085,13 +5581,13 @@
       "lastAt": "2026-10-22T14:24:31.403756+08:00"
     },
     "bareUsage": {
-      "requests": 4,
+      "requests": 2,
       "inputTokens": 18645,
       "outputTokens": 19,
       "cacheRead": 3456,
       "cacheWrite": 0,
       "totalTokens": 18664,
-      "lastAt": "2026-11-05T13:41:44.923541+08:00"
+      "lastAt": "2026-10-22T14:24:31.403756+08:00"
     },
     "matched": {
       "provider": "openai",
@@ -6122,7 +5618,7 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 4,
+      "requests": 2,
       "inputTokens": 0,
       "outputTokens": 0,
       "cacheRead": 0,
@@ -6158,15 +5654,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T13:41:45.368779+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "openai",
       "model": "gpt-5.6-luna",
@@ -6195,21 +5683,13 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:46:46.795372+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "google",
-      "model": "gemini-3.1-pro-preview-customtools",
-      "name": "Gemini 3.1 Pro Preview Custom Tools",
+      "provider": "google-vertex",
+      "model": "gemini-3.1-pro-preview",
+      "name": "Gemini 3.1 Pro Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 2,
         "output": 12,
@@ -6232,21 +5712,13 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:46:46.795279+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3.6-flash",
       "name": "Gemini 3.6 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.75,
         "output": 3.75,
@@ -6270,20 +5742,20 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 6898,
-      "inputTokens": 76724298,
-      "outputTokens": 3734870,
+      "requests": 6889,
+      "inputTokens": 76724053,
+      "outputTokens": 3733746,
       "cacheRead": 736000591,
       "cacheWrite": 0,
-      "totalTokens": 80459168,
+      "totalTokens": 80457799,
       "lastAt": "2026-11-09T14:29:03.017067+08:00"
     },
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3.8-flash",
       "name": "Gemini 3.8 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.75,
         "output": 3.75,
@@ -6306,21 +5778,13 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:46:46.795326+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3.7-flash",
       "name": "Gemini 3.7 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.75,
         "output": 3.75,
@@ -6343,21 +5807,13 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T10:46:46.795284+08:00"
-    },
+    "bareUsage": null,
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-3.5-flash-lite",
       "name": "Gemini 3.5 Flash Lite",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 0.3,
         "output": 2.5,
@@ -6381,7 +5837,7 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 358,
+      "requests": 356,
       "inputTokens": 4537468,
       "outputTokens": 212418,
       "cacheRead": 20774617,
@@ -6390,11 +5846,11 @@
       "lastAt": "2026-11-10T11:26:28.583561+08:00"
     },
     "matched": {
-      "provider": "google",
+      "provider": "google-vertex",
       "model": "gemini-4-argon",
       "name": "Gemini 4 Argon",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google)",
+      "reason": "原厂规约匹配 (google-vertex)",
       "cost": {
         "input": 2,
         "output": 10,
@@ -6406,24 +5862,24 @@
   }
 ];
   g.__MAGPIE_USAGE_SUMMARY__ = {
-  "requests": 16650,
-  "inputTokens": 165090935,
-  "outputTokens": 8488034,
+  "requests": 16448,
+  "inputTokens": 165090690,
+  "outputTokens": 8486910,
   "cacheRead": 2395303594,
-  "totalTokens": 173578969
+  "totalTokens": 173577600
 };
   g.__MAGPIE_BARE_USAGE__ = {
   "gpt-6-luna": {
-    "requests": 4,
+    "requests": 2,
     "inputTokens": 18645,
     "outputTokens": 19,
     "cacheRead": 3456,
     "cacheWrite": 0,
     "totalTokens": 18664,
-    "lastAt": "2026-11-05T13:41:44.923541+08:00"
+    "lastAt": "2026-10-22T14:24:31.403756+08:00"
   },
   "deepseek-v4.1-flash": {
-    "requests": 3108,
+    "requests": 3105,
     "inputTokens": 20025810,
     "outputTokens": 1759588,
     "cacheRead": 728580466,
@@ -6441,211 +5897,22 @@
     "lastAt": "2026-11-02T14:27:53.129928+08:00"
   },
   "gemini-3.8-flash": {
-    "requests": 6898,
-    "inputTokens": 76724298,
-    "outputTokens": 3734870,
+    "requests": 6889,
+    "inputTokens": 76724053,
+    "outputTokens": 3733746,
     "cacheRead": 736000591,
     "cacheWrite": 0,
-    "totalTokens": 80459168,
+    "totalTokens": 80457799,
     "lastAt": "2026-11-09T14:29:03.017067+08:00"
   },
-  "unknown": {
-    "requests": 94,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-09T21:07:44.91445+08:00"
-  },
-  "gpt-5.6-terra": {
-    "requests": 4,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-06T09:41:38.983275+08:00"
-  },
-  "hy4-preview": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-28T12:26:56.033611+08:00"
-  },
-  "fast-model": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-28T12:26:56.033717+08:00"
-  },
-  "default-model": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T13:41:41.044343+08:00"
-  },
-  "gpt-5.6-luna": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T13:41:45.368779+08:00"
-  },
-  "gpt-5.5": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-28T12:26:57.962807+08:00"
-  },
-  "grok-4.7": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T13:41:45.538156+08:00"
-  },
-  "gpt-5.4": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-28T12:26:57.999945+08:00"
-  },
-  "glm-5.3-flash": {
-    "requests": 4,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T13:41:38.657221+08:00"
-  },
-  "glm-5.3": {
-    "requests": 5,
-    "inputTokens": 20,
-    "outputTokens": 5,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 25,
-    "lastAt": "2026-11-05T13:41:38.657195+08:00"
-  },
-  "glm-5.2": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:27:45.44668+08:00"
-  },
-  "kimi-k3.1-pro": {
-    "requests": 238,
-    "inputTokens": 705148,
-    "outputTokens": 103028,
-    "cacheRead": 9900544,
-    "cacheWrite": 0,
-    "totalTokens": 808176,
-    "lastAt": "2026-11-07T07:37:20.155916+08:00"
-  },
-  "gpt-6-astra": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T13:41:43.932347+08:00"
-  },
   "deepseek-v4.1-flash-sg": {
-    "requests": 355,
+    "requests": 352,
     "inputTokens": 4330409,
     "outputTokens": 134466,
     "cacheRead": 117564288,
     "cacheWrite": 0,
     "totalTokens": 4464875,
-    "lastAt": "2026-11-05T13:41:38.657284+08:00"
-  },
-  "minimax-m3.1-flash": {
-    "requests": 3,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T13:41:40.610666+08:00"
-  },
-  "hy3": {
-    "requests": 3,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T13:41:45.979184+08:00"
-  },
-  "gpt-6-sol": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T13:41:44.560598+08:00"
-  },
-  "gpt-6.1-sol": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T13:41:44.522744+08:00"
-  },
-  "primary-model": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-28T12:27:02.489532+08:00"
-  },
-  "gpt-5.6-sol": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T13:41:44.959949+08:00"
-  },
-  "balanced-model": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-28T12:27:03.458891+08:00"
+    "lastAt": "2026-10-29T09:52:33.133626+08:00"
   },
   "claude-opus-4-6-thinking": {
     "requests": 41,
@@ -6656,143 +5923,17 @@
     "totalTokens": 208006,
     "lastAt": "2026-10-28T16:15:45.870654+08:00"
   },
-  "Doubao-Seed-2.1-Pro-max": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
+  "kimi-k3.1-pro": {
+    "requests": 234,
+    "inputTokens": 705148,
+    "outputTokens": 103028,
+    "cacheRead": 9900544,
     "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:27:41.484784+08:00"
-  },
-  "Doubao-Seed-2.1-Pro": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:27:41.484642+08:00"
-  },
-  "Doubao-Seed-Evolving-max": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:27:41.484799+08:00"
-  },
-  "glm-5.2_advisor_doubao": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:27:42.070355+08:00"
-  },
-  "Doubao-Seed-Code": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:27:42.585423+08:00"
-  },
-  "Doubao-Seed-2.1-Turbo": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:27:41.48454+08:00"
-  },
-  "Doubao_1_6": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:27:42.424201+08:00"
-  },
-  "glm-5.3-max": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:27:43.083315+08:00"
-  },
-  "glm-5.3-flashx": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:27:43.198608+08:00"
-  },
-  "glm-5.3-flash-max": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:27:42.906185+08:00"
-  },
-  "glm-5.3-flashx-max": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:27:43.959631+08:00"
-  },
-  "glm-5.1": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:27:44.905092+08:00"
-  },
-  "glm-5.2-max": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:27:45.447002+08:00"
-  },
-  "Doubao-Seed-Evolving": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:27:46.088429+08:00"
-  },
-  "glm-5": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:27:44.617104+08:00"
+    "totalTokens": 808176,
+    "lastAt": "2026-11-07T07:37:20.155916+08:00"
   },
   "DeepSeek-V4-Flash-max": {
-    "requests": 2,
+    "requests": 1,
     "inputTokens": 0,
     "outputTokens": 0,
     "cacheRead": 0,
@@ -6800,44 +5941,8 @@
     "totalTokens": 0,
     "lastAt": "2026-10-30T16:13:19.103035+08:00"
   },
-  "glm-4.7": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:27:46.710378+08:00"
-  },
-  "DeepSeek-V4-Flash": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:27:46.70915+08:00"
-  },
-  "kimi-k2.7-code": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:27:47.773237+08:00"
-  },
-  "glm-4.6": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:27:47.696731+08:00"
-  },
   "deepseek-v4.1-flash-max": {
-    "requests": 3,
+    "requests": 2,
     "inputTokens": 17788,
     "outputTokens": 453,
     "cacheRead": 0,
@@ -6845,185 +5950,14 @@
     "totalTokens": 18241,
     "lastAt": "2026-11-02T09:17:29.359465+08:00"
   },
-  "minimax-m3.1-flash-max": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:28:49.29392+08:00"
-  },
-  "kimi-k3.1-pro-max": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:31:12.307421+08:00"
-  },
   "mimo-v2.6-pro-max": {
-    "requests": 3,
+    "requests": 2,
     "inputTokens": 17157,
     "outputTokens": 207,
     "cacheRead": 0,
     "cacheWrite": 0,
     "totalTokens": 17364,
     "lastAt": "2026-11-02T09:19:32.899515+08:00"
-  },
-  "mimo-v2.6-flash-max": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-29T14:32:30.62483+08:00"
-  },
-  "gemini-3.6-flash": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-02T10:46:46.795279+08:00"
-  },
-  "gemini-3-pro-image": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-02T10:03:43.390863+08:00"
-  },
-  "gemini-flash-lite-latest": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-02T10:03:38.500401+08:00"
-  },
-  "gemini-3.1-flash-lite-image": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-02T10:03:45.039728+08:00"
-  },
-  "gemini-nano-banana-2.1": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-02T10:03:38.463863+08:00"
-  },
-  "gemini-pro-latest": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-02T10:03:46.335973+08:00"
-  },
-  "gemini-3.5-flash-lite": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-02T10:46:46.795284+08:00"
-  },
-  "gemini-flash-latest": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-02T10:03:51.117263+08:00"
-  },
-  "gemini-3.1-flash-lite": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-02T10:03:51.85515+08:00"
-  },
-  "gemini-4-argon": {
-    "requests": 358,
-    "inputTokens": 4537468,
-    "outputTokens": 212418,
-    "cacheRead": 20774617,
-    "cacheWrite": 0,
-    "totalTokens": 4749886,
-    "lastAt": "2026-11-10T11:26:28.583561+08:00"
-  },
-  "gemini-3.1-pro-preview": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-02T10:03:53.257763+08:00"
-  },
-  "gemini-3-flash-preview": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-02T10:03:55.375256+08:00"
-  },
-  "gemini-3.1-flash-image": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-02T10:03:45.596822+08:00"
-  },
-  "gemini-2.5-flash-image": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-02T10:03:48.783584+08:00"
-  },
-  "gemini-3.1-pro": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-02T10:46:46.795372+08:00"
-  },
-  "gemini-3.7-flash": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-02T10:46:46.795326+08:00"
   },
   "claude-sonnet-4-6": {
     "requests": 1,
@@ -7033,6 +5967,15 @@
     "cacheWrite": 0,
     "totalTokens": 18,
     "lastAt": "2026-11-02T12:18:35.337624+08:00"
+  },
+  "gemini-4-argon": {
+    "requests": 356,
+    "inputTokens": 4537468,
+    "outputTokens": 212418,
+    "cacheRead": 20774617,
+    "cacheWrite": 0,
+    "totalTokens": 4749886,
+    "lastAt": "2026-11-10T11:26:28.583561+08:00"
   },
   "undefined": {
     "requests": 27,
@@ -7044,16 +5987,16 @@
     "lastAt": "2026-11-05T10:23:51.184946+08:00"
   },
   "hy4free": {
-    "requests": 2,
+    "requests": 1,
     "inputTokens": 54,
     "outputTokens": 10,
     "cacheRead": 0,
     "cacheWrite": 0,
     "totalTokens": 64,
-    "lastAt": "2026-11-05T13:41:42.431973+08:00"
+    "lastAt": "2026-11-04T13:12:54.230795+08:00"
   },
   "hy4std": {
-    "requests": 42,
+    "requests": 41,
     "inputTokens": 41941,
     "outputTokens": 36251,
     "cacheRead": 37504,
@@ -7069,6 +6012,15 @@
     "cacheWrite": 0,
     "totalTokens": 16,
     "lastAt": "2026-11-04T13:13:08.048878+08:00"
+  },
+  "glm-5.3": {
+    "requests": 1,
+    "inputTokens": 20,
+    "outputTokens": 5,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 25,
+    "lastAt": "2026-11-04T13:13:08.047491+08:00"
   },
   "gemini-4": {
     "requests": 1,
@@ -7088,32 +6040,14 @@
     "totalTokens": 284,
     "lastAt": "2026-11-04T13:13:20.842697+08:00"
   },
-  "max-model": {
-    "requests": 1,
+  "gpt-5.6-terra": {
+    "requests": 2,
     "inputTokens": 0,
     "outputTokens": 0,
     "cacheRead": 0,
     "cacheWrite": 0,
     "totalTokens": 0,
-    "lastAt": "2026-11-05T13:41:41.559014+08:00"
-  },
-  "kimi-k3.1-pro-highspeed": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T13:41:45.965365+08:00"
-  },
-  "kimi-k3": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T13:41:38.657307+08:00"
+    "lastAt": "2026-11-06T09:41:38.983275+08:00"
   }
 };
 })(typeof window !== "undefined" ? window : globalThis);

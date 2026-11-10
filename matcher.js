@@ -169,6 +169,19 @@ function getUsageData() {
       if (!line.trim()) continue;
       try {
         const r = JSON.parse(line);
+        // 排除测试请求 (Magpie 自身健康探针、provider_test、model_list 等测试请求)
+        const isTest = (
+          r.source === 'probe' ||
+          r.agent === 'magpie' ||
+          r.kind === 'provider_test' ||
+          r.kind === 'model_list' ||
+          r.kind === 'connection_check' ||
+          r.kind === 'api_detect' ||
+          (typeof r.kind === 'string' && r.kind.toLowerCase().includes('test')) ||
+          (typeof r.operation === 'string' && r.operation.toLowerCase().includes('test'))
+        );
+        if (isTest) continue;
+
         const req = r.req || (r.provider + '/' + r.model);
         const bare = r.model || (r.req ? r.req.split('/')[1] : 'unknown');
         const inT = r.in || 0;

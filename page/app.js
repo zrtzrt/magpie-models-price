@@ -1,7 +1,6 @@
 // app.js - Model Prices Controller with Master Mode Switch, Scope, Time-of-Use Peak/Off-Peak Pricing & Full i18n
 (async () => {
   const $ = (id) => document.getElementById(id);
-  const MM = globalThis.MagpieMyModels;
   const { t, setLocale, onLocaleChange, getLocale } = window.I18N_MODULE || {
     t: (k) => k,
     setLocale: () => {},
@@ -21,8 +20,8 @@
     }, 2500);
   }
 
-  // Load models data and options (bundled snapshot first; host may overwrite via models-live.js)
-  let rawModels = window.__MAGPIE_MODELS_DATA__ || [];
+  // Load models data and options
+  const rawModels = window.__MAGPIE_MODELS_DATA__ || [];
   let pluginOptions = {};
   let customPrices = {};
   let globalMode = "all-equivalent"; // "all-equivalent" or "api-only"
@@ -30,68 +29,6 @@
   let search = "";
   let editingModel = null;
   let selectedScope = "specific";
-
-  function loadPageScript(src) {
-    return new Promise((resolve) => {
-      const s = document.createElement("script");
-      s.src = src;
-      s.onload = () => { s.remove(); resolve(true); };
-      s.onerror = () => { s.remove(); resolve(false); };
-      document.head.appendChild(s);
-    });
-  }
-
-  // The page cannot scan Magpie's cache itself (CSP connect-src none).
-  // The host hook writes page/models-live.js; refresh reloads that file.
-  async function reloadModelsSnapshot() {
-    const ok = await loadPageScript("models-live.js?t=" + Date.now());
-    if (!ok) return { live: false, count: rawModels.length };
-    rawModels = window.__MAGPIE_MODELS_DATA__ || [];
-    return {
-      live: !!window.__MAGPIE_MODELS_DATA_LIVE__,
-      count: rawModels.length,
-      at: window.__MAGPIE_MODELS_DATA_AT__ || ""
-    };
-  }
-
-  // ---- My Models state -------------------------------------------------
-  const mm = {
-    view: "mine",
-    providers: null,          // [{id, name}] from providers:list, null when unavailable
-    basis: "snapshot",        // "bridge" | "snapshot"
-    rows: [],
-    favorites: new Set(),
-    query: "",
-    providerQuery: "",
-    loading: false,
-    notice: "",
-    missingProviders: [],
-    staleFavorites: [],
-    prefs: {
-      providers: null,        // null = all configured; [] = none selected
-      onlyFavorites: false,
-      hideUnpriced: false,
-      group: false,
-      sort: { key: "provider", dir: "asc" }
-    }
-  };
-  let mmPersistTimer = null;
-
-  function loadMyModelPrefs() {
-    const saved = pluginOptions.myModels || {};
-    mm.favorites = new Set(Array.isArray(saved.favorites) ? saved.favorites : []);
-    mm.prefs.providers = Array.isArray(saved.providers) ? saved.providers : null;
-    mm.prefs.onlyFavorites = !!saved.onlyFavorites;
-    mm.prefs.hideUnpriced = !!saved.hideUnpriced;
-    mm.prefs.group = !!saved.group;
-    if (saved.sort && typeof saved.sort.key === "string") {
-      mm.prefs.sort = {
-        key: ["provider", "model", "input", "output", "cache_read", "source"].includes(saved.sort.key)
-          ? saved.sort.key : "provider",
-        dir: saved.sort.dir === "desc" ? "desc" : "asc"
-      };
-    }
-  }
 
   // 1. 初始化 Magpie 宿主通信规范 (Host PostMessage Handshake & Theme/Locale Sync)
   function initMagpieHostSync() {
@@ -322,14 +259,14 @@
   }
 
   function renderModeUI() {
-    const buttons = document.querySelectorAll("[data-mode]");
-    buttons.forEach((btn) => {
-      if (btn.dataset.mode === globalMode) btn.setAttribute("aria-selected", "true");
-      else btn.removeAttribute("aria-selected");
-    });
-    const descEl = $("mode-desc-text");
-    if (descEl) {
-      descEl.innerHTML = globalMode === "api-only" ? t("mode_desc_api") : t("mode_desc_all");
+    if (globalMode === "api-only") {
+      $("mode-btn-api").setAttribute("aria-selected", "true");
+      $("mode-btn-all").removeAttribute("aria-selected");
+      $("mode-desc-text").innerHTML = t("mode_desc_api");
+    } else {
+      $("mode-btn-all").setAttribute("aria-selected", "true");
+      $("mode-btn-api").removeAttribute("aria-selected");
+      $("mode-desc-text").innerHTML = t("mode_desc_all");
     }
   }
 
@@ -353,393 +290,6 @@
     $("stat-priced").textContent = pricedCount;
     $("stat-custom").textContent = customCount;
     $("stat-unpriced").textContent = unpricedCount;
-  }
-
-  // ---- My Models -------------------------------------------------------
-
-  function configuredProviderIds() {
-    return (mm.providers || []).map((p) => p.id);
-  }
-
-  function selectedProviderIds() {
-    const all = configuredProviderIds();
-    if (mm.prefs.providers === null) return all;
-    return all.filter((id) => mm.prefs.providers.includes(id));
-  }
-
-  function renderProviderList() {
-    const box = $("mm-provider-list");
-    if (!box) return;
-    box.textContent = "";
-    const selected = new Set(selectedProviderIds());
-    const counts = new Map();
-    for (const row of mm.rows) counts.set(row.provider, (counts.get(row.provider) || 0) + 1);
-
-    const q = mm.providerQuery.trim().toLowerCase();
-    const list = (mm.providers || []).filter((p) =>
-      !q || p.id.toLowerCase().includes(q) || String(p.name || "").toLowerCase().includes(q));
-
-    if (list.length === 0) {
-      const empty = document.createElement("span");
-      empty.className = "mm-filter-empty";
-      empty.textContent = (mm.providers || []).length === 0 ? "Magpie 中还没有已配置的供应商" : "没有匹配的渠道";
-      box.append(empty);
-      return;
-    }
-
-    for (const p of list) {
-      const label = document.createElement("label");
-      label.className = "mm-provider-option";
-
-      const input = document.createElement("input");
-      input.type = "checkbox";
-      input.checked = selected.has(p.id);
-      input.value = p.id;
-      input.addEventListener("change", () => setProviderSelected(p.id, input.checked));
-
-      const name = document.createElement("span");
-      name.className = "mm-provider-name";
-      name.textContent = p.name || p.id;
-      name.title = p.id;
-
-      const count = document.createElement("span");
-      count.className = "mm-provider-models";
-      count.textContent = String(counts.get(p.id) || 0);
-
-      label.append(input, name, count);
-      box.append(label);
-    }
-  }
-
-  function setProviderSelected(id, selected) {
-    const all = configuredProviderIds();
-    const current = new Set(selectedProviderIds());
-    if (selected) current.add(id); else current.delete(id);
-    mm.prefs.providers = all.filter((x) => current.has(x));
-    scheduleMmPersist();
-    renderMyModels();
-  }
-
-  function setAllProviders(selected) {
-    mm.prefs.providers = selected ? configuredProviderIds() : [];
-    scheduleMmPersist();
-    renderMyModels();
-    renderProviderList();
-  }
-
-  function mmPriceCell(row, key) {
-    const td = document.createElement("td");
-    td.className = "num mm-price";
-    const p = row.price;
-    if (!p || p[key] == null) {
-      td.textContent = "—";
-      td.classList.add("mm-dash");
-      return td;
-    }
-    td.textContent = MM.formatPrice(p[key]);
-    if (p.source === MM.SOURCE.REFERENCE) {
-      td.classList.add("is-reference");
-      td.title = "models.dev 参考价：尚未写入 Magpie 账单";
-    }
-    return td;
-  }
-
-  function mmRow(row, grouped) {
-    const tr = document.createElement("tr");
-    tr.className = "mm-row";
-    if (row.price && (row.price.source === MM.SOURCE.CUSTOM || row.price.source === MM.SOURCE.WILDCARD)) {
-      tr.classList.add("is-custom");
-    }
-    if (row.price && row.price.source === MM.SOURCE.REFERENCE) tr.classList.add("is-reference");
-    if (!MM.hasPrice(row)) tr.classList.add("is-unknown");
-
-    const provider = document.createElement("td");
-    provider.className = "mm-provider-cell";
-    const pName = document.createElement("div");
-    pName.className = "mm-provider-name-main";
-    pName.textContent = row.providerName;
-    pName.title = row.provider;
-    provider.append(pName);
-    if (row.providerKind === "subscription") {
-      const kind = document.createElement("span");
-      kind.className = "mm-kind";
-      kind.textContent = "订阅/账号";
-      provider.append(kind);
-    }
-
-    const model = document.createElement("td");
-    model.className = "mm-model-cell";
-
-    const fav = document.createElement("button");
-    fav.type = "button";
-    fav.className = "star-btn";
-    const isFav = mm.favorites.has(row.key);
-    fav.textContent = isFav ? "★" : "☆";
-    fav.setAttribute("aria-pressed", isFav ? "true" : "false");
-    fav.setAttribute("aria-label", (isFav ? "取消收藏 " : "收藏 ") + row.model);
-    fav.title = isFav ? "取消收藏" : "收藏（仅本面板，不影响 Magpie 路由）";
-    fav.addEventListener("click", () => toggleFavorite(row.key));
-
-    const modelText = document.createElement("div");
-    modelText.className = "mm-model-text";
-    const modelName = document.createElement("div");
-    modelName.className = "mm-model-name";
-    modelName.textContent = grouped ? row.name : row.model;
-    modelName.title = row.model;
-    const modelId = document.createElement("div");
-    modelId.className = "mm-model-id";
-    modelId.textContent = grouped ? row.bare : row.name;
-    modelId.title = row.name;
-    modelText.append(modelName, modelId);
-    model.append(fav, modelText);
-
-    const input = mmPriceCell(row, "input");
-    const output = mmPriceCell(row, "output");
-    const cacheRead = mmPriceCell(row, "cache_read");
-    const cacheWrite = mmPriceCell(row, "cache_write");
-    cacheRead.classList.add("mm-col-cache");
-    cacheWrite.classList.add("mm-col-cache");
-
-    const source = document.createElement("td");
-    source.className = "mm-source-cell mm-col-source";
-    const badge = document.createElement("span");
-    const src = row.price ? row.price.source : MM.SOURCE.UNKNOWN;
-    badge.className = "mm-source mm-source-" + src;
-    badge.textContent = MM.sourceLabel(row);
-    const refDiffers = row.reference && row.price &&
-      (row.reference.input !== row.price.input || row.reference.output !== row.price.output);
-    if (refDiffers) {
-      const ref = document.createElement("span");
-      ref.className = "mm-ref-note";
-      ref.textContent = "公价 $" + MM.formatPrice(row.reference.input).slice(1) +
-        " / $" + MM.formatPrice(row.reference.output).slice(1);
-      ref.title = "models.dev 参考价（未直接计入当前价格）";
-      source.append(badge, ref);
-    } else {
-      source.append(badge);
-    }
-
-    const actions = document.createElement("td");
-    actions.className = "mm-actions-cell mm-col-actions";
-    const edit = document.createElement("button");
-    edit.type = "button";
-    edit.className = "btn btn-small";
-    edit.textContent = row.applied ? "改价" : "应用公价";
-    edit.addEventListener("click", () => openEditModal(row.item));
-    actions.append(edit);
-
-    tr.append(provider, model, input, output, cacheRead, cacheWrite, source, actions);
-    return tr;
-  }
-
-  function renderMyModels() {
-    const tbody = $("mm-tbody");
-    if (!tbody) return;
-    tbody.textContent = "";
-
-    const allIds = configuredProviderIds();
-    const selected = selectedProviderIds();
-
-    $("mm-provider-count").textContent = selected.length === allIds.length
-      ? String(allIds.length)
-      : selected.length + "/" + allIds.length;
-    $("mm-provider-btn").setAttribute("aria-expanded", $("mm-filter-panel").hidden ? "false" : "true");
-
-    if (mm.loading) {
-      $("mm-table-wrap").hidden = true;
-      $("mm-empty").hidden = true;
-      $("mm-summary").textContent = "正在读取 Magpie 配置…";
-      return;
-    }
-
-    const favVisible = mm.rows.filter((r) => mm.favorites.has(r.key)).length;
-    $("mm-fav-count").textContent = String(favVisible);
-    $("mm-fav-btn").setAttribute("aria-pressed", mm.prefs.onlyFavorites ? "true" : "false");
-    $("mm-hide-unpriced").setAttribute("aria-pressed", mm.prefs.hideUnpriced ? "true" : "false");
-    $("mm-group-btn").setAttribute("aria-pressed", mm.prefs.group ? "true" : "false");
-    $("mm-group-btn").disabled = !mm.prefs.group && MM.groupByModel(mm.rows).every((g) => !g.comparable);
-
-    const rows = MM.filterRows(mm.rows, {
-      providers: selected,
-      favorites: mm.favorites,
-      onlyFavorites: mm.prefs.onlyFavorites,
-      hideUnpriced: mm.prefs.hideUnpriced,
-      query: mm.query
-    });
-    const sorted = MM.sortRows(rows, mm.prefs.sort);
-
-    document.querySelectorAll("#mm-table thead th[data-sort]").forEach((th) => {
-      th.removeAttribute("aria-sort");
-      if (th.dataset.sort === mm.prefs.sort.key) {
-        th.setAttribute("aria-sort", mm.prefs.sort.dir === "desc" ? "descending" : "ascending");
-      }
-    });
-
-    if (mm.prefs.group) {
-      const groups = MM.groupByModel(sorted);
-      for (const group of groups) {
-        const tr = document.createElement("tr");
-        tr.className = "mm-group-row";
-        const td = document.createElement("td");
-        td.colSpan = 8;
-        const label = document.createElement("span");
-        label.className = "mm-group-name";
-        label.textContent = group.bare;
-        const meta = document.createElement("span");
-        meta.className = "mm-group-meta";
-        meta.textContent = group.comparable
-          ? "跨 " + group.providerCount + " 个渠道 · 可直接比较"
-          : "仅 1 个渠道";
-        td.append(label, meta);
-        tr.append(td);
-        tbody.append(tr);
-        for (const row of group.rows) tbody.append(mmRow(row, true));
-      }
-    } else {
-      for (const row of sorted) tbody.append(mmRow(row, false));
-    }
-
-    const empty = rows.length === 0;
-    $("mm-table-wrap").hidden = empty;
-    $("mm-empty").hidden = !empty;
-
-    const priced = rows.filter((r) => MM.hasPrice(r)).length;
-    $("mm-summary").textContent = rows.length + " 个模型 · " +
-      selected.length + "/" + allIds.length + " 个渠道 · " +
-      priced + " 个有明确价格 · USD / 1M tokens";
-
-    const snapshotAt = window.__MAGPIE_MODELS_DATA_AT__;
-    $("mm-snapshot").textContent = snapshotAt
-      ? "模型快照 " + String(snapshotAt).slice(0, 10)
-      : "模型快照时间未知";
-    $("mm-basis").textContent = mm.basis === "bridge"
-      ? "Magpie 已配置渠道 × 本地模型快照"
-      : "本地模型快照（未连接 Magpie）";
-
-    const notes = [];
-    if (mm.basis !== "bridge") {
-      notes.push("未能读取 Magpie 的渠道列表，当前按本地快照中的全部渠道展示。");
-    }
-    if (allIds.length === 0) notes.push("Magpie 中还没有已配置的供应商。");
-    if (mm.missingProviders.length > 0) {
-      const names = mm.missingProviders.slice(0, 3).map((p) => p.name || p.id);
-      notes.push(mm.missingProviders.length + " 个已配置渠道不在本地模型快照中：" +
-        names.join("、") + (mm.missingProviders.length > 3 ? " 等" : "") +
-        "。宿主会自动扫描本机 Magpie 模型缓存；点「↻ 刷新配置」即可加载最新快照。");
-    }
-    if (mm.staleFavorites.length > 0) {
-      notes.push(mm.staleFavorites.length + " 个收藏不在当前模型快照中，已保留，不会影响其他模型。");
-    }
-    if (mm.notice) notes.push(mm.notice);
-    $("mm-notice").hidden = notes.length === 0;
-    $("mm-notice").textContent = notes.join(" ");
-
-    renderProviderList();
-  }
-
-  async function loadMyModels() {
-    mm.loading = true;
-    mm.notice = "";
-    renderMyModels();
-
-    let providers = null;
-    let readError = null;
-    if (globalThis.magpie && typeof magpie.read === "function") {
-      try {
-        providers = await magpie.read("providers:list");
-      } catch (e) {
-        readError = e;
-      }
-    }
-
-    mm.basis = Array.isArray(providers) ? "bridge" : "snapshot";
-    if (Array.isArray(providers)) {
-      mm.providers = providers.map((p) => ({ id: String(p.id), name: p.name || String(p.id) }));
-    } else {
-      const ids = [];
-      for (const m of rawModels) {
-        if (m.provider && !ids.includes(m.provider)) ids.push(m.provider);
-      }
-      mm.providers = ids.map((id) => {
-        const found = rawModels.find((m) => m.provider === id);
-        return { id, name: (found && found.providerName) || id };
-      });
-    }
-
-    const ids = configuredProviderIds();
-    if (mm.prefs.providers !== null) {
-      mm.prefs.providers = MM.reconcileProviders(ids, mm.prefs.providers);
-    }
-    mm.rows = MM.buildRows(rawModels, {
-      providers: mm.providers,
-      customPrices,
-      mode: globalMode
-    });
-    mm.missingProviders = mm.providers.filter((p) => !mm.rows.some((r) => r.provider === p.id));
-    const known = new Set(rawModels.map((m) => m.model));
-    mm.staleFavorites = [...mm.favorites].filter((k) => !known.has(k));
-    if (readError) mm.notice = "读取 Magpie 渠道失败：" + (readError.message || readError) + "。已回退到快照。";
-    mm.loading = false;
-    renderMyModels();
-  }
-
-  function toggleFavorite(key) {
-    if (mm.favorites.has(key)) mm.favorites.delete(key);
-    else mm.favorites.add(key);
-    scheduleMmPersist();
-    renderMyModels();
-  }
-
-  function mmPrefsPayload() {
-    return {
-      providers: mm.prefs.providers,
-      favorites: [...mm.favorites],
-      onlyFavorites: mm.prefs.onlyFavorites,
-      hideUnpriced: mm.prefs.hideUnpriced,
-      group: mm.prefs.group,
-      sort: mm.prefs.sort
-    };
-  }
-
-  function scheduleMmPersist() {
-    clearTimeout(mmPersistTimer);
-    mmPersistTimer = setTimeout(() => { persistOptions(); }, 450);
-  }
-
-  function rebuildMyModelRows() {
-    mm.rows = MM.buildRows(rawModels, {
-      providers: mm.providers,
-      customPrices,
-      mode: globalMode
-    });
-  }
-
-  function resetMmFilters() {
-    mm.prefs.providers = null;
-    mm.prefs.onlyFavorites = false;
-    mm.prefs.hideUnpriced = false;
-    mm.prefs.group = false;
-    mm.prefs.sort = { key: "provider", dir: "asc" };
-    mm.query = "";
-    mm.providerQuery = "";
-    $("mm-search").value = "";
-    $("mm-provider-search").value = "";
-    scheduleMmPersist();
-    renderMyModels();
-    renderProviderList();
-  }
-
-  function setView(view) {
-    mm.view = view === "all" ? "all" : "mine";
-    $("view-mine").hidden = mm.view !== "mine";
-    $("view-all").hidden = mm.view !== "all";
-    $("view-desc").textContent = mm.view === "mine"
-      ? "只看你在 Magpie 中配置的渠道与模型，按实际生效价格排列。参考价来自 models.dev。"
-      : "基于 models.dev 与 Magpie 账单系统，自动匹配与自定义价格即时生效于每日用量及托盘花费。";
-    $("view-tabs").querySelectorAll("button").forEach((b) => {
-      if (b.dataset.view === mm.view) b.setAttribute("aria-selected", "true");
-      else b.removeAttribute("aria-selected");
-    });
   }
 
   function renderList() {
@@ -963,27 +513,6 @@
       $("offpeak-details").hidden = !hasOffPeak;
       $("offpeak-input-cost").value = +(c.input * 0.5).toFixed(5);
       $("offpeak-output-cost").value = +(c.output * 0.5).toFixed(5);
-    } else if (MM && item.currentPrice) {
-      const applied = MM.parseCurrentPrice(item.currentPrice);
-      if (applied) {
-        $("input-cost").value = applied.input == null ? "" : applied.input;
-        $("output-cost").value = applied.output == null ? "" : applied.output;
-        $("cache-read-cost").value = applied.cache_read == null ? "" : applied.cache_read;
-        $("cache-write-cost").value = applied.cache_write == null ? "" : applied.cache_write;
-        $("offpeak-enabled").checked = false;
-        $("offpeak-details").hidden = true;
-        $("offpeak-input-cost").value = "0";
-        $("offpeak-output-cost").value = "0";
-      } else {
-        $("input-cost").value = "0";
-        $("output-cost").value = "0";
-        $("cache-read-cost").value = "0";
-        $("cache-write-cost").value = "0";
-        $("offpeak-enabled").checked = false;
-        $("offpeak-details").hidden = true;
-        $("offpeak-input-cost").value = "0";
-        $("offpeak-output-cost").value = "0";
-      }
     } else {
       $("input-cost").value = "0";
       $("output-cost").value = "0";
@@ -1053,10 +582,8 @@
 
     await persistOptions();
     closeEditModal();
-    rebuildMyModelRows();
     renderStats();
     renderList();
-    renderMyModels();
     showToast(t("toast_rate_saved", { key: targetKey }));
   }
 
@@ -1066,44 +593,29 @@
     delete customPrices["*/" + bare];
 
     await persistOptions();
-    rebuildMyModelRows();
     renderStats();
     renderList();
-    renderMyModels();
     showToast(t("toast_rate_reset", { model }));
   }
 
   async function setGlobalMode(mode) {
     globalMode = mode;
     renderModeUI();
-    rebuildMyModelRows();
     await persistOptions();
     renderStats();
     renderList();
-    renderMyModels();
     showToast(mode === "api-only" ? t("toast_mode_api") : t("toast_mode_all"));
   }
 
   async function persistOptions() {
     if (globalThis.magpie && magpie.options) {
-      const payload = {
-        ...pluginOptions,
-        mode: globalMode,
-        customPrices,
-        myModels: mmPrefsPayload()
-      };
       try {
-        pluginOptions = await magpie.options.set(payload);
+        pluginOptions = await magpie.options.set({
+          ...pluginOptions,
+          mode: globalMode,
+          customPrices
+        });
       } catch (e) {
-        if (/once a second|429|too many/i.test(String(e && e.message || e))) {
-          await new Promise((resolve) => setTimeout(resolve, 1100));
-          try {
-            pluginOptions = await magpie.options.set(payload);
-            return;
-          } catch (retryError) {
-            e = retryError;
-          }
-        }
         console.error("Failed to save options via magpie bridge:", e);
       }
     }
@@ -1131,18 +643,12 @@
       }
     }
     await persistOptions();
-    rebuildMyModelRows();
     renderStats();
     renderList();
-    renderMyModels();
     showToast(t("toast_sync_all", { count }));
   }
 
   // 6. 事件绑定
-  $("view-tabs").addEventListener("click", (e) => {
-    const btn = e.target.closest("button[data-view]");
-    if (btn) setView(btn.dataset.view);
-  });
   $("filter-seg").addEventListener("click", (e) => {
     const btn = e.target.closest("button");
     if (!btn) return;
@@ -1154,97 +660,8 @@
     renderList();
   });
 
-  document.querySelectorAll("[data-mode]").forEach((btn) => {
-    btn.addEventListener("click", () => setGlobalMode(btn.dataset.mode));
-  });
-
-  $("mm-search").addEventListener("input", (e) => {
-    mm.query = e.target.value;
-    renderMyModels();
-  });
-
-  $("mm-provider-btn").addEventListener("click", () => {
-    const panel = $("mm-filter-panel");
-    panel.hidden = !panel.hidden;
-    if (!panel.hidden) renderProviderList();
-    $("mm-provider-btn").setAttribute("aria-expanded", panel.hidden ? "false" : "true");
-  });
-
-  $("mm-provider-search").addEventListener("input", (e) => {
-    mm.providerQuery = e.target.value;
-    renderProviderList();
-  });
-
-  $("mm-provider-all").addEventListener("click", () => setAllProviders(true));
-  $("mm-provider-none").addEventListener("click", () => setAllProviders(false));
-
-  $("mm-fav-btn").addEventListener("click", () => {
-    mm.prefs.onlyFavorites = !mm.prefs.onlyFavorites;
-    scheduleMmPersist();
-    renderMyModels();
-  });
-
-  $("mm-hide-unpriced").addEventListener("click", () => {
-    mm.prefs.hideUnpriced = !mm.prefs.hideUnpriced;
-    scheduleMmPersist();
-    renderMyModels();
-  });
-
-  $("mm-group-btn").addEventListener("click", () => {
-    mm.prefs.group = !mm.prefs.group;
-    scheduleMmPersist();
-    renderMyModels();
-  });
-
-  $("mm-reset").addEventListener("click", resetMmFilters);
-  $("mm-empty-reset").addEventListener("click", resetMmFilters);
-
-  $("mm-refresh").addEventListener("click", async () => {
-    $("mm-refresh").disabled = true;
-    try {
-      if (globalThis.magpie && magpie.options) {
-        pluginOptions = (await magpie.options.get()) || pluginOptions;
-        customPrices = pluginOptions.customPrices || customPrices;
-        globalMode = pluginOptions.mode || globalMode;
-        loadMyModelPrefs();
-        renderModeUI();
-      }
-      const snap = await reloadModelsSnapshot();
-      await loadMyModels();
-      renderStats();
-      renderList();
-      showToast(snap.live
-        ? ("已更新模型快照（" + snap.count + " 个）与 Magpie 渠道配置")
-        : "已重新读取 Magpie 渠道与本地配置（宿主快照尚未就绪，仍用随包快照）");
-    } finally {
-      $("mm-refresh").disabled = false;
-    }
-  });
-
-  $("mm-table").addEventListener("click", (e) => {
-    const th = e.target.closest("th[data-sort]");
-    if (!th) return;
-    const key = th.dataset.sort;
-    if (mm.prefs.sort.key === key) {
-      mm.prefs.sort.dir = mm.prefs.sort.dir === "asc" ? "desc" : "asc";
-    } else {
-      mm.prefs.sort = { key, dir: "asc" };
-    }
-    scheduleMmPersist();
-    renderMyModels();
-  });
-
-  $("mm-table").addEventListener("keydown", (e) => {
-    if (e.key !== "Enter" && e.key !== " ") return;
-    const th = e.target.closest("th[data-sort]");
-    if (!th) return;
-    e.preventDefault();
-    th.click();
-  });
-  document.querySelectorAll("#mm-table thead th[data-sort]").forEach((th) => {
-    th.tabIndex = 0;
-    th.setAttribute("role", "button");
-  });
+  $("mode-btn-all").addEventListener("click", () => setGlobalMode("all-equivalent"));
+  $("mode-btn-api").addEventListener("click", () => setGlobalMode("api-only"));
 
   $("scope-specific").addEventListener("click", () => setScope("specific"));
   $("scope-wildcard").addEventListener("click", () => setScope("wildcard"));
@@ -1268,9 +685,6 @@
   window.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !$("edit-modal").hidden) {
       closeEditModal();
-    } else if (e.key === "Escape" && !$("mm-filter-panel").hidden) {
-      $("mm-filter-panel").hidden = true;
-      $("mm-provider-btn").setAttribute("aria-expanded", "false");
     }
   });
 
@@ -1325,12 +739,6 @@
     renderModeUI();
     renderStats();
     renderList();
-    renderMyModels();
-    renderProviderList();
-    const descEl = $("view-desc");
-    if (descEl) {
-      descEl.textContent = mm.view === "mine" ? t("view_desc_mine") : t("view_desc_all");
-    }
     if (editingModel && !$("edit-modal").hidden) {
       $("modal-model-title").textContent = t("modal_title_set", { model: editingModel.model });
       $("modal-model-sub").textContent = editingModel.name
@@ -1343,12 +751,9 @@
   // 定时更新峰谷状态胶囊 (每 30 秒)
   setInterval(updatePeakStatusBar, 30000);
 
-  loadMyModelPrefs();
-  setView("mine");
-  await reloadModelsSnapshot();
+  // 初始渲染
   updatePeakStatusBar();
   renderModeUI();
   renderStats();
   renderList();
-  await loadMyModels();
 })();

@@ -1,4 +1,3 @@
-window.__MAGPIE_MODELS_DATA_AT__ = "2026-10-23";
 window.__MAGPIE_MODELS_DATA__ = [
   {
     "model": "antigravity/gemini-3.8-flash",

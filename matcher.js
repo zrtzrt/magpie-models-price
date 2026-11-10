@@ -6,6 +6,7 @@ const HOME = process.env.HOME || process.env.USERPROFILE || '';
 const CACHE_MODELS_PATH = path.join(HOME, '.cache/magpie/models.json');
 const PROVIDERS_STATE_PATH = path.join(HOME, '.cache/magpie/providers-state.json');
 const SETTINGS_PATH = path.join(HOME, '.config/magpie/settings.json');
+const USAGE_PATH = path.join(HOME, '.config/magpie/usage.jsonl');
 
 // Preferred official makers in models.dev
 const OFFICIAL_MAKERS = [
@@ -122,9 +123,12 @@ function getMagpieModels() {
 
   for (const p of providersList) {
     const providerId = p.id;
+    const isProviderOn = !p.off;
     const pInfo = classifications[providerId] || { kind: 'api', name: providerId };
     const pModels = p.models || [];
     for (const m of pModels) {
+      const isModelOn = m.on !== false;
+      const isEnabled = isProviderOn && isModelOn;
       models.push({
         provider: providerId,
         providerName: pInfo.name,
@@ -133,11 +137,100 @@ function getMagpieModels() {
         fullName: providerId + '/' + m.id,
         name: m.name || m.id,
         free: !!m.free,
-        listPrice: m.list || null
+        listPrice: m.list || null,
+        enabled: isEnabled,
+        providerOff: !!p.off,
+        modelOn: isModelOn
       });
     }
   }
   return models;
+}
+
+function getUsageData() {
+  const channelUsage = {};
+  const bareUsage = {};
+  const totalSummary = {
+    requests: 0,
+    inputTokens: 0,
+    outputTokens: 0,
+    cacheRead: 0,
+    totalTokens: 0
+  };
+
+  if (!fs.existsSync(USAGE_PATH)) {
+    return { channelUsage, bareUsage, totalSummary };
+  }
+
+  try {
+    const content = fs.readFileSync(USAGE_PATH, 'utf8');
+    const lines = content.split('\n');
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      try {
+        const r = JSON.parse(line);
+        const req = r.req || (r.provider + '/' + r.model);
+        const bare = r.model || (r.req ? r.req.split('/')[1] : 'unknown');
+        const inT = r.in || 0;
+        const outT = r.out || 0;
+        const cRead = r.cache_read || 0;
+        const cWrite = r.cache_write || 0;
+        const sumT = inT + outT;
+
+        totalSummary.requests++;
+        totalSummary.inputTokens += inT;
+        totalSummary.outputTokens += outT;
+        totalSummary.cacheRead += cRead;
+        totalSummary.totalTokens += sumT;
+
+        if (!channelUsage[req]) {
+          channelUsage[req] = {
+            requests: 0,
+            inputTokens: 0,
+            outputTokens: 0,
+            cacheRead: 0,
+            cacheWrite: 0,
+            totalTokens: 0,
+            lastAt: r.t
+          };
+        }
+        channelUsage[req].requests++;
+        channelUsage[req].inputTokens += inT;
+        channelUsage[req].outputTokens += outT;
+        channelUsage[req].cacheRead += cRead;
+        channelUsage[req].cacheWrite += cWrite;
+        channelUsage[req].totalTokens += sumT;
+        if (r.t && (!channelUsage[req].lastAt || r.t > channelUsage[req].lastAt)) {
+          channelUsage[req].lastAt = r.t;
+        }
+
+        if (!bareUsage[bare]) {
+          bareUsage[bare] = {
+            requests: 0,
+            inputTokens: 0,
+            outputTokens: 0,
+            cacheRead: 0,
+            cacheWrite: 0,
+            totalTokens: 0,
+            lastAt: r.t
+          };
+        }
+        bareUsage[bare].requests++;
+        bareUsage[bare].inputTokens += inT;
+        bareUsage[bare].outputTokens += outT;
+        bareUsage[bare].cacheRead += cRead;
+        bareUsage[bare].cacheWrite += cWrite;
+        bareUsage[bare].totalTokens += sumT;
+        if (r.t && (!bareUsage[bare].lastAt || r.t > bareUsage[bare].lastAt)) {
+          bareUsage[bare].lastAt = r.t;
+        }
+      } catch {}
+    }
+  } catch (e) {
+    console.warn('Failed to read usage.jsonl:', e.message);
+  }
+
+  return { channelUsage, bareUsage, totalSummary };
 }
 
 function getCustomPrices() {
@@ -249,20 +342,28 @@ function scanAll() {
   const catalog = loadCatalog();
   const allModels = getMagpieModels();
   const statuses = getPricingStatus(allModels);
+  const { channelUsage, bareUsage, totalSummary } = getUsageData();
 
   const report = [];
   for (const s of statuses) {
     const matchResult = matchModel(s.model, catalog);
     const preset = hasOffPeakPreset(s.model, s.modelObj.provider);
+    const bare = s.modelObj.id || (s.model.includes('/') ? s.model.split('/')[1] : s.model);
+    const chUsage = channelUsage[s.model] || null;
+    const bUsage = bareUsage[bare] || null;
+
     report.push({
       model: s.model,
       name: s.modelObj.name,
       provider: s.modelObj.provider,
       providerName: s.modelObj.providerName,
       providerKind: s.modelObj.providerKind,
+      enabled: s.modelObj.enabled !== false,
       isUnpriced: s.isUnpriced,
       currentPrice: s.priceInfo,
       offPeakPreset: preset,
+      usage: chUsage,
+      bareUsage: bUsage,
       matched: matchResult ? {
         provider: matchResult.match.provider,
         model: matchResult.match.model,
@@ -459,6 +560,7 @@ module.exports = {
   getMagpieModels,
   getPricingStatus,
   getProviderClassifications,
+  getUsageData,
   matchModel,
   scanAll,
   applyPrice,

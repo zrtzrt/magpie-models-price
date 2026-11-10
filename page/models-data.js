@@ -1,14 +1,34 @@
-window.__MAGPIE_MODELS_DATA__ = [
+;(function(g){
+  g.__MAGPIE_MODELS_DATA__ = [
   {
     "model": "antigravity/gemini-3.8-flash",
     "name": "Gemini 3.8 Flash",
     "provider": "antigravity",
     "providerName": "Antigravity",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.75/$3.75 in/out (cache: $0.075/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": {
+      "requests": 6459,
+      "inputTokens": 72556913,
+      "outputTokens": 3446651,
+      "cacheRead": 689115765,
+      "cacheWrite": 0,
+      "totalTokens": 76003564,
+      "lastAt": "2026-11-09T14:29:03.017067+08:00"
+    },
+    "bareUsage": {
+      "requests": 6898,
+      "inputTokens": 76724298,
+      "outputTokens": 3734870,
+      "cacheRead": 736000591,
+      "cacheWrite": 0,
+      "totalTokens": 80459168,
+      "lastAt": "2026-11-09T14:29:03.017067+08:00"
     },
     "matched": {
       "provider": "google",
@@ -31,10 +51,29 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "antigravity",
     "providerName": "Antigravity",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $3/$15 in/out (cache: $0.3/$3.75)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": {
+      "requests": 1,
+      "inputTokens": 14,
+      "outputTokens": 4,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 18,
+      "lastAt": "2026-11-02T12:18:35.337624+08:00"
+    },
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 14,
+      "outputTokens": 4,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 18,
+      "lastAt": "2026-11-02T12:18:35.337624+08:00"
     },
     "matched": {
       "provider": "anthropic",
@@ -57,10 +96,29 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "antigravity",
     "providerName": "Antigravity",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $5/$25 in/out (cache: $0.5/$6.25)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": {
+      "requests": 41,
+      "inputTokens": 189987,
+      "outputTokens": 18019,
+      "cacheRead": 823281,
+      "cacheWrite": 0,
+      "totalTokens": 208006,
+      "lastAt": "2026-10-28T16:15:45.870654+08:00"
+    },
+    "bareUsage": {
+      "requests": 41,
+      "inputTokens": 189987,
+      "outputTokens": 18019,
+      "cacheRead": 823281,
+      "cacheWrite": 0,
+      "totalTokens": 208006,
+      "lastAt": "2026-10-28T16:15:45.870654+08:00"
     },
     "matched": {
       "provider": "anthropic",
@@ -83,11 +141,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "antigravity",
     "providerName": "Antigravity",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.16782/$0.67128 in/out (cache: $0/$0)",
+    "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.075/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "groq",
       "model": "openai/gpt-oss-120b",
@@ -109,11 +170,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "antigravity",
     "providerName": "Antigravity",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.3/$2.5 in/out (cache: $0.03/$0)",
+    "currentPrice": "Custom: $0.5/$10 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "google",
       "model": "gemini-2.5-flash-preview-tts",
@@ -135,11 +199,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "antigravity",
     "providerName": "Antigravity",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.1/$0.4 in/out (cache: $0.01/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "google",
       "model": "gemini-2.5-flash-lite",
@@ -161,11 +228,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "antigravity",
     "providerName": "Antigravity",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.5/$3 in/out (cache: $0.05/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "google",
       "model": "gemini-3-flash-preview",
@@ -187,10 +257,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "antigravity",
     "providerName": "Antigravity",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.5/$60 in/out (cache: $0.05/$0)",
+    "currentPrice": "Custom: $0.5/$60 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:03:45.596822+08:00"
     },
     "matched": {
       "provider": "google",
@@ -213,10 +294,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "antigravity",
     "providerName": "Antigravity",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.25/$1.5 in/out (cache: $0.025/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:03:51.85515+08:00"
     },
     "matched": {
       "provider": "google",
@@ -239,10 +331,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "antigravity",
     "providerName": "Antigravity",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.3/$2.5 in/out (cache: $0.03/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:46:46.795284+08:00"
     },
     "matched": {
       "provider": "google",
@@ -265,10 +368,29 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "antigravity",
     "providerName": "Antigravity",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.75/$3.75 in/out (cache: $0.075/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": {
+      "requests": 4882,
+      "inputTokens": 53980634,
+      "outputTokens": 2220140,
+      "cacheRead": 736364716,
+      "cacheWrite": 0,
+      "totalTokens": 56200774,
+      "lastAt": "2026-11-02T14:27:53.129928+08:00"
+    },
+    "bareUsage": {
+      "requests": 5388,
+      "inputTokens": 58482165,
+      "outputTokens": 2488427,
+      "cacheRead": 781618847,
+      "cacheWrite": 0,
+      "totalTokens": 60970592,
+      "lastAt": "2026-11-02T14:27:53.129928+08:00"
     },
     "matched": {
       "provider": "google",
@@ -291,10 +413,29 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "ai-studio",
     "providerName": "Google AI Studio",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "List: $2/$10 in/out",
+    "currentPrice": "Custom: $2/$10 in/out (cache: $0.1/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": {
+      "requests": 356,
+      "inputTokens": 4537468,
+      "outputTokens": 212418,
+      "cacheRead": 20774617,
+      "cacheWrite": 0,
+      "totalTokens": 4749886,
+      "lastAt": "2026-11-10T11:26:28.583561+08:00"
+    },
+    "bareUsage": {
+      "requests": 358,
+      "inputTokens": 4537468,
+      "outputTokens": 212418,
+      "cacheRead": 20774617,
+      "cacheWrite": 0,
+      "totalTokens": 4749886,
+      "lastAt": "2026-11-10T11:26:28.583561+08:00"
     },
     "matched": {
       "provider": "google",
@@ -317,10 +458,29 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "ai-studio",
     "providerName": "Google AI Studio",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "List: $0.75/$3.75 in/out",
+    "currentPrice": "Custom: $0.75/$3.75 in/out (cache: $0.075/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": {
+      "requests": 88,
+      "inputTokens": 261438,
+      "outputTokens": 40268,
+      "cacheRead": 35970,
+      "cacheWrite": 0,
+      "totalTokens": 301706,
+      "lastAt": "2026-11-09T12:10:23.287929+08:00"
+    },
+    "bareUsage": {
+      "requests": 6898,
+      "inputTokens": 76724298,
+      "outputTokens": 3734870,
+      "cacheRead": 736000591,
+      "cacheWrite": 0,
+      "totalTokens": 80459168,
+      "lastAt": "2026-11-09T14:29:03.017067+08:00"
     },
     "matched": {
       "provider": "google",
@@ -343,10 +503,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "ai-studio",
     "providerName": "Google AI Studio",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "List: $0.3/$2.5 in/out",
+    "currentPrice": "Custom: $0.3/$2.5 in/out (cache: $0.03/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:46:46.795284+08:00"
     },
     "matched": {
       "provider": "google",
@@ -369,10 +540,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "ai-studio",
     "providerName": "Google AI Studio",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "List: $2/$12 in/out",
+    "currentPrice": "Custom: $2/$12 in/out (cache: $0.2/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:03:53.257763+08:00"
     },
     "matched": {
       "provider": "google",
@@ -395,10 +577,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "ai-studio",
     "providerName": "Google AI Studio",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "List: $0.75/$3.75 in/out",
+    "currentPrice": "Custom: $0.75/$3.75 in/out (cache: $0.075/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:46:46.795279+08:00"
     },
     "matched": {
       "provider": "google",
@@ -421,10 +614,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "ai-studio",
     "providerName": "Google AI Studio",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "List: $0.25/$1.5 in/out",
+    "currentPrice": "Custom: $0.25/$1.5 in/out (cache: $0.025/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:03:51.85515+08:00"
     },
     "matched": {
       "provider": "google",
@@ -447,10 +651,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "ai-studio",
     "providerName": "Google AI Studio",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "List: $0.5/$3 in/out",
+    "currentPrice": "Custom: $0.5/$3 in/out (cache: $0.05/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:03:55.375256+08:00"
     },
     "matched": {
       "provider": "google",
@@ -473,10 +688,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "ai-studio",
     "providerName": "Google AI Studio",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "List: $1.5/$30 in/out",
+    "currentPrice": "Custom: $1.5/$30 in/out (cache: $0.15/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:03:38.463863+08:00"
     },
     "matched": {
       "provider": "google-vertex",
@@ -499,10 +725,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "ai-studio",
     "providerName": "Google AI Studio",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "List: $0.25/$30 in/out",
+    "currentPrice": "Custom: $0.25/$30 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:03:45.039728+08:00"
     },
     "matched": {
       "provider": "google",
@@ -525,10 +762,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "ai-studio",
     "providerName": "Google AI Studio",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "List: $0.5/$60 in/out",
+    "currentPrice": "Custom: $0.5/$60 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:03:45.596822+08:00"
     },
     "matched": {
       "provider": "google",
@@ -551,10 +799,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "ai-studio",
     "providerName": "Google AI Studio",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "List: $2/$120 in/out",
+    "currentPrice": "Custom: $2/$120 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:03:43.390863+08:00"
     },
     "matched": {
       "provider": "google",
@@ -577,10 +836,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "ai-studio",
     "providerName": "Google AI Studio",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "List: $0.3/$30 in/out",
+    "currentPrice": "Custom: $0.3/$30 in/out (cache: $0.075/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:03:48.783584+08:00"
     },
     "matched": {
       "provider": "google",
@@ -603,10 +873,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "ai-studio",
     "providerName": "Google AI Studio",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "List: $2/$12 in/out",
+    "currentPrice": "Custom: $2/$12 in/out (cache: $0.2/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:03:46.335973+08:00"
     },
     "matched": {
       "provider": "google",
@@ -629,10 +910,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "ai-studio",
     "providerName": "Google AI Studio",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "List: $0.75/$3.75 in/out",
+    "currentPrice": "Custom: $0.75/$3.75 in/out (cache: $0.075/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:03:51.117263+08:00"
     },
     "matched": {
       "provider": "google",
@@ -655,10 +947,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "ai-studio",
     "providerName": "Google AI Studio",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "List: $0.3/$2.5 in/out",
+    "currentPrice": "Custom: $0.3/$2.5 in/out (cache: $0.03/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:03:38.500401+08:00"
     },
     "matched": {
       "provider": "google",
@@ -681,10 +984,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "gemini",
     "providerName": "Gemini CLI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $2/$12 in/out (cache: $0.2/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:03:53.257763+08:00"
     },
     "matched": {
       "provider": "google",
@@ -707,11 +1021,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "gemini",
     "providerName": "Gemini CLI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.57/$3.43 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "qihang-ai",
       "model": "gemini-3-pro-preview",
@@ -733,10 +1050,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "gemini",
     "providerName": "Gemini CLI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.5/$3 in/out (cache: $0.05/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:03:55.375256+08:00"
     },
     "matched": {
       "provider": "google",
@@ -759,10 +1087,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "gemini",
     "providerName": "Gemini CLI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.75/$3.75 in/out (cache: $0.075/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 6898,
+      "inputTokens": 76724298,
+      "outputTokens": 3734870,
+      "cacheRead": 736000591,
+      "cacheWrite": 0,
+      "totalTokens": 80459168,
+      "lastAt": "2026-11-09T14:29:03.017067+08:00"
     },
     "matched": {
       "provider": "google",
@@ -785,11 +1124,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "gemini",
     "providerName": "Gemini CLI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $1.5/$9 in/out (cache: $0.15/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "google",
       "model": "gemini-3.5-flash",
@@ -811,10 +1153,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "gemini",
     "providerName": "Gemini CLI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.3/$2.5 in/out (cache: $0.03/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:46:46.795284+08:00"
     },
     "matched": {
       "provider": "google",
@@ -837,10 +1190,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "gemini",
     "providerName": "Gemini CLI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.25/$1.5 in/out (cache: $0.025/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:03:51.85515+08:00"
     },
     "matched": {
       "provider": "google",
@@ -863,11 +1227,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "gemini",
     "providerName": "Gemini CLI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1.25/$10 in/out (cache: $0.125/$0)",
+    "currentPrice": "Custom: $1/$20 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "google",
       "model": "gemini-2.5-pro-preview-tts",
@@ -889,11 +1256,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "gemini",
     "providerName": "Gemini CLI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.3/$2.5 in/out (cache: $0.03/$0)",
+    "currentPrice": "Custom: $0.5/$10 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "google",
       "model": "gemini-2.5-flash-preview-tts",
@@ -915,11 +1285,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "gemini",
     "providerName": "Gemini CLI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.1/$0.4 in/out (cache: $0.01/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "google",
       "model": "gemini-2.5-flash-lite",
@@ -941,10 +1314,29 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy",
     "providerName": "WorkBuddy",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.85/$1.55 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": {
+      "requests": 1,
+      "inputTokens": 20,
+      "outputTokens": 264,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 284,
+      "lastAt": "2026-11-04T13:13:20.842697+08:00"
+    },
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 20,
+      "outputTokens": 264,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 284,
+      "lastAt": "2026-11-04T13:13:20.842697+08:00"
     },
     "matched": {
       "provider": "morph",
@@ -967,10 +1359,29 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy",
     "providerName": "WorkBuddy",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Free model ($0.00)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": {
+      "requests": 1,
+      "inputTokens": 54,
+      "outputTokens": 10,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 64,
+      "lastAt": "2026-11-04T13:12:54.230795+08:00"
+    },
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 54,
+      "outputTokens": 10,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 64,
+      "lastAt": "2026-11-05T13:41:42.431973+08:00"
     },
     "matched": {
       "provider": "tencent-token-plan",
@@ -993,10 +1404,29 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy",
     "providerName": "WorkBuddy",
     "providerKind": "subscription",
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "enabled": true,
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.834/$2.501 in/out (cache: $0.042/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": {
+      "requests": 41,
+      "inputTokens": 41941,
+      "outputTokens": 36251,
+      "cacheRead": 37504,
+      "cacheWrite": 0,
+      "totalTokens": 78192,
+      "lastAt": "2026-11-07T07:38:56.971941+08:00"
+    },
+    "bareUsage": {
+      "requests": 42,
+      "inputTokens": 41941,
+      "outputTokens": 36251,
+      "cacheRead": 37504,
+      "cacheWrite": 0,
+      "totalTokens": 78192,
+      "lastAt": "2026-11-07T07:38:56.971941+08:00"
     },
     "matched": {
       "provider": "tencent-token-plan",
@@ -1019,10 +1449,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy",
     "providerName": "WorkBuddy",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Free model ($0.00)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 3,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T13:41:45.979184+08:00"
     },
     "matched": {
       "provider": "tencent-token-plan",
@@ -1045,11 +1486,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy",
     "providerName": "WorkBuddy",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0/$0 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "tencent-token-plan",
       "model": "hy3",
@@ -1071,6 +1515,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy",
     "providerName": "WorkBuddy",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.003/$0)",
     "offPeakPreset": {
@@ -1079,6 +1524,24 @@ window.__MAGPIE_MODELS_DATA__ = [
       "rule": "deepseek",
       "discount": 0.5,
       "name": "DeepSeek 官方峰谷 (闲时5折)"
+    },
+    "usage": {
+      "requests": 2395,
+      "inputTokens": 6653424,
+      "outputTokens": 1242024,
+      "cacheRead": 401557106,
+      "cacheWrite": 0,
+      "totalTokens": 7895448,
+      "lastAt": "2026-11-10T11:27:59.422821+08:00"
+    },
+    "bareUsage": {
+      "requests": 3108,
+      "inputTokens": 20025810,
+      "outputTokens": 1759588,
+      "cacheRead": 728580466,
+      "cacheWrite": 0,
+      "totalTokens": 21785398,
+      "lastAt": "2026-11-10T11:27:59.422821+08:00"
     },
     "matched": {
       "provider": "deepseek",
@@ -1101,10 +1564,29 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy",
     "providerName": "WorkBuddy",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $1.19516/$4.18306 in/out (cache: $0.29879/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": {
+      "requests": 1,
+      "inputTokens": 20,
+      "outputTokens": 5,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 25,
+      "lastAt": "2026-11-04T13:13:08.047491+08:00"
+    },
+    "bareUsage": {
+      "requests": 5,
+      "inputTokens": 20,
+      "outputTokens": 5,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 25,
+      "lastAt": "2026-11-05T13:41:38.657195+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -1127,10 +1609,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy",
     "providerName": "WorkBuddy",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.29879/$1.04577 in/out (cache: $0.08516/$0)",
+    "currentPrice": "Custom: $0.11952/$0.41831 in/out (cache: $0.03436/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 4,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T13:41:38.657221+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -1153,10 +1646,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy",
     "providerName": "WorkBuddy",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $1.19516/$4.18306 in/out (cache: $0.29879/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:45.44668+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -1179,11 +1683,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy",
     "providerName": "WorkBuddy",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.03/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "opencode-go",
       "model": "space-bunny",
@@ -1205,10 +1712,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy",
     "providerName": "WorkBuddy",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.015/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 3,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T13:41:40.610666+08:00"
     },
     "matched": {
       "provider": "minimax",
@@ -1231,10 +1749,29 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy",
     "providerName": "WorkBuddy",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $2/$10 in/out (cache: $0.2/$2)",
+    "currentPrice": "Custom: $1.9437/$10.1671 in/out (cache: $0.1944/$1.9437)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": {
+      "requests": 232,
+      "inputTokens": 705148,
+      "outputTokens": 103028,
+      "cacheRead": 9900544,
+      "cacheWrite": 0,
+      "totalTokens": 808176,
+      "lastAt": "2026-11-07T07:37:20.155916+08:00"
+    },
+    "bareUsage": {
+      "requests": 238,
+      "inputTokens": 705148,
+      "outputTokens": 103028,
+      "cacheRead": 9900544,
+      "cacheWrite": 0,
+      "totalTokens": 808176,
+      "lastAt": "2026-11-07T07:37:20.155916+08:00"
     },
     "matched": {
       "provider": "moonshotai-cn",
@@ -1257,11 +1794,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy",
     "providerName": "WorkBuddy",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $3/$15 in/out (cache: $0.3/$3)",
+    "currentPrice": "Custom: $2.9879/$14.9395 in/out (cache: $0.2988/$2.9879)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "moonshotai-cn",
       "model": "kimi-k3",
@@ -1283,11 +1823,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy",
     "providerName": "WorkBuddy",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.574/$2.294 in/out (cache: $0/$0)",
+    "currentPrice": "Custom: $1/$4 in/out (cache: $0.25/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "llmgateway",
       "model": "kimi-k2.8-preview",
@@ -1309,6 +1852,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy",
     "providerName": "WorkBuddy",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.66/$1.98 in/out (cache: $0.022/$0)",
     "offPeakPreset": {
@@ -1317,6 +1861,24 @@ window.__MAGPIE_MODELS_DATA__ = [
       "rule": "deepseek",
       "discount": 0.5,
       "name": "DeepSeek 官方峰谷 (闲时5折)"
+    },
+    "usage": {
+      "requests": 1,
+      "inputTokens": 11,
+      "outputTokens": 5,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 16,
+      "lastAt": "2026-11-04T13:13:08.048878+08:00"
+    },
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 11,
+      "outputTokens": 5,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 16,
+      "lastAt": "2026-11-04T13:13:08.048878+08:00"
     },
     "matched": {
       "provider": "deepseek",
@@ -1339,11 +1901,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy",
     "providerName": "WorkBuddy",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1.04613/$2.98895 in/out (cache: $0.10461/$0)",
+    "currentPrice": "Custom: $1/$2.7 in/out (cache: $0.1/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "stepfun-ai",
       "model": "step-5-preview",
@@ -1365,11 +1930,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy",
     "providerName": "WorkBuddy",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.435/$0.87 in/out (cache: $0.0036/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "xiaomi",
       "model": "mimo-v2.6-pro",
@@ -1391,10 +1959,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": true,
     "currentPrice": "no price is known for it",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T13:41:41.044343+08:00"
     },
     "matched": null
   },
@@ -1404,10 +1983,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "enabled": false,
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0/$0 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T13:41:41.559014+08:00"
     },
     "matched": {
       "provider": "opencode",
@@ -1430,10 +2020,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Free model ($0.00)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 54,
+      "outputTokens": 10,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 64,
+      "lastAt": "2026-11-05T13:41:42.431973+08:00"
     },
     "matched": {
       "provider": "tencent-token-plan",
@@ -1456,10 +2057,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "enabled": true,
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.834/$2.501 in/out (cache: $0.042/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 42,
+      "inputTokens": 41941,
+      "outputTokens": 36251,
+      "cacheRead": 37504,
+      "cacheWrite": 0,
+      "totalTokens": 78192,
+      "lastAt": "2026-11-07T07:38:56.971941+08:00"
     },
     "matched": {
       "provider": "tencent-token-plan",
@@ -1482,10 +2094,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Free model ($0.00)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 3,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T13:41:45.979184+08:00"
     },
     "matched": {
       "provider": "tencent-token-plan",
@@ -1508,6 +2131,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.003/$0)",
     "offPeakPreset": {
@@ -1516,6 +2140,24 @@ window.__MAGPIE_MODELS_DATA__ = [
       "rule": "deepseek",
       "discount": 0.5,
       "name": "DeepSeek 官方峰谷 (闲时5折)"
+    },
+    "usage": {
+      "requests": 216,
+      "inputTokens": 1634300,
+      "outputTokens": 60735,
+      "cacheRead": 61802112,
+      "cacheWrite": 0,
+      "totalTokens": 1695035,
+      "lastAt": "2026-10-28T14:18:54.171638+08:00"
+    },
+    "bareUsage": {
+      "requests": 355,
+      "inputTokens": 4330409,
+      "outputTokens": 134466,
+      "cacheRead": 117564288,
+      "cacheWrite": 0,
+      "totalTokens": 4464875,
+      "lastAt": "2026-11-05T13:41:38.657284+08:00"
     },
     "matched": {
       "provider": "deepseek",
@@ -1538,10 +2180,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $10/$50 in/out (cache: $1/$12.5)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T13:41:43.932347+08:00"
     },
     "matched": {
       "provider": "openai",
@@ -1564,10 +2217,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $2/$10 in/out (cache: $0.1/$2.5)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T13:41:44.522744+08:00"
     },
     "matched": {
       "provider": "openai",
@@ -1590,10 +2254,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $2/$10 in/out (cache: $0.2/$2.5)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T13:41:44.560598+08:00"
     },
     "matched": {
       "provider": "openai",
@@ -1616,10 +2291,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.1/$0.5 in/out (cache: $0.01/$0.125)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 4,
+      "inputTokens": 18645,
+      "outputTokens": 19,
+      "cacheRead": 3456,
+      "cacheWrite": 0,
+      "totalTokens": 18664,
+      "lastAt": "2026-11-05T13:41:44.923541+08:00"
     },
     "matched": {
       "provider": "openai",
@@ -1642,10 +2328,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $4/$20 in/out (cache: $0.4/$5)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T13:41:44.959949+08:00"
     },
     "matched": {
       "provider": "openai",
@@ -1668,10 +2365,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $2/$12 in/out (cache: $0.2/$2.5)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 4,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-06T09:41:38.983275+08:00"
     },
     "matched": {
       "provider": "openai",
@@ -1694,10 +2402,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.2/$1.2 in/out (cache: $0.02/$0.25)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T13:41:45.368779+08:00"
     },
     "matched": {
       "provider": "openai",
@@ -1720,10 +2439,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $2/$6 in/out (cache: $0.5/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T13:41:45.538156+08:00"
     },
     "matched": {
       "provider": "aihubmix",
@@ -1746,10 +2476,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.75/$3.75 in/out (cache: $0.075/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 6898,
+      "inputTokens": 76724298,
+      "outputTokens": 3734870,
+      "cacheRead": 736000591,
+      "cacheWrite": 0,
+      "totalTokens": 80459168,
+      "lastAt": "2026-11-09T14:29:03.017067+08:00"
     },
     "matched": {
       "provider": "google",
@@ -1772,10 +2513,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $1.19516/$4.18306 in/out (cache: $0.29879/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 5,
+      "inputTokens": 20,
+      "outputTokens": 5,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 25,
+      "lastAt": "2026-11-05T13:41:38.657195+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -1798,10 +2550,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.29879/$1.04577 in/out (cache: $0.08516/$0)",
+    "currentPrice": "Custom: $0.11952/$0.41831 in/out (cache: $0.03436/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 4,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T13:41:38.657221+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -1824,10 +2587,29 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $2/$10 in/out (cache: $0.2/$2)",
+    "currentPrice": "Custom: $1.9437/$10.1671 in/out (cache: $0.1944/$1.9437)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": {
+      "requests": 2,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T14:42:38.107535+08:00"
+    },
+    "bareUsage": {
+      "requests": 238,
+      "inputTokens": 705148,
+      "outputTokens": 103028,
+      "cacheRead": 9900544,
+      "cacheWrite": 0,
+      "totalTokens": 808176,
+      "lastAt": "2026-11-07T07:37:20.155916+08:00"
     },
     "matched": {
       "provider": "moonshotai-cn",
@@ -1850,10 +2632,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $4/$20 in/out (cache: $0.2/$4)",
+    "currentPrice": "Custom: $3.8874/$20.3342 in/out (cache: $0.1944/$3.8874)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T13:41:45.965365+08:00"
     },
     "matched": {
       "provider": "moonshotai-cn",
@@ -1876,10 +2669,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $3/$15 in/out (cache: $0.3/$3)",
+    "currentPrice": "Custom: $2.9879/$14.9395 in/out (cache: $0.2988/$2.9879)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T13:41:38.657307+08:00"
     },
     "matched": {
       "provider": "moonshotai-cn",
@@ -1902,10 +2706,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "workbuddy-ai",
     "providerName": "WorkBuddy AI",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.015/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 3,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T13:41:40.610666+08:00"
     },
     "matched": {
       "provider": "minimax",
@@ -1928,10 +2743,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0/$0 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:41.48454+08:00"
     },
     "matched": {
       "provider": "volcengine-coding-plan",
@@ -1954,10 +2780,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1/$5 in/out (cache: $0.5/$0)",
+    "currentPrice": "Custom: $0.7072/$3.536 in/out (cache: $0.1416/$0.002)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:41.484642+08:00"
     },
     "matched": {
       "provider": "ofox",
@@ -1980,10 +2817,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1/$5 in/out (cache: $0.5/$0)",
+    "currentPrice": "Custom: $0.7072/$3.536 in/out (cache: $0.1416/$0.002)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:41.484784+08:00"
     },
     "matched": {
       "provider": "ofox",
@@ -2006,10 +2854,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.8906/$4.45301 in/out (cache: $0.17812/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:46.088429+08:00"
     },
     "matched": {
       "provider": "volcengine",
@@ -2032,10 +2891,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.8906/$4.45301 in/out (cache: $0.17812/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:41.484799+08:00"
     },
     "matched": {
       "provider": "volcengine",
@@ -2058,10 +2928,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": true,
     "currentPrice": "no price is known for it",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:42.424201+08:00"
     },
     "matched": null
   },
@@ -2071,10 +2952,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.17/$1.12 in/out (cache: $0.03/$0)",
+    "currentPrice": "Custom: $0.17/$1.12 in/out (cache: $0.034/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:42.585423+08:00"
     },
     "matched": {
       "provider": "zenmux",
@@ -2097,10 +2989,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $1.19516/$4.18306 in/out (cache: $0.29879/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:42.070355+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -2123,10 +3026,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.29879/$1.04577 in/out (cache: $0.08516/$0)",
+    "currentPrice": "Custom: $0.11952/$0.41831 in/out (cache: $0.03436/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 4,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T13:41:38.657221+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -2149,10 +3063,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.29879/$1.04577 in/out (cache: $0.08516/$0)",
+    "currentPrice": "Custom: $0.11952/$0.41831 in/out (cache: $0.03436/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:42.906185+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -2175,10 +3100,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.29879/$1.04577 in/out (cache: $0.08516/$0)",
+    "currentPrice": "Custom: $0.11952/$0.41831 in/out (cache: $0.03436/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:43.198608+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -2201,10 +3137,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.29879/$1.04577 in/out (cache: $0.08516/$0)",
+    "currentPrice": "Custom: $0.11952/$0.41831 in/out (cache: $0.03436/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:43.959631+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -2227,10 +3174,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $1.19516/$4.18306 in/out (cache: $0.29879/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 5,
+      "inputTokens": 20,
+      "outputTokens": 5,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 25,
+      "lastAt": "2026-11-05T13:41:38.657195+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -2253,10 +3211,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $1.19516/$4.18306 in/out (cache: $0.29879/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:43.083315+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -2279,10 +3248,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.89637/$3.58548 in/out (cache: $0.19421/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:44.905092+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -2305,10 +3285,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.59758/$2.68911 in/out (cache: $0.1494/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:44.617104+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -2331,10 +3322,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $1.19516/$4.18306 in/out (cache: $0.29879/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:45.44668+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -2357,10 +3359,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $1.19516/$4.18306 in/out (cache: $0.29879/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:45.447002+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -2383,6 +3396,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.003/$0)",
     "offPeakPreset": {
@@ -2391,6 +3405,16 @@ window.__MAGPIE_MODELS_DATA__ = [
       "rule": "deepseek",
       "discount": 0.5,
       "name": "DeepSeek 官方峰谷 (闲时5折)"
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:46.70915+08:00"
     },
     "matched": {
       "provider": "deepseek",
@@ -2413,6 +3437,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.003/$0)",
     "offPeakPreset": {
@@ -2421,6 +3446,16 @@ window.__MAGPIE_MODELS_DATA__ = [
       "rule": "deepseek",
       "discount": 0.5,
       "name": "DeepSeek 官方峰谷 (闲时5折)"
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-30T16:13:19.103035+08:00"
     },
     "matched": {
       "provider": "deepseek",
@@ -2443,10 +3478,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.44819/$2.09153 in/out (cache: $0.08964/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:46.710378+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -2469,10 +3515,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.6/$2.2 in/out (cache: $0.11/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:47.696731+08:00"
     },
     "matched": {
       "provider": "zhipuai",
@@ -2495,10 +3552,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.95/$4 in/out (cache: $0.19/$0)",
+    "currentPrice": "Custom: $0.9711/$4.0337 in/out (cache: $0.1942/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:27:47.773237+08:00"
     },
     "matched": {
       "provider": "moonshotai-cn",
@@ -2521,6 +3589,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.003/$0)",
     "offPeakPreset": {
@@ -2529,6 +3598,16 @@ window.__MAGPIE_MODELS_DATA__ = [
       "rule": "deepseek",
       "discount": 0.5,
       "name": "DeepSeek 官方峰谷 (闲时5折)"
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 3108,
+      "inputTokens": 20025810,
+      "outputTokens": 1759588,
+      "cacheRead": 728580466,
+      "cacheWrite": 0,
+      "totalTokens": 21785398,
+      "lastAt": "2026-11-10T11:27:59.422821+08:00"
     },
     "matched": {
       "provider": "deepseek",
@@ -2551,6 +3630,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.003/$0)",
     "offPeakPreset": {
@@ -2559,6 +3639,24 @@ window.__MAGPIE_MODELS_DATA__ = [
       "rule": "deepseek",
       "discount": 0.5,
       "name": "DeepSeek 官方峰谷 (闲时5折)"
+    },
+    "usage": {
+      "requests": 2,
+      "inputTokens": 17788,
+      "outputTokens": 453,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 18241,
+      "lastAt": "2026-11-02T09:17:29.359465+08:00"
+    },
+    "bareUsage": {
+      "requests": 3,
+      "inputTokens": 17788,
+      "outputTokens": 453,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 18241,
+      "lastAt": "2026-11-02T09:17:29.359465+08:00"
     },
     "matched": {
       "provider": "deepseek",
@@ -2581,6 +3679,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.003/$0)",
     "offPeakPreset": {
@@ -2590,6 +3689,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "DeepSeek 官方峰谷 (闲时5折)"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "deepseek",
       "model": "deepseek-v4-flash",
@@ -2611,6 +3712,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.003/$0)",
     "offPeakPreset": {
@@ -2620,6 +3722,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "DeepSeek 官方峰谷 (闲时5折)"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "deepseek",
       "model": "deepseek-v4-flash",
@@ -2641,6 +3745,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.66/$1.98 in/out (cache: $0.022/$0)",
     "offPeakPreset": {
@@ -2650,6 +3755,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "DeepSeek 官方峰谷 (闲时5折)"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "deepseek",
       "model": "deepseek-v4-pro",
@@ -2671,6 +3778,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.66/$1.98 in/out (cache: $0.022/$0)",
     "offPeakPreset": {
@@ -2680,6 +3788,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "DeepSeek 官方峰谷 (闲时5折)"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "deepseek",
       "model": "deepseek-v4-pro",
@@ -2701,6 +3811,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.66/$1.98 in/out (cache: $0.022/$0)",
     "offPeakPreset": {
@@ -2710,6 +3821,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "DeepSeek 官方峰谷 (闲时5折)"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "deepseek",
       "model": "deepseek-v4-pro",
@@ -2731,6 +3844,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.66/$1.98 in/out (cache: $0.022/$0)",
     "offPeakPreset": {
@@ -2740,6 +3854,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "DeepSeek 官方峰谷 (闲时5折)"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "deepseek",
       "model": "deepseek-v4-pro",
@@ -2761,11 +3877,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.85/$1.55 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "morph",
       "model": "auto",
@@ -2787,10 +3906,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $2/$10 in/out (cache: $0.2/$2)",
+    "currentPrice": "Custom: $1.9437/$10.1671 in/out (cache: $0.1944/$1.9437)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 238,
+      "inputTokens": 705148,
+      "outputTokens": 103028,
+      "cacheRead": 9900544,
+      "cacheWrite": 0,
+      "totalTokens": 808176,
+      "lastAt": "2026-11-07T07:37:20.155916+08:00"
     },
     "matched": {
       "provider": "moonshotai-cn",
@@ -2813,10 +3943,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $2/$10 in/out (cache: $0.2/$2)",
+    "currentPrice": "Custom: $1.9437/$10.1671 in/out (cache: $0.1944/$1.9437)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:31:12.307421+08:00"
     },
     "matched": {
       "provider": "moonshotai-cn",
@@ -2839,10 +3980,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $3/$15 in/out (cache: $0.3/$3)",
+    "currentPrice": "Custom: $2.9879/$14.9395 in/out (cache: $0.2988/$2.9879)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T13:41:38.657307+08:00"
     },
     "matched": {
       "provider": "moonshotai-cn",
@@ -2865,11 +4017,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $3/$15 in/out (cache: $0.3/$3)",
+    "currentPrice": "Custom: $2.9879/$14.9395 in/out (cache: $0.2988/$2.9879)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "moonshotai-cn",
       "model": "kimi-k3",
@@ -2891,11 +4046,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.574/$2.294 in/out (cache: $0/$0)",
+    "currentPrice": "Custom: $1/$4 in/out (cache: $0.25/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "llmgateway",
       "model": "kimi-k2.8-preview",
@@ -2917,11 +4075,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.574/$2.294 in/out (cache: $0/$0)",
+    "currentPrice": "Custom: $1/$4 in/out (cache: $0.25/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "llmgateway",
       "model": "kimi-k2.8-preview",
@@ -2943,11 +4104,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.57/$2.3 in/out (cache: $0.5/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "llmgateway",
       "model": "kimi-k2",
@@ -2969,11 +4133,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.14/$0.28 in/out (cache: $0.0028/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "xiaomi",
       "model": "mimo-v2.6-flash",
@@ -2995,10 +4162,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.14/$0.28 in/out (cache: $0.0028/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:32:30.62483+08:00"
     },
     "matched": {
       "provider": "xiaomi",
@@ -3021,11 +4199,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.89637/$3.58548 in/out (cache: $0.19421/$0)",
+    "currentPrice": "Custom: $0.59758/$2.68911 in/out (cache: $0.1494/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-5",
@@ -3047,11 +4228,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.435/$0.87 in/out (cache: $0.0036/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "xiaomi",
       "model": "mimo-v2.6-pro",
@@ -3073,10 +4257,29 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.435/$0.87 in/out (cache: $0.0036/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": {
+      "requests": 2,
+      "inputTokens": 17157,
+      "outputTokens": 207,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 17364,
+      "lastAt": "2026-11-02T09:19:32.899515+08:00"
+    },
+    "bareUsage": {
+      "requests": 3,
+      "inputTokens": 17157,
+      "outputTokens": 207,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 17364,
+      "lastAt": "2026-11-02T09:19:32.899515+08:00"
     },
     "matched": {
       "provider": "xiaomi",
@@ -3099,10 +4302,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.015/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 3,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T13:41:40.610666+08:00"
     },
     "matched": {
       "provider": "minimax",
@@ -3125,10 +4339,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.015/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-29T14:28:49.29392+08:00"
     },
     "matched": {
       "provider": "minimax",
@@ -3151,11 +4376,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.3/$1.2 in/out (cache: $0.06/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "minimax",
       "model": "MiniMax-M3",
@@ -3177,11 +4405,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.3/$1.2 in/out (cache: $0.06/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "minimax",
       "model": "MiniMax-M3",
@@ -3203,11 +4434,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.44819/$2.09153 in/out (cache: $0.08964/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-4.7",
@@ -3229,11 +4463,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.3/$1.2 in/out (cache: $0.03/$0.375)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "minimax",
       "model": "MiniMax-M2.1",
@@ -3255,11 +4492,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.3/$1.2 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "minimax",
       "model": "MiniMax-M2",
@@ -3281,11 +4521,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1.04613/$2.98895 in/out (cache: $0.10461/$0)",
+    "currentPrice": "Custom: $1/$2.7 in/out (cache: $0.1/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "stepfun-ai",
       "model": "step-5-preview",
@@ -3307,11 +4550,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1.04613/$2.98895 in/out (cache: $0.10461/$0)",
+    "currentPrice": "Custom: $1/$2.7 in/out (cache: $0.1/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "stepfun-ai",
       "model": "step-5-preview",
@@ -3333,6 +4579,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.15/$0.47 in/out (cache: $0.016/$0.2)",
     "offPeakPreset": {
@@ -3342,6 +4589,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "百炼/千问 闲时策略"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "alibaba",
       "model": "qwen3.8-flash",
@@ -3363,6 +4612,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.15/$0.47 in/out (cache: $0.016/$0.2)",
     "offPeakPreset": {
@@ -3372,6 +4622,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "百炼/千问 闲时策略"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "alibaba",
       "model": "qwen3.8-flash",
@@ -3393,6 +4645,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $2/$6 in/out (cache: $0.25/$2.5)",
     "offPeakPreset": {
@@ -3402,6 +4655,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "百炼/千问 闲时策略"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "alibaba",
       "model": "qwen3.8-max",
@@ -3423,6 +4678,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0/$0 in/out (cache: $0/$0)",
     "offPeakPreset": {
@@ -3432,6 +4688,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "百炼/千问 闲时策略"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "aihubmix",
       "model": "qwen3.8-max-free",
@@ -3453,6 +4711,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $1.6/$6.4 in/out (cache: $0/$0)",
     "offPeakPreset": {
@@ -3462,6 +4721,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "百炼/千问 闲时策略"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "alibaba",
       "model": "qwen-max",
@@ -3483,6 +4744,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $1.6/$6.4 in/out (cache: $0/$0)",
     "offPeakPreset": {
@@ -3492,6 +4754,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "百炼/千问 闲时策略"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "alibaba",
       "model": "qwen-max",
@@ -3513,6 +4777,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $1.6/$6.4 in/out (cache: $0/$0)",
     "offPeakPreset": {
@@ -3522,6 +4787,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "百炼/千问 闲时策略"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "alibaba",
       "model": "qwen-max",
@@ -3543,6 +4810,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.45/$1.8 in/out (cache: $0/$0)",
     "offPeakPreset": {
@@ -3552,6 +4820,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "百炼/千问 闲时策略"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "opencode",
       "model": "qwen3-coder",
@@ -3573,11 +4843,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": true,
     "currentPrice": "no price is known for it",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": null
   },
   {
@@ -3586,11 +4859,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": true,
     "currentPrice": "no price is known for it",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": null
   },
   {
@@ -3599,11 +4875,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.46376812/$2.31884058 in/out (cache: $0.09275362/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "qiniu-ai",
       "model": "doubao-seed-2.0-code",
@@ -3625,11 +4904,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": true,
     "currentPrice": "no price is known for it",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": null
   },
   {
@@ -3638,11 +4920,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $1.2/$4 in/out (cache: $0.24/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "zai",
       "model": "glm-5-turbo",
@@ -3664,11 +4949,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.95/$4 in/out (cache: $0.16/$0)",
+    "currentPrice": "Custom: $0.9711/$4.0337 in/out (cache: $0.1643/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "moonshotai-cn",
       "model": "kimi-k2.6",
@@ -3690,11 +4978,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": true,
     "currentPrice": "no price is known for it",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": null
   },
   {
@@ -3703,11 +4994,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": true,
     "currentPrice": "no price is known for it",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": null
   },
   {
@@ -3716,11 +5010,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": true,
     "currentPrice": "no price is known for it",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": null
   },
   {
@@ -3729,11 +5026,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0/$0 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "opencode",
       "model": "x-preview-f-free",
@@ -3755,11 +5055,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.8906/$4.45301 in/out (cache: $0.17812/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "volcengine",
       "model": "doubao-seed-evolving",
@@ -3781,11 +5084,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.8906/$4.45301 in/out (cache: $0.17812/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "volcengine",
       "model": "doubao-seed-evolving",
@@ -3807,11 +5113,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0/$0 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "volcengine-coding-plan",
       "model": "doubao-seed-2.1-turbo",
@@ -3833,11 +5142,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.17/$1.12 in/out (cache: $0.03/$0)",
+    "currentPrice": "Custom: $0.5/$3 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "kilo",
       "model": "bytedance-seed/seed-2.0-code",
@@ -3859,6 +5171,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $1.6/$6.4 in/out (cache: $0/$0)",
     "offPeakPreset": {
@@ -3868,6 +5181,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "百炼/千问 闲时策略"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "alibaba",
       "model": "qwen-max",
@@ -3889,6 +5204,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $1.6/$6.4 in/out (cache: $0/$0)",
     "offPeakPreset": {
@@ -3898,6 +5214,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "百炼/千问 闲时策略"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "alibaba",
       "model": "qwen-max",
@@ -3919,11 +5237,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.3/$1.2 in/out (cache: $0/$0)",
+    "currentPrice": "Custom: $0.3/$1.2 in/out (cache: $0.03/$0.375)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "minimax",
       "model": "MiniMax-M2.1",
@@ -3945,11 +5266,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.3/$1.2 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "minimax",
       "model": "MiniMax-M2",
@@ -3971,11 +5295,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1.19516/$4.18306 in/out (cache: $0.29879/$0)",
+    "currentPrice": "Custom: $0.59758/$2.68911 in/out (cache: $0.1494/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-5",
@@ -3997,11 +5324,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.6/$2.2 in/out (cache: $0.11/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-4.6",
@@ -4023,11 +5353,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "enabled": false,
+    "isUnpriced": false,
+    "currentPrice": "Custom: $1.9437/$10.1671 in/out (cache: $0.1944/$1.9437)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "moonshotai-cn",
       "model": "kimi-k3.1-pro",
@@ -4049,11 +5382,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "enabled": false,
+    "isUnpriced": false,
+    "currentPrice": "Custom: $1.9437/$10.1671 in/out (cache: $0.1944/$1.9437)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "moonshotai-cn",
       "model": "kimi-k3.1-pro",
@@ -4075,11 +5411,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $3/$15 in/out (cache: $0.3/$3)",
+    "currentPrice": "Custom: $2.9879/$14.9395 in/out (cache: $0.2988/$2.9879)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "moonshotai-cn",
       "model": "kimi-k3",
@@ -4101,11 +5440,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $3/$15 in/out (cache: $0.3/$3)",
+    "currentPrice": "Custom: $2.9879/$14.9395 in/out (cache: $0.2988/$2.9879)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "moonshotai-cn",
       "model": "kimi-k3",
@@ -4127,11 +5469,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.5/$2 in/out (cache: $0.4/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "helicone",
       "model": "kimi-k2-0905",
@@ -4153,11 +5498,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.74698/$3.28669 in/out (cache: $0.17927/$0)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-5v-turbo",
@@ -4179,11 +5527,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.574/$3.011 in/out (cache: $0.1148/$0.7175)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "alibaba-cn",
       "model": "kimi-k2.5",
@@ -4205,11 +5556,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.3/$1.2 in/out (cache: $0.06/$0.375)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "minimax",
       "model": "MiniMax-M2.7",
@@ -4231,6 +5585,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "trae-cn",
     "providerName": "Trae CN",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.5/$3 in/out (cache: $0.1/$0)",
     "offPeakPreset": {
@@ -4240,6 +5595,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "百炼/千问 闲时策略"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "auriko",
       "model": "qwen-3.6-plus",
@@ -4261,11 +5618,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "opencode-zen-free",
     "providerName": "OpenCode Zen Free",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Free model ($0.00)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "opencode",
       "model": "big-pickle",
@@ -4287,11 +5647,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "opencode-zen-free",
     "providerName": "OpenCode Zen Free",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Free model ($0.00)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "xiaomi",
       "model": "mimo-v2.6-flash",
@@ -4313,6 +5676,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "opencode-zen-free",
     "providerName": "OpenCode Zen Free",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Free model ($0.00)",
     "offPeakPreset": {
@@ -4322,6 +5686,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "DeepSeek 官方峰谷 (闲时5折)"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "deepseek",
       "model": "deepseek-v4-flash",
@@ -4343,11 +5709,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "opencode-zen-free",
     "providerName": "OpenCode Zen Free",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Free model ($0.00)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-5.3-flash",
@@ -4369,11 +5738,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "opencode-zen-free",
     "providerName": "OpenCode Zen Free",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Free model ($0.00)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "opencode-go",
       "model": "longcat-2.5-free",
@@ -4395,11 +5767,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "opencode-zen-free",
     "providerName": "OpenCode Zen Free",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Free model ($0.00)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "opencode",
       "model": "iceman-free",
@@ -4421,11 +5796,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "opencode-zen-free",
     "providerName": "OpenCode Zen Free",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Free model ($0.00)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "opencode",
       "model": "inkling-2-small-free",
@@ -4447,11 +5825,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "opencode-zen-free",
     "providerName": "OpenCode Zen Free",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Free model ($0.00)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "opencode-go",
       "model": "beam-free",
@@ -4473,11 +5854,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "opencode-zen-free",
     "providerName": "OpenCode Zen Free",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Free model ($0.00)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "opencode",
       "model": "flint-40b-free",
@@ -4499,11 +5883,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "opencode-zen-free",
     "providerName": "OpenCode Zen Free",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Free model ($0.00)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "opencode",
       "model": "nemotron-3.5-super-vl-free",
@@ -4525,11 +5912,14 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "opencode-zen-free",
     "providerName": "OpenCode Zen Free",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Free model ($0.00)",
     "offPeakPreset": {
       "supported": false
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "aihubmix",
       "model": "nemotron-3.5-lightning-free",
@@ -4546,13 +5936,43 @@ window.__MAGPIE_MODELS_DATA__ = [
     }
   },
   {
+    "model": "opencode-zen-free/minimax-m3.1-flash-free",
+    "name": "MiniMax M3.1 Flash Free",
+    "provider": "opencode-zen-free",
+    "providerName": "OpenCode Zen Free",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": false,
+    "currentPrice": "Free model ($0.00)",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "minimax",
+      "model": "MiniMax-M3.1-Flash",
+      "name": "MiniMax-M3.1-Flash",
+      "confidence": "exact",
+      "reason": "原厂规约匹配 (minimax)",
+      "cost": {
+        "input": 0.15,
+        "output": 0.6,
+        "cache_read": 0.015,
+        "cache_write": 0
+      },
+      "priceString": "0.15,0.6,0.015,0"
+    }
+  },
+  {
     "model": "qwenwork/flash",
     "name": "标准",
     "provider": "qwenwork",
     "providerName": "QwenWork",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.05/$0.4 in/out (cache: $0.01/$0.0625)",
+    "currentPrice": "Custom: $0.3/$1.5 in/out (cache: $0.06/$0.375)",
     "offPeakPreset": {
       "supported": true,
       "provider": "alibaba",
@@ -4560,6 +5980,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "百炼/千问 闲时策略"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "alibaba",
       "model": "qwen3-coder-flash",
@@ -4581,6 +6003,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "qwenwork",
     "providerName": "QwenWork",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $1.65/$3.301 in/out (cache: $0/$0)",
     "offPeakPreset": {
@@ -4590,6 +6013,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "百炼/千问 闲时策略"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "alibaba-cn",
       "model": "deepseek-v4-pro",
@@ -4611,6 +6036,7 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "qwenwork",
     "providerName": "QwenWork",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $2/$6 in/out (cache: $0.25/$2.5)",
     "offPeakPreset": {
@@ -4620,6 +6046,8 @@ window.__MAGPIE_MODELS_DATA__ = [
       "discount": 0.5,
       "name": "百炼/千问 闲时策略"
     },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "alibaba",
       "model": "qwen3.8-max",
@@ -4641,10 +6069,29 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "codex",
     "providerName": "Codex",
     "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.1/$0.5 in/out (cache: $0.01/$0.125)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": {
+      "requests": 2,
+      "inputTokens": 18645,
+      "outputTokens": 19,
+      "cacheRead": 3456,
+      "cacheWrite": 0,
+      "totalTokens": 18664,
+      "lastAt": "2026-10-22T14:24:31.403756+08:00"
+    },
+    "bareUsage": {
+      "requests": 4,
+      "inputTokens": 18645,
+      "outputTokens": 19,
+      "cacheRead": 3456,
+      "cacheWrite": 0,
+      "totalTokens": 18664,
+      "lastAt": "2026-11-05T13:41:44.923541+08:00"
     },
     "matched": {
       "provider": "openai",
@@ -4667,10 +6114,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "codex",
     "providerName": "Codex",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $2/$12 in/out (cache: $0.2/$2.5)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 4,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-06T09:41:38.983275+08:00"
     },
     "matched": {
       "provider": "openai",
@@ -4693,10 +6151,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "codex",
     "providerName": "Codex",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
     "currentPrice": "Custom: $0.2/$1.2 in/out (cache: $0.02/$0.25)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T13:41:45.368779+08:00"
     },
     "matched": {
       "provider": "openai",
@@ -4719,10 +6188,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "gemini-web",
     "providerName": "Gemini Web",
     "providerKind": "subscription",
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "enabled": false,
+    "isUnpriced": false,
+    "currentPrice": "Custom: $2/$12 in/out (cache: $0.2/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:46:46.795372+08:00"
     },
     "matched": {
       "provider": "google",
@@ -4745,10 +6225,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "gemini-web",
     "providerName": "Gemini Web",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "List: $0.75/$3.75 in/out",
+    "currentPrice": "Custom: $0.75/$3.75 in/out (cache: $0.075/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:46:46.795279+08:00"
     },
     "matched": {
       "provider": "google",
@@ -4771,10 +6262,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "gemini-web",
     "providerName": "Gemini Web",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "List: $0.75/$3.75 in/out",
+    "currentPrice": "Custom: $0.75/$3.75 in/out (cache: $0.075/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 6898,
+      "inputTokens": 76724298,
+      "outputTokens": 3734870,
+      "cacheRead": 736000591,
+      "cacheWrite": 0,
+      "totalTokens": 80459168,
+      "lastAt": "2026-11-09T14:29:03.017067+08:00"
     },
     "matched": {
       "provider": "google",
@@ -4797,10 +6299,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "gemini-web",
     "providerName": "Gemini Web",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "List: $0.75/$3.75 in/out",
+    "currentPrice": "Custom: $0.75/$3.75 in/out (cache: $0.075/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:46:46.795326+08:00"
     },
     "matched": {
       "provider": "google",
@@ -4823,10 +6336,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "gemini-web",
     "providerName": "Gemini Web",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "List: $0.3/$2.5 in/out",
+    "currentPrice": "Custom: $0.3/$2.5 in/out (cache: $0.03/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-02T10:46:46.795284+08:00"
     },
     "matched": {
       "provider": "google",
@@ -4849,10 +6373,21 @@ window.__MAGPIE_MODELS_DATA__ = [
     "provider": "gemini-web",
     "providerName": "Gemini Web",
     "providerKind": "subscription",
+    "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "List: $2/$10 in/out",
+    "currentPrice": "Custom: $2/$10 in/out (cache: $0.1/$0)",
     "offPeakPreset": {
       "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 358,
+      "inputTokens": 4537468,
+      "outputTokens": 212418,
+      "cacheRead": 20774617,
+      "cacheWrite": 0,
+      "totalTokens": 4749886,
+      "lastAt": "2026-11-10T11:26:28.583561+08:00"
     },
     "matched": {
       "provider": "google",
@@ -4870,3 +6405,715 @@ window.__MAGPIE_MODELS_DATA__ = [
     }
   }
 ];
+  g.__MAGPIE_USAGE_SUMMARY__ = {
+  "requests": 16650,
+  "inputTokens": 165090935,
+  "outputTokens": 8488034,
+  "cacheRead": 2395303594,
+  "totalTokens": 173578969
+};
+  g.__MAGPIE_BARE_USAGE__ = {
+  "gpt-6-luna": {
+    "requests": 4,
+    "inputTokens": 18645,
+    "outputTokens": 19,
+    "cacheRead": 3456,
+    "cacheWrite": 0,
+    "totalTokens": 18664,
+    "lastAt": "2026-11-05T13:41:44.923541+08:00"
+  },
+  "deepseek-v4.1-flash": {
+    "requests": 3108,
+    "inputTokens": 20025810,
+    "outputTokens": 1759588,
+    "cacheRead": 728580466,
+    "cacheWrite": 0,
+    "totalTokens": 21785398,
+    "lastAt": "2026-11-10T11:27:59.422821+08:00"
+  },
+  "gemini-3.8-flash-tiered": {
+    "requests": 5388,
+    "inputTokens": 58482165,
+    "outputTokens": 2488427,
+    "cacheRead": 781618847,
+    "cacheWrite": 0,
+    "totalTokens": 60970592,
+    "lastAt": "2026-11-02T14:27:53.129928+08:00"
+  },
+  "gemini-3.8-flash": {
+    "requests": 6898,
+    "inputTokens": 76724298,
+    "outputTokens": 3734870,
+    "cacheRead": 736000591,
+    "cacheWrite": 0,
+    "totalTokens": 80459168,
+    "lastAt": "2026-11-09T14:29:03.017067+08:00"
+  },
+  "unknown": {
+    "requests": 94,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-09T21:07:44.91445+08:00"
+  },
+  "gpt-5.6-terra": {
+    "requests": 4,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-06T09:41:38.983275+08:00"
+  },
+  "hy4-preview": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-28T12:26:56.033611+08:00"
+  },
+  "fast-model": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-28T12:26:56.033717+08:00"
+  },
+  "default-model": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T13:41:41.044343+08:00"
+  },
+  "gpt-5.6-luna": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T13:41:45.368779+08:00"
+  },
+  "gpt-5.5": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-28T12:26:57.962807+08:00"
+  },
+  "grok-4.7": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T13:41:45.538156+08:00"
+  },
+  "gpt-5.4": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-28T12:26:57.999945+08:00"
+  },
+  "glm-5.3-flash": {
+    "requests": 4,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T13:41:38.657221+08:00"
+  },
+  "glm-5.3": {
+    "requests": 5,
+    "inputTokens": 20,
+    "outputTokens": 5,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 25,
+    "lastAt": "2026-11-05T13:41:38.657195+08:00"
+  },
+  "glm-5.2": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:27:45.44668+08:00"
+  },
+  "kimi-k3.1-pro": {
+    "requests": 238,
+    "inputTokens": 705148,
+    "outputTokens": 103028,
+    "cacheRead": 9900544,
+    "cacheWrite": 0,
+    "totalTokens": 808176,
+    "lastAt": "2026-11-07T07:37:20.155916+08:00"
+  },
+  "gpt-6-astra": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T13:41:43.932347+08:00"
+  },
+  "deepseek-v4.1-flash-sg": {
+    "requests": 355,
+    "inputTokens": 4330409,
+    "outputTokens": 134466,
+    "cacheRead": 117564288,
+    "cacheWrite": 0,
+    "totalTokens": 4464875,
+    "lastAt": "2026-11-05T13:41:38.657284+08:00"
+  },
+  "minimax-m3.1-flash": {
+    "requests": 3,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T13:41:40.610666+08:00"
+  },
+  "hy3": {
+    "requests": 3,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T13:41:45.979184+08:00"
+  },
+  "gpt-6-sol": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T13:41:44.560598+08:00"
+  },
+  "gpt-6.1-sol": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T13:41:44.522744+08:00"
+  },
+  "primary-model": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-28T12:27:02.489532+08:00"
+  },
+  "gpt-5.6-sol": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T13:41:44.959949+08:00"
+  },
+  "balanced-model": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-28T12:27:03.458891+08:00"
+  },
+  "claude-opus-4-6-thinking": {
+    "requests": 41,
+    "inputTokens": 189987,
+    "outputTokens": 18019,
+    "cacheRead": 823281,
+    "cacheWrite": 0,
+    "totalTokens": 208006,
+    "lastAt": "2026-10-28T16:15:45.870654+08:00"
+  },
+  "Doubao-Seed-2.1-Pro-max": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:27:41.484784+08:00"
+  },
+  "Doubao-Seed-2.1-Pro": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:27:41.484642+08:00"
+  },
+  "Doubao-Seed-Evolving-max": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:27:41.484799+08:00"
+  },
+  "glm-5.2_advisor_doubao": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:27:42.070355+08:00"
+  },
+  "Doubao-Seed-Code": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:27:42.585423+08:00"
+  },
+  "Doubao-Seed-2.1-Turbo": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:27:41.48454+08:00"
+  },
+  "Doubao_1_6": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:27:42.424201+08:00"
+  },
+  "glm-5.3-max": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:27:43.083315+08:00"
+  },
+  "glm-5.3-flashx": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:27:43.198608+08:00"
+  },
+  "glm-5.3-flash-max": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:27:42.906185+08:00"
+  },
+  "glm-5.3-flashx-max": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:27:43.959631+08:00"
+  },
+  "glm-5.1": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:27:44.905092+08:00"
+  },
+  "glm-5.2-max": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:27:45.447002+08:00"
+  },
+  "Doubao-Seed-Evolving": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:27:46.088429+08:00"
+  },
+  "glm-5": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:27:44.617104+08:00"
+  },
+  "DeepSeek-V4-Flash-max": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-30T16:13:19.103035+08:00"
+  },
+  "glm-4.7": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:27:46.710378+08:00"
+  },
+  "DeepSeek-V4-Flash": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:27:46.70915+08:00"
+  },
+  "kimi-k2.7-code": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:27:47.773237+08:00"
+  },
+  "glm-4.6": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:27:47.696731+08:00"
+  },
+  "deepseek-v4.1-flash-max": {
+    "requests": 3,
+    "inputTokens": 17788,
+    "outputTokens": 453,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 18241,
+    "lastAt": "2026-11-02T09:17:29.359465+08:00"
+  },
+  "minimax-m3.1-flash-max": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:28:49.29392+08:00"
+  },
+  "kimi-k3.1-pro-max": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:31:12.307421+08:00"
+  },
+  "mimo-v2.6-pro-max": {
+    "requests": 3,
+    "inputTokens": 17157,
+    "outputTokens": 207,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 17364,
+    "lastAt": "2026-11-02T09:19:32.899515+08:00"
+  },
+  "mimo-v2.6-flash-max": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-10-29T14:32:30.62483+08:00"
+  },
+  "gemini-3.6-flash": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-02T10:46:46.795279+08:00"
+  },
+  "gemini-3-pro-image": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-02T10:03:43.390863+08:00"
+  },
+  "gemini-flash-lite-latest": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-02T10:03:38.500401+08:00"
+  },
+  "gemini-3.1-flash-lite-image": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-02T10:03:45.039728+08:00"
+  },
+  "gemini-nano-banana-2.1": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-02T10:03:38.463863+08:00"
+  },
+  "gemini-pro-latest": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-02T10:03:46.335973+08:00"
+  },
+  "gemini-3.5-flash-lite": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-02T10:46:46.795284+08:00"
+  },
+  "gemini-flash-latest": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-02T10:03:51.117263+08:00"
+  },
+  "gemini-3.1-flash-lite": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-02T10:03:51.85515+08:00"
+  },
+  "gemini-4-argon": {
+    "requests": 358,
+    "inputTokens": 4537468,
+    "outputTokens": 212418,
+    "cacheRead": 20774617,
+    "cacheWrite": 0,
+    "totalTokens": 4749886,
+    "lastAt": "2026-11-10T11:26:28.583561+08:00"
+  },
+  "gemini-3.1-pro-preview": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-02T10:03:53.257763+08:00"
+  },
+  "gemini-3-flash-preview": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-02T10:03:55.375256+08:00"
+  },
+  "gemini-3.1-flash-image": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-02T10:03:45.596822+08:00"
+  },
+  "gemini-2.5-flash-image": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-02T10:03:48.783584+08:00"
+  },
+  "gemini-3.1-pro": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-02T10:46:46.795372+08:00"
+  },
+  "gemini-3.7-flash": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-02T10:46:46.795326+08:00"
+  },
+  "claude-sonnet-4-6": {
+    "requests": 1,
+    "inputTokens": 14,
+    "outputTokens": 4,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 18,
+    "lastAt": "2026-11-02T12:18:35.337624+08:00"
+  },
+  "undefined": {
+    "requests": 27,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T10:23:51.184946+08:00"
+  },
+  "hy4free": {
+    "requests": 2,
+    "inputTokens": 54,
+    "outputTokens": 10,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 64,
+    "lastAt": "2026-11-05T13:41:42.431973+08:00"
+  },
+  "hy4std": {
+    "requests": 42,
+    "inputTokens": 41941,
+    "outputTokens": 36251,
+    "cacheRead": 37504,
+    "cacheWrite": 0,
+    "totalTokens": 78192,
+    "lastAt": "2026-11-07T07:38:56.971941+08:00"
+  },
+  "deepseek-v4-pro": {
+    "requests": 1,
+    "inputTokens": 11,
+    "outputTokens": 5,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 16,
+    "lastAt": "2026-11-04T13:13:08.048878+08:00"
+  },
+  "gemini-4": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-04T13:13:20.581728+08:00"
+  },
+  "auto": {
+    "requests": 1,
+    "inputTokens": 20,
+    "outputTokens": 264,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 284,
+    "lastAt": "2026-11-04T13:13:20.842697+08:00"
+  },
+  "max-model": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T13:41:41.559014+08:00"
+  },
+  "kimi-k3.1-pro-highspeed": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T13:41:45.965365+08:00"
+  },
+  "kimi-k3": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T13:41:38.657307+08:00"
+  }
+};
+})(typeof window !== "undefined" ? window : globalThis);

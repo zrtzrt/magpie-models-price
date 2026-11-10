@@ -28,9 +28,23 @@
   let filter = "all";
   let search = "";
   let selectedProvider = "all";
+  let currentSort = "default";
   let editingModel = null;
   let selectedScope = "specific";
   const userToggledGroups = new Map(); // bareModel -> boolean (user explicit toggle override)
+
+  function formatNumber(num) {
+    if (num == null) return "0";
+    return Number(num).toLocaleString();
+  }
+
+  function formatTokens(tokens) {
+    if (!tokens || tokens <= 0) return "0";
+    if (tokens >= 1e9) return (tokens / 1e9).toFixed(2) + "B";
+    if (tokens >= 1e6) return (tokens / 1e6).toFixed(2) + "M";
+    if (tokens >= 1e3) return (tokens / 1e3).toFixed(1) + "k";
+    return String(tokens);
+  }
 
   // 1. 初始化 Magpie 宿主通信规范 (Host PostMessage Handshake & Theme/Locale Sync)
   function initMagpieHostSync() {
@@ -127,14 +141,25 @@
   // 3. 模型分组逻辑 (Group models by bare model identity)
   function buildModelGroups(models) {
     const map = new Map();
+    const bareUsageMap = window.__MAGPIE_BARE_USAGE__ || {};
+
     for (const item of models) {
       const bare = getBareModel(item.model);
       if (!map.has(bare)) {
+        const bu = bareUsageMap[bare] || {
+          requests: 0,
+          totalTokens: 0,
+          inputTokens: 0,
+          outputTokens: 0,
+          cacheRead: 0,
+          cacheWrite: 0
+        };
         map.set(bare, {
           bare,
           name: item.name || bare,
           matched: item.matched,
           offPeakPreset: item.offPeakPreset,
+          usage: { ...bu },
           items: []
         });
       }
@@ -151,6 +176,46 @@
       g.items.push(item);
     }
     return Array.from(map.values());
+  }
+
+  function getGroupRepresentativeInputPrice(g) {
+    for (const it of g.items) {
+      const p = getModelPrice(it);
+      if (p && typeof p.input === "number") return p.input;
+    }
+    return null;
+  }
+
+  function sortGroups(list, sortType) {
+    const sorted = [...list];
+    if (sortType === "price-asc") {
+      sorted.sort((a, b) => {
+        const pa = getGroupRepresentativeInputPrice(a);
+        const pb = getGroupRepresentativeInputPrice(b);
+        if (pa === null && pb === null) return 0;
+        if (pa === null) return 1;
+        if (pb === null) return -1;
+        return pa - pb;
+      });
+    } else if (sortType === "price-desc") {
+      sorted.sort((a, b) => {
+        const pa = getGroupRepresentativeInputPrice(a);
+        const pb = getGroupRepresentativeInputPrice(b);
+        if (pa === null && pb === null) return 0;
+        if (pa === null) return 1;
+        if (pb === null) return -1;
+        return pb - pa;
+      });
+    } else if (sortType === "calls-desc") {
+      sorted.sort((a, b) => (b.usage?.requests || 0) - (a.usage?.requests || 0));
+    } else if (sortType === "tokens-desc") {
+      sorted.sort((a, b) => (b.usage?.totalTokens || 0) - (a.usage?.totalTokens || 0));
+    } else if (sortType === "channels-desc") {
+      sorted.sort((a, b) => b.items.length - a.items.length);
+    } else if (sortType === "name-asc") {
+      sorted.sort((a, b) => (a.name || a.bare).localeCompare(b.name || b.bare));
+    }
+    return sorted;
   }
 
   // 4. 供应商图标获取辅助函数 (基于 page/icons.js 官方资源)
@@ -356,6 +421,12 @@
     let customCount = 0;
     let pricedCount = 0;
     let unpricedCount = 0;
+    let enabledGroupsCount = 0;
+    let enabledChannelsCount = 0;
+
+    for (const item of rawModels) {
+      if (item.enabled) enabledChannelsCount++;
+    }
 
     for (const g of allGroups) {
       const hasWildcard = !!customPrices["*/" + g.bare];
@@ -372,12 +443,22 @@
       if (hasAnyCustom) {
         customCount++;
       }
+
+      if (g.items.some((it) => it.enabled)) {
+        enabledGroupsCount++;
+      }
     }
 
-    $("stat-total").textContent = totalModels;
-    $("stat-priced").textContent = pricedCount;
-    $("stat-custom").textContent = customCount;
-    $("stat-unpriced").textContent = unpricedCount;
+    const usageSummary = window.__MAGPIE_USAGE_SUMMARY__ || { requests: 0, totalTokens: 0 };
+
+    if ($("stat-total")) $("stat-total").textContent = totalModels;
+    if ($("stat-enabled")) $("stat-enabled").textContent = enabledGroupsCount;
+    if ($("stat-enabled-sub")) $("stat-enabled-sub").textContent = `${enabledChannelsCount} 个渠道启用`;
+    if ($("stat-priced")) $("stat-priced").textContent = pricedCount;
+    if ($("stat-custom")) $("stat-custom").textContent = customCount;
+    if ($("stat-unpriced")) $("stat-unpriced").textContent = unpricedCount;
+    if ($("stat-usage")) $("stat-usage").textContent = formatNumber(usageSummary.requests);
+    if ($("stat-usage-sub")) $("stat-usage-sub").textContent = `${formatTokens(usageSummary.totalTokens)} Tokens`;
   }
 
   // 9. 核心列表渲染 (按模型分组 + 供应商图标 + 展开/折叠渠道价格)
@@ -386,7 +467,13 @@
     let list = allGroups;
 
     // Filter by tab
-    if (filter === "custom") {
+    if (filter === "enabled") {
+      if (selectedProvider && selectedProvider !== "all") {
+        list = list.filter((g) => g.items.some((it) => (it.provider || "other") === selectedProvider && it.enabled));
+      } else {
+        list = list.filter((g) => g.items.some((it) => it.enabled));
+      }
+    } else if (filter === "custom") {
       list = list.filter((g) => {
         return !!customPrices["*/" + g.bare] || g.items.some((it) => !!customPrices[it.model]);
       });
@@ -428,6 +515,9 @@
         );
       });
     }
+
+    // Apply sorting
+    list = sortGroups(list, currentSort);
 
     const listContainer = $("models-list");
     listContainer.innerHTML = "";
@@ -515,6 +605,18 @@
       // Right: Price summary & Expand toggle
       const rightDiv = document.createElement("div");
       rightDiv.className = "header-right";
+
+      // Group Usage Pill (if group has recorded calls/tokens)
+      if (group.usage && group.usage.requests > 0) {
+        const usagePill = document.createElement("div");
+        usagePill.className = "usage-pill";
+        usagePill.title = `历史调用: ${formatNumber(group.usage.requests)} 次\n输入: ${formatTokens(group.usage.inputTokens)} Tokens\n输出: ${formatTokens(group.usage.outputTokens)} Tokens\n缓存: ${formatTokens(group.usage.cacheRead)} Tokens`;
+        const labelText = group.usage.totalTokens > 0
+          ? `${formatTokens(group.usage.totalTokens)} (${formatNumber(group.usage.requests)}次)`
+          : `${formatNumber(group.usage.requests)}次`;
+        usagePill.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg><span>${labelText}</span>`;
+        rightDiv.appendChild(usagePill);
+      }
 
       const priceSummary = document.createElement("div");
       priceSummary.className = "price-summary";
@@ -609,7 +711,7 @@
 
         for (const item of group.items) {
           const subrow = document.createElement("div");
-          subrow.className = "provider-subrow";
+          subrow.className = "provider-subrow" + (item.enabled ? "" : " is-disabled");
 
           const rowLeft = document.createElement("div");
           rowLeft.className = "subrow-left";
@@ -627,6 +729,11 @@
           modelIdSpan.className = "subrow-model-id";
           modelIdSpan.textContent = item.model;
 
+          // Status Badge: 🟢 已启用 / ⚪ 已停用
+          const statusBadge = document.createElement("span");
+          statusBadge.className = "badge-status " + (item.enabled ? "status-on" : "status-off");
+          statusBadge.textContent = item.enabled ? t("badge_status_enabled") : t("badge_status_disabled");
+
           const isSub = item.providerKind === "subscription";
           const kindBadge = document.createElement("span");
           kindBadge.style.cssText = isSub
@@ -634,10 +741,21 @@
             : "font-size: 10px; color: var(--accent); border: 1px solid var(--accent); border-radius: 3px; padding: 0 4px;";
           kindBadge.textContent = isSub ? t("badge_subscription") : t("badge_paid_api");
 
-          rowLeft.append(pIcon, provName, modelIdSpan, kindBadge);
+          rowLeft.append(pIcon, provName, modelIdSpan, statusBadge, kindBadge);
 
           const rowRight = document.createElement("div");
           rowRight.className = "subrow-right";
+
+          if (item.usage && item.usage.requests > 0) {
+            const subUsage = document.createElement("span");
+            subUsage.className = "subrow-usage";
+            subUsage.title = `历史调用: ${formatNumber(item.usage.requests)} 次\n输入: ${formatTokens(item.usage.inputTokens)} Tokens\n输出: ${formatTokens(item.usage.outputTokens)} Tokens\n缓存: ${formatTokens(item.usage.cacheRead)} Tokens`;
+            const subLabel = item.usage.totalTokens > 0
+              ? `${formatTokens(item.usage.totalTokens)} (${formatNumber(item.usage.requests)}次)`
+              : `${formatNumber(item.usage.requests)}次`;
+            subUsage.textContent = subLabel;
+            rowRight.appendChild(subUsage);
+          }
 
           const priceSpan = document.createElement("div");
           priceSpan.className = "subrow-price";
@@ -911,6 +1029,14 @@
     renderList();
   });
 
+  const sortSelect = $("sort-select");
+  if (sortSelect) {
+    sortSelect.addEventListener("change", (e) => {
+      currentSort = e.target.value;
+      renderList();
+    });
+  }
+
   $("modal-btn-cancel").addEventListener("click", (e) => {
     e.stopPropagation();
     closeEditModal();
@@ -992,10 +1118,43 @@
   // 定时更新峰谷状态胶囊 (每 30 秒)
   setInterval(updatePeakStatusBar, 30000);
 
+  // URL Hash 状态恢复 (便于深层链接与快速测试: #sort=calls-desc&filter=enabled&expand=all)
+  function handleUrlHash() {
+    const hash = (location.hash || "").replace(/^#/, "");
+    if (!hash) return;
+    const params = new URLSearchParams(hash);
+    if (params.has("sort")) {
+      currentSort = params.get("sort");
+      const s = $("sort-select");
+      if (s) s.value = currentSort;
+    }
+    if (params.has("filter")) {
+      filter = params.get("filter");
+      $("filter-seg")?.querySelectorAll("button").forEach((b) => {
+        if (b.dataset.filter === filter) b.setAttribute("aria-selected", "true");
+        else b.removeAttribute("aria-selected");
+      });
+    }
+    if (params.has("expand")) {
+      const exp = params.get("expand");
+      if (exp === "all") {
+        for (const g of buildModelGroups(rawModels)) userToggledGroups.set(g.bare, true);
+      } else if (exp) {
+        userToggledGroups.set(exp, true);
+      }
+    }
+  }
+
+  window.addEventListener("hashchange", () => {
+    handleUrlHash();
+    renderList();
+  });
+
   // 初始渲染
   updatePeakStatusBar();
   renderModeUI();
   renderProviderFilter();
   renderStats();
+  handleUrlHash();
   renderList();
 })();

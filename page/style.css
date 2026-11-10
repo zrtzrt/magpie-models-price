@@ -211,24 +211,12 @@ h1 {
   font-weight: 500;
 }
 
-/* 4 指标统计卡片 */
+/* 统计指标卡片 (流式网格自适应) */
 .tiles {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 8px;
   margin-bottom: 16px;
-}
-
-@media (max-width: 600px) {
-  .tiles {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 340px) {
-  .tiles {
-    grid-template-columns: 1fr;
-  }
 }
 
 .tile {
@@ -335,7 +323,8 @@ h1 {
   flex-wrap: wrap;
 }
 
-.provider-select {
+.provider-select,
+.sort-select {
   background: var(--card);
   color: var(--fg);
   border: 1px solid var(--line);
@@ -346,12 +335,75 @@ h1 {
   cursor: pointer;
   outline: none;
   height: 32px;
-  min-width: 140px;
+  min-width: 130px;
   transition: border-color .15s ease;
 }
 
-.provider-select:focus {
+.provider-select:focus,
+.sort-select:focus {
   border-color: var(--accent);
+}
+
+/* 用量统计徽章 (Usage Pill) */
+.usage-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(255, 149, 0, 0.12);
+  border: 1px solid rgba(255, 149, 0, 0.3);
+  color: #ff9f0a;
+  white-space: nowrap;
+}
+
+[data-theme="light"] .usage-pill {
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #b45309;
+}
+
+/* 启用/停用状态徽章 (Enabled / Disabled Badge) */
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.badge-status.status-on {
+  color: var(--green);
+  background: rgba(48, 209, 88, 0.12);
+  border: 1px solid rgba(48, 209, 88, 0.3);
+}
+
+.badge-status.status-off {
+  color: var(--muted);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  opacity: .75;
+}
+
+.subrow-usage {
+  font-size: 11px;
+  color: #ff9f0a;
+  white-space: nowrap;
+  margin-right: 4px;
+}
+
+[data-theme="light"] .subrow-usage {
+  color: #b45309;
+}
+
+.provider-subrow.is-disabled {
+  opacity: .72;
 }
 
 .model-list {

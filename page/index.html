@@ -19,6 +19,7 @@
   </h1>
   <div class="seg" role="tablist" id="filter-seg">
     <button type="button" role="tab" data-filter="all" aria-selected="true" data-i18n="tab_all">全部</button>
+    <button type="button" role="tab" data-filter="enabled" data-i18n="tab_enabled">🟢 已启用</button>
     <button type="button" role="tab" data-filter="offpeak" data-i18n="tab_offpeak">峰谷定价</button>
     <button type="button" role="tab" data-filter="custom" data-i18n="tab_custom">自定义</button>
     <button type="button" role="tab" data-filter="matched" data-i18n="tab_matched">已配公价</button>
@@ -58,8 +59,13 @@
     <div class="s" data-i18n="tile_active_s">已识别模型</div>
   </div>
   <div class="tile">
+    <div class="k" data-i18n="tile_enabled_k">已启用模型</div>
+    <div class="v" style="color: var(--green);" id="stat-enabled">0</div>
+    <div class="s" id="stat-enabled-sub" data-i18n="tile_enabled_s">可调用渠道</div>
+  </div>
+  <div class="tile">
     <div class="k" data-i18n="tile_priced_k">已生效计费</div>
-    <div class="v" style="color: var(--green);" id="stat-priced">0</div>
+    <div class="v" id="stat-priced">0</div>
     <div class="s" data-i18n="tile_priced_s">纳入用量账单</div>
   </div>
   <div class="tile">
@@ -68,9 +74,9 @@
     <div class="s" data-i18n="tile_custom_s">自主设定的价格</div>
   </div>
   <div class="tile">
-    <div class="k" data-i18n="tile_unpriced_k">未定价模型</div>
-    <div class="v" style="color: var(--amber);" id="stat-unpriced">0</div>
-    <div class="s" data-i18n="tile_unpriced_s">按 0 花费统计</div>
+    <div class="k" data-i18n="tile_usage_k">历史调用总数</div>
+    <div class="v" style="color: #ff9f0a;" id="stat-usage">0</div>
+    <div class="s" id="stat-usage-sub">0 Tokens</div>
   </div>
 </section>
 
@@ -79,6 +85,15 @@
     <div class="filter-row">
       <select class="provider-select" id="provider-filter" aria-label="供应商筛选">
         <option value="all" data-i18n="provider_filter_all">🏢 全部供应商</option>
+      </select>
+      <select class="sort-select" id="sort-select" aria-label="排序方式">
+        <option value="default" data-i18n="sort_default">↕ 默认排序</option>
+        <option value="price-asc" data-i18n="sort_price_asc">💰 价格：由低到高</option>
+        <option value="price-desc" data-i18n="sort_price_desc">💎 价格：由高到低</option>
+        <option value="calls-desc" data-i18n="sort_calls_desc">🔥 用量：调用次数最多</option>
+        <option value="tokens-desc" data-i18n="sort_tokens_desc">📊 用量：Token 消耗最多</option>
+        <option value="channels-desc" data-i18n="sort_channels_desc">🏢 渠道数：最多</option>
+        <option value="name-asc" data-i18n="sort_name_asc">🔤 模型名称：A - Z</option>
       </select>
       <input type="search" class="search-input" id="search-input" placeholder="搜索模型、渠道或厂商..." data-i18n-placeholder="search_placeholder" autocomplete="off">
       <button type="button" class="btn btn-sync" id="btn-sync-all" data-i18n="btn_sync_all">✨ 全部应用公价</button>

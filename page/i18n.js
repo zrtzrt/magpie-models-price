@@ -4,7 +4,7 @@
   const I18N = {
     "zh": {
       title: "价格",
-      title_sub: "(Prices)",
+      title_sub: "",
       tab_all: "全部",
       tab_enabled: "已启用",
       tab_custom: "自定义",
@@ -109,7 +109,7 @@
     },
     "zh-TW": {
       title: "價格",
-      title_sub: "(Prices)",
+      title_sub: "",
       tab_all: "全部",
       tab_enabled: "已啟用",
       tab_custom: "自訂",

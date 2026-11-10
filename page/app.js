@@ -153,81 +153,13 @@
     return Array.from(map.values());
   }
 
-  // 4. 厂商图标与模型品牌识别
-  function getVendorInfo(group) {
-    const matchedProv = (group.matched?.provider || "").toLowerCase();
-    const bare = group.bare.toLowerCase();
-    const name = (group.name || "").toLowerCase();
-
-    if (matchedProv.includes("anthropic") || bare.includes("claude") || name.includes("claude")) {
-      return { id: "anthropic", name: "Anthropic", color: "#d97706" };
+  // 4. 供应商图标获取辅助函数 (基于 page/icons.js 官方资源)
+  function getProviderIconHtml(providerId) {
+    if (window.getIconSvg) {
+      const svg = window.getIconSvg(providerId);
+      if (svg) return svg;
     }
-    if (matchedProv.includes("google") || bare.includes("gemini") || name.includes("gemini")) {
-      return { id: "google", name: "Google", color: "#4285f4" };
-    }
-    if (matchedProv.includes("openai") || bare.startsWith("gpt") || bare.startsWith("o1") || bare.startsWith("o3") || bare.startsWith("o4") || bare.includes("chatgpt")) {
-      return { id: "openai", name: "OpenAI", color: "#10a37f" };
-    }
-    if (matchedProv.includes("deepseek") || bare.includes("deepseek")) {
-      return { id: "deepseek", name: "DeepSeek", color: "#0ea5e9" };
-    }
-    if (matchedProv.includes("alibaba") || bare.includes("qwen") || name.includes("qwen")) {
-      return { id: "alibaba", name: "Alibaba", color: "#f97316" };
-    }
-    if (matchedProv.includes("zhipu") || bare.includes("glm") || name.includes("glm")) {
-      return { id: "zhipu", name: "Zhipu AI", color: "#3b82f6" };
-    }
-    if (matchedProv.includes("meta") || bare.includes("llama")) {
-      return { id: "meta", name: "Meta", color: "#0668e1" };
-    }
-    if (matchedProv.includes("volcengine") || bare.includes("doubao")) {
-      return { id: "bytedance", name: "ByteDance", color: "#3b82f6" };
-    }
-    if (matchedProv.includes("moonshot") || bare.includes("kimi") || bare.includes("moonshot")) {
-      return { id: "moonshot", name: "Moonshot", color: "#8b5cf6" };
-    }
-    if (matchedProv.includes("minimax") || bare.includes("minimax")) {
-      return { id: "minimax", name: "MiniMax", color: "#ec4899" };
-    }
-    if (matchedProv.includes("mistral") || bare.includes("mistral") || bare.includes("mixtral") || bare.includes("codestral")) {
-      return { id: "mistral", name: "Mistral", color: "#f59e0b" };
-    }
-    return { id: "generic", name: "AI", color: "var(--muted)" };
-  }
-
-  function getVendorIconSvg(vendorId) {
-    switch (vendorId) {
-      case "anthropic":
-        return `<svg viewBox="0 0 24 24" fill="currentColor" style="color: #d97757;"><path d="M13.5 3h-3l-7 18h3.3l1.8-4.8h6.8l1.8 4.8h3.3L13.5 3zm-3.8 10.6l2.3-6.1 2.3 6.1H9.7z"/></svg>`;
-      case "google":
-        return `<svg viewBox="0 0 24 24" fill="none"><path d="M12 2C12 7.52 7.52 12 2 12c5.48 0 10 4.48 10 10 0-5.52 4.48-10 10-10-5.52 0-10-4.48-10-10z" fill="#4285F4"/></svg>`;
-      case "openai":
-        return `<svg viewBox="0 0 24 24" fill="none" stroke="#10a37f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>`;
-      case "deepseek":
-        return `<svg viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><path d="M4 14c0-3.3 2.7-6 6-6h4c3.3 0 6 2.7 6 6 0 2.2-1.2 4.1-3 5.1V21h-2v-2h-6v2H7v-1.9C5.2 18.1 4 16.2 4 14z"/><circle cx="9" cy="13" r="1.5" fill="#0ea5e9"/></svg>`;
-      case "alibaba":
-        return `<svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>`;
-      case "meta":
-        return `<svg viewBox="0 0 24 24" fill="none" stroke="#0668e1" stroke-width="2"><path d="M6.5 15.5c-2 0-3.5-1.5-3.5-3.5s1.5-3.5 3.5-3.5c2.2 0 3.3 2.2 4.5 3.5M17.5 8.5c2 0 3.5 1.5 3.5 3.5s-1.5 3.5-3.5 3.5c-2.2 0-3.3-2.2-4.5-3.5"/></svg>`;
-      case "zhipu":
-        return `<svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>`;
-      default:
-        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="3"/><rect x="9" y="9" width="6" height="6" rx="1"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3"/></svg>`;
-    }
-  }
-
-  function getProviderClass(provider) {
-    const p = (provider || "").toLowerCase();
-    if (p.includes("antigravity")) return "p-antigravity";
-    if (p.includes("ai-studio") || p.includes("aistudio")) return "p-aistudio";
-    if (p === "gemini-web") return "p-geminiweb";
-    if (p.includes("gemini")) return "p-gemini";
-    if (p.includes("workbuddy")) return "p-workbuddy";
-    if (p.includes("trae")) return "p-trae";
-    if (p.includes("codex")) return "p-codex";
-    if (p.includes("qwen")) return "p-qwen";
-    if (p.includes("zen")) return "p-zen";
-    return "p-generic";
+    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/></svg>`;
   }
 
   // 5. 峰谷分时时段计算 (Time-of-Use & DeepSeek Official Schedule)
@@ -510,7 +442,6 @@
       const card = document.createElement("div");
       card.className = "model-card";
 
-      const vendor = getVendorInfo(group);
       const wildcardCustom = customPrices["*/" + group.bare];
       const hasChannelCustom = group.items.some((it) => !!customPrices[it.model]);
       const hasCustom = !!(wildcardCustom || hasChannelCustom);
@@ -525,14 +456,31 @@
       const header = document.createElement("div");
       header.className = "card-header";
 
-      // Left: Vendor icon + Model title + Provider pills
+      // Left: Provider icon stack + Model title + Provider names
       const leftDiv = document.createElement("div");
       leftDiv.className = "header-left";
 
-      const iconDiv = document.createElement("div");
-      iconDiv.className = "vendor-icon";
-      iconDiv.title = vendor.name;
-      iconDiv.innerHTML = getVendorIconSvg(vendor.id);
+      // Collect unique providers offering this model
+      const seenProviders = new Map();
+      for (const item of group.items) {
+        const pKey = item.provider || "other";
+        if (!seenProviders.has(pKey)) {
+          seenProviders.set(pKey, item.providerName || pKey);
+        }
+      }
+
+      // 供应商头像堆叠 (参考 Magpie MCP / Skill 展示规范)
+      const stackDiv = document.createElement("div");
+      stackDiv.className = "provider-icon-stack";
+      let zIdx = seenProviders.size;
+      for (const [pId, pName] of seenProviders.entries()) {
+        const iconDiv = document.createElement("div");
+        iconDiv.className = "provider-squircle-icon";
+        iconDiv.style.zIndex = zIdx--;
+        iconDiv.title = pName;
+        iconDiv.innerHTML = getProviderIconHtml(pId);
+        stackDiv.appendChild(iconDiv);
+      }
 
       const titleBlock = document.createElement("div");
       titleBlock.className = "model-title-block";
@@ -557,25 +505,12 @@
         nameRow.append(offPeakTag);
       }
 
-      // Provider pills list
-      const pillsDiv = document.createElement("div");
-      pillsDiv.className = "provider-pill-list";
+      const namesDiv = document.createElement("div");
+      namesDiv.className = "provider-names-text";
+      namesDiv.textContent = Array.from(seenProviders.values()).join(" · ");
 
-      // Collect unique providers offering this model
-      const seenProviders = new Set();
-      for (const item of group.items) {
-        const pKey = item.provider || "other";
-        if (seenProviders.has(pKey)) continue;
-        seenProviders.add(pKey);
-
-        const pill = document.createElement("span");
-        pill.className = `provider-pill ${getProviderClass(item.provider)}`;
-        pill.textContent = item.providerName || item.provider || "Unknown";
-        pillsDiv.appendChild(pill);
-      }
-
-      titleBlock.append(nameRow, pillsDiv);
-      leftDiv.append(iconDiv, titleBlock);
+      titleBlock.append(nameRow, namesDiv);
+      leftDiv.append(stackDiv, titleBlock);
 
       // Right: Price summary & Expand toggle
       const rightDiv = document.createElement("div");
@@ -679,9 +614,14 @@
           const rowLeft = document.createElement("div");
           rowLeft.className = "subrow-left";
 
-          const provPill = document.createElement("span");
-          provPill.className = `provider-pill ${getProviderClass(item.provider)}`;
-          provPill.textContent = item.providerName || item.provider || "Channel";
+          const pIcon = document.createElement("div");
+          pIcon.className = "provider-squircle-icon subrow-icon";
+          pIcon.title = item.providerName || item.provider || "Channel";
+          pIcon.innerHTML = getProviderIconHtml(item.provider);
+
+          const provName = document.createElement("span");
+          provName.className = "subrow-pname";
+          provName.textContent = item.providerName || item.provider || "Channel";
 
           const modelIdSpan = document.createElement("span");
           modelIdSpan.className = "subrow-model-id";
@@ -694,7 +634,7 @@
             : "font-size: 10px; color: var(--accent); border: 1px solid var(--accent); border-radius: 3px; padding: 0 4px;";
           kindBadge.textContent = isSub ? t("badge_subscription") : t("badge_paid_api");
 
-          rowLeft.append(provPill, modelIdSpan, kindBadge);
+          rowLeft.append(pIcon, provName, modelIdSpan, kindBadge);
 
           const rowRight = document.createElement("div");
           rowRight.className = "subrow-right";

@@ -22,20 +22,20 @@
       "lastAt": "2026-11-09T14:29:03.017067+08:00"
     },
     "bareUsage": {
-      "requests": 6889,
+      "requests": 6890,
       "inputTokens": 76724053,
       "outputTokens": 3733746,
       "cacheRead": 736000591,
       "cacheWrite": 0,
       "totalTokens": 80457799,
-      "lastAt": "2026-11-09T14:29:03.017067+08:00"
+      "lastAt": "2026-11-11T13:55:08.81503+08:00"
     },
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3.8-flash",
       "name": "Gemini 3.8 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.75,
         "output": 3.75,
@@ -150,18 +150,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "vercel",
-      "model": "openai/gpt-oss-120b",
+      "provider": "aki-io",
+      "model": "gpt-oss-120b",
       "name": "GPT OSS 120B",
       "confidence": "medium",
-      "reason": "模糊推荐匹配 (vercel)",
+      "reason": "模糊推荐匹配 (aki-io)",
       "cost": {
-        "input": 0.1,
-        "output": 0.5,
-        "cache_read": 0.1,
+        "input": 0.168225,
+        "output": 0.616825,
+        "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "0.1,0.5,0.1,0"
+      "priceString": "0.168225,0.616825,0,0"
     }
   },
   {
@@ -179,18 +179,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
-      "model": "gemini-2.5-flash",
-      "name": "Gemini 2.5 Flash",
+      "provider": "google",
+      "model": "gemini-2.5-flash-preview-tts",
+      "name": "Gemini 2.5 Flash Preview TTS",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
-        "input": 0.3,
-        "output": 2.5,
-        "cache_read": 0.03,
+        "input": 0.5,
+        "output": 10,
+        "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "0.3,2.5,0.03,0"
+      "priceString": "0.5,10,0,0"
     }
   },
   {
@@ -208,11 +208,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-2.5-flash-lite",
       "name": "Gemini 2.5 Flash-Lite",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.1,
         "output": 0.4,
@@ -237,11 +237,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3-flash-preview",
       "name": "Gemini 3 Flash Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.5,
         "output": 3,
@@ -266,18 +266,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3.1-flash-image",
       "name": "Nano Banana 2",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.5,
         "output": 60,
-        "cache_read": 0.05,
+        "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "0.5,60,0.05,0"
+      "priceString": "0.5,60,0,0"
     }
   },
   {
@@ -295,11 +295,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
-      "model": "gemini-3.1-flash-lite",
-      "name": "Gemini 3.1 Flash Lite",
+      "provider": "google",
+      "model": "gemini-3.1-flash-lite-preview",
+      "name": "Gemini 3.1 Flash Lite Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.25,
         "output": 1.5,
@@ -324,11 +324,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3.5-flash-lite",
       "name": "Gemini 3.5 Flash Lite",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.3,
         "output": 2.5,
@@ -369,11 +369,11 @@
       "lastAt": "2026-11-02T14:27:53.129928+08:00"
     },
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3.8-flash",
       "name": "Gemini 3.8 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.75,
         "output": 3.75,
@@ -414,11 +414,11 @@
       "lastAt": "2026-11-10T11:26:28.583561+08:00"
     },
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-4-argon",
       "name": "Gemini 4 Argon",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 2,
         "output": 10,
@@ -441,29 +441,29 @@
       "supported": false
     },
     "usage": {
-      "requests": 88,
+      "requests": 89,
       "inputTokens": 261438,
       "outputTokens": 40268,
       "cacheRead": 35970,
       "cacheWrite": 0,
       "totalTokens": 301706,
-      "lastAt": "2026-11-09T12:10:23.287929+08:00"
+      "lastAt": "2026-11-11T13:55:08.81503+08:00"
     },
     "bareUsage": {
-      "requests": 6889,
+      "requests": 6890,
       "inputTokens": 76724053,
       "outputTokens": 3733746,
       "cacheRead": 736000591,
       "cacheWrite": 0,
       "totalTokens": 80457799,
-      "lastAt": "2026-11-09T14:29:03.017067+08:00"
+      "lastAt": "2026-11-11T13:55:08.81503+08:00"
     },
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3.8-flash",
       "name": "Gemini 3.8 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.75,
         "output": 3.75,
@@ -488,11 +488,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3.5-flash-lite",
       "name": "Gemini 3.5 Flash Lite",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.3,
         "output": 2.5,
@@ -517,11 +517,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3.1-pro-preview",
       "name": "Gemini 3.1 Pro Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 2,
         "output": 12,
@@ -546,11 +546,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3.6-flash",
       "name": "Gemini 3.6 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.75,
         "output": 3.75,
@@ -575,11 +575,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
-      "model": "gemini-3.1-flash-lite",
-      "name": "Gemini 3.1 Flash Lite",
+      "provider": "google",
+      "model": "gemini-3.1-flash-lite-preview",
+      "name": "Gemini 3.1 Flash Lite Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.25,
         "output": 1.5,
@@ -604,11 +604,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3-flash-preview",
       "name": "Gemini 3 Flash Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.5,
         "output": 3,
@@ -662,18 +662,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3.1-flash-lite-image",
       "name": "Nano Banana 2 Lite",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.25,
         "output": 30,
-        "cache_read": 0.025,
+        "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "0.25,30,0.025,0"
+      "priceString": "0.25,30,0,0"
     }
   },
   {
@@ -691,18 +691,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3.1-flash-image",
       "name": "Nano Banana 2",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.5,
         "output": 60,
-        "cache_read": 0.05,
+        "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "0.5,60,0.05,0"
+      "priceString": "0.5,60,0,0"
     }
   },
   {
@@ -720,18 +720,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3-pro-image",
       "name": "Nano Banana Pro",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 2,
         "output": 120,
-        "cache_read": 0.2,
+        "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "2,120,0.2,0"
+      "priceString": "2,120,0,0"
     }
   },
   {
@@ -749,18 +749,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-2.5-flash-image",
       "name": "Nano Banana",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.3,
         "output": 30,
-        "cache_read": 0,
+        "cache_read": 0.075,
         "cache_write": 0
       },
-      "priceString": "0.3,30,0,0"
+      "priceString": "0.3,30,0.075,0"
     }
   },
   {
@@ -865,11 +865,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3.1-pro-preview",
       "name": "Gemini 3.1 Pro Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 2,
         "output": 12,
@@ -923,11 +923,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3-flash-preview",
       "name": "Gemini 3 Flash Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.5,
         "output": 3,
@@ -951,20 +951,20 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 6889,
+      "requests": 6890,
       "inputTokens": 76724053,
       "outputTokens": 3733746,
       "cacheRead": 736000591,
       "cacheWrite": 0,
       "totalTokens": 80457799,
-      "lastAt": "2026-11-09T14:29:03.017067+08:00"
+      "lastAt": "2026-11-11T13:55:08.81503+08:00"
     },
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3.8-flash",
       "name": "Gemini 3.8 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.75,
         "output": 3.75,
@@ -989,11 +989,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3.5-flash",
       "name": "Gemini 3.5 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 1.5,
         "output": 9,
@@ -1018,11 +1018,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3.5-flash-lite",
       "name": "Gemini 3.5 Flash Lite",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.3,
         "output": 2.5,
@@ -1047,11 +1047,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
-      "model": "gemini-3.1-flash-lite",
-      "name": "Gemini 3.1 Flash Lite",
+      "provider": "google",
+      "model": "gemini-3.1-flash-lite-preview",
+      "name": "Gemini 3.1 Flash Lite Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.25,
         "output": 1.5,
@@ -1076,18 +1076,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
-      "model": "gemini-2.5-pro",
-      "name": "Gemini 2.5 Pro",
+      "provider": "google",
+      "model": "gemini-2.5-pro-preview-tts",
+      "name": "Gemini 2.5 Pro Preview TTS",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
-        "input": 1.25,
-        "output": 10,
-        "cache_read": 0.125,
+        "input": 1,
+        "output": 20,
+        "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "1.25,10,0.125,0"
+      "priceString": "1,20,0,0"
     }
   },
   {
@@ -1105,18 +1105,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
-      "model": "gemini-2.5-flash",
-      "name": "Gemini 2.5 Flash",
+      "provider": "google",
+      "model": "gemini-2.5-flash-preview-tts",
+      "name": "Gemini 2.5 Flash Preview TTS",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
-        "input": 0.3,
-        "output": 2.5,
-        "cache_read": 0.03,
+        "input": 0.5,
+        "output": 10,
+        "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "0.3,2.5,0.03,0"
+      "priceString": "0.5,10,0,0"
     }
   },
   {
@@ -1134,11 +1134,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-2.5-flash-lite",
       "name": "Gemini 2.5 Flash-Lite",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.1,
         "output": 0.4,
@@ -1224,11 +1224,11 @@
       "lastAt": "2026-11-04T13:12:54.230795+08:00"
     },
     "matched": {
-      "provider": "tencent-token-plan",
-      "model": "hy4-preview",
-      "name": "Hy4 preview",
+      "provider": "tencent-tokenhub",
+      "model": "hy4",
+      "name": "Hy4",
       "confidence": "medium",
-      "reason": "关联厂商模型 (tencent-token-plan)",
+      "reason": "关联厂商模型 (tencent-tokenhub)",
       "cost": {
         "input": 0.834,
         "output": 2.501,
@@ -1269,11 +1269,11 @@
       "lastAt": "2026-11-07T07:38:56.971941+08:00"
     },
     "matched": {
-      "provider": "tencent-token-plan",
-      "model": "hy4-preview",
-      "name": "Hy4 preview",
+      "provider": "tencent-tokenhub",
+      "model": "hy4",
+      "name": "Hy4",
       "confidence": "medium",
-      "reason": "关联厂商模型 (tencent-token-plan)",
+      "reason": "关联厂商模型 (tencent-tokenhub)",
       "cost": {
         "input": 0.834,
         "output": 2.501,
@@ -1298,11 +1298,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "tencent-token-plan",
+      "provider": "tencent-tokenhub",
       "model": "hy3",
       "name": "Hy3",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (tencent-token-plan)",
+      "reason": "原厂规约匹配 (tencent-tokenhub)",
       "cost": {
         "input": 0,
         "output": 0,
@@ -1327,11 +1327,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "tencent-token-plan",
+      "provider": "tencent-tokenhub",
       "model": "hy3",
       "name": "Hy3",
       "confidence": "medium",
-      "reason": "关联厂商模型 (tencent-token-plan)",
+      "reason": "关联厂商模型 (tencent-tokenhub)",
       "cost": {
         "input": 0,
         "output": 0,
@@ -1367,13 +1367,13 @@
       "lastAt": "2026-11-10T11:27:59.422821+08:00"
     },
     "bareUsage": {
-      "requests": 3105,
-      "inputTokens": 20025810,
-      "outputTokens": 1759588,
-      "cacheRead": 728580466,
+      "requests": 3390,
+      "inputTokens": 20765018,
+      "outputTokens": 1976430,
+      "cacheRead": 749138162,
       "cacheWrite": 0,
-      "totalTokens": 21785398,
-      "lastAt": "2026-11-10T11:27:59.422821+08:00"
+      "totalTokens": 22741448,
+      "lastAt": "2026-11-11T15:13:05.849808+08:00"
     },
     "matched": {
       "provider": "deepseek",
@@ -1447,21 +1447,37 @@
     "offPeakPreset": {
       "supported": false
     },
-    "usage": null,
-    "bareUsage": null,
+    "usage": {
+      "requests": 1,
+      "inputTokens": 3175,
+      "outputTokens": 890,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 4065,
+      "lastAt": "2026-11-11T13:57:12.507484+08:00"
+    },
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 3175,
+      "outputTokens": 890,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 4065,
+      "lastAt": "2026-11-11T13:57:12.507484+08:00"
+    },
     "matched": {
       "provider": "zhipuai",
-      "model": "glm-5.3-flash",
-      "name": "GLM-5.3-Flash",
+      "model": "glm-5.3-flashx",
+      "name": "GLM-5.3-FlashX",
       "confidence": "exact",
       "reason": "原厂规约匹配 (zhipuai)",
       "cost": {
-        "input": 0.11952,
-        "output": 0.41831,
-        "cache_read": 0.03436,
+        "input": 0.29879,
+        "output": 1.04577,
+        "cache_read": 0.08516,
         "cache_write": 0
       },
-      "priceString": "0.11952,0.41831,0.03436,0"
+      "priceString": "0.29879,1.04577,0.08516,0"
     }
   },
   {
@@ -1537,18 +1553,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "minimax",
+      "provider": "minimax-cn",
       "model": "MiniMax-M3.1-Flash",
       "name": "MiniMax-M3.1-Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (minimax)",
+      "reason": "原厂规约匹配 (minimax-cn)",
       "cost": {
-        "input": 0.15,
-        "output": 0.6,
-        "cache_read": 0.015,
+        "input": 0.1494,
+        "output": 0.5976,
+        "cache_read": 0.0149,
         "cache_write": 0
       },
-      "priceString": "0.15,0.6,0.015,0"
+      "priceString": "0.1494,0.5976,0.0149,0"
     }
   },
   {
@@ -1582,18 +1598,18 @@
       "lastAt": "2026-11-07T07:37:20.155916+08:00"
     },
     "matched": {
-      "provider": "moonshotai-cn",
+      "provider": "moonshotai",
       "model": "kimi-k3.1-pro",
       "name": "Kimi K3.1 Pro",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (moonshotai-cn)",
+      "reason": "原厂规约匹配 (moonshotai)",
       "cost": {
-        "input": 1.9437,
-        "output": 10.1671,
-        "cache_read": 0.1944,
-        "cache_write": 1.9437
+        "input": 2,
+        "output": 10,
+        "cache_read": 0.2,
+        "cache_write": 2
       },
-      "priceString": "1.9437,10.1671,0.1944,1.9437"
+      "priceString": "2,10,0.2,2"
     }
   },
   {
@@ -1611,18 +1627,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "moonshotai-cn",
+      "provider": "moonshotai",
       "model": "kimi-k3",
       "name": "Kimi K3",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (moonshotai-cn)",
+      "reason": "原厂规约匹配 (moonshotai)",
       "cost": {
-        "input": 2.9879,
-        "output": 14.9395,
-        "cache_read": 0.2988,
-        "cache_write": 2.9879
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3,
+        "cache_write": 3
       },
-      "priceString": "2.9879,14.9395,0.2988,2.9879"
+      "priceString": "3,15,0.3,3"
     }
   },
   {
@@ -1718,18 +1734,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "stepfun",
+      "provider": "stepfun-ai",
       "model": "step-5-preview",
       "name": "Step 5 Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (stepfun)",
+      "reason": "原厂规约匹配 (stepfun-ai)",
       "cost": {
-        "input": 1.04613,
-        "output": 2.98895,
-        "cache_read": 0.10461,
+        "input": 1,
+        "output": 2.7,
+        "cache_read": 0.1,
         "cache_write": 0
       },
-      "priceString": "1.04613,2.98895,0.10461,0"
+      "priceString": "1,2.7,0.1,0"
     }
   },
   {
@@ -1829,11 +1845,11 @@
       "lastAt": "2026-11-04T13:12:54.230795+08:00"
     },
     "matched": {
-      "provider": "tencent-token-plan",
-      "model": "hy4-preview",
-      "name": "Hy4 preview",
+      "provider": "tencent-tokenhub",
+      "model": "hy4",
+      "name": "Hy4",
       "confidence": "medium",
-      "reason": "关联厂商模型 (tencent-token-plan)",
+      "reason": "关联厂商模型 (tencent-tokenhub)",
       "cost": {
         "input": 0.834,
         "output": 2.501,
@@ -1866,11 +1882,11 @@
       "lastAt": "2026-11-07T07:38:56.971941+08:00"
     },
     "matched": {
-      "provider": "tencent-token-plan",
-      "model": "hy4-preview",
-      "name": "Hy4 preview",
+      "provider": "tencent-tokenhub",
+      "model": "hy4",
+      "name": "Hy4",
       "confidence": "medium",
-      "reason": "关联厂商模型 (tencent-token-plan)",
+      "reason": "关联厂商模型 (tencent-tokenhub)",
       "cost": {
         "input": 0.834,
         "output": 2.501,
@@ -1895,11 +1911,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "tencent-token-plan",
+      "provider": "tencent-tokenhub",
       "model": "hy3",
       "name": "Hy3",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (tencent-token-plan)",
+      "reason": "原厂规约匹配 (tencent-tokenhub)",
       "cost": {
         "input": 0,
         "output": 0,
@@ -2059,13 +2075,13 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 2,
+      "requests": 3,
       "inputTokens": 18645,
       "outputTokens": 19,
       "cacheRead": 3456,
       "cacheWrite": 0,
       "totalTokens": 18664,
-      "lastAt": "2026-10-22T14:24:31.403756+08:00"
+      "lastAt": "2026-11-11T13:56:38.377512+08:00"
     },
     "matched": {
       "provider": "openai",
@@ -2192,18 +2208,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "requesty",
+      "provider": "302ai",
       "model": "grok-4.7",
       "name": "Grok 4.7",
       "confidence": "exact",
-      "reason": "渠道精准匹配 (requesty)",
+      "reason": "渠道精准匹配 (302ai)",
       "cost": {
         "input": 2,
         "output": 6,
         "cache_read": 0.5,
-        "cache_write": 2
+        "cache_write": 0.5
       },
-      "priceString": "2,6,0.5,2"
+      "priceString": "2,6,0.5,0.5"
     }
   },
   {
@@ -2220,20 +2236,20 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 6889,
+      "requests": 6890,
       "inputTokens": 76724053,
       "outputTokens": 3733746,
       "cacheRead": 736000591,
       "cacheWrite": 0,
       "totalTokens": 80457799,
-      "lastAt": "2026-11-09T14:29:03.017067+08:00"
+      "lastAt": "2026-11-11T13:55:08.81503+08:00"
     },
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3.8-flash",
       "name": "Gemini 3.8 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.75,
         "output": 3.75,
@@ -2293,20 +2309,28 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 3175,
+      "outputTokens": 890,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 4065,
+      "lastAt": "2026-11-11T13:57:12.507484+08:00"
+    },
     "matched": {
       "provider": "zhipuai",
-      "model": "glm-5.3-flash",
-      "name": "GLM-5.3-Flash",
+      "model": "glm-5.3-flashx",
+      "name": "GLM-5.3-FlashX",
       "confidence": "exact",
       "reason": "原厂规约匹配 (zhipuai)",
       "cost": {
-        "input": 0.11952,
-        "output": 0.41831,
-        "cache_read": 0.03436,
+        "input": 0.29879,
+        "output": 1.04577,
+        "cache_read": 0.08516,
         "cache_write": 0
       },
-      "priceString": "0.11952,0.41831,0.03436,0"
+      "priceString": "0.29879,1.04577,0.08516,0"
     }
   },
   {
@@ -2340,18 +2364,18 @@
       "lastAt": "2026-11-07T07:37:20.155916+08:00"
     },
     "matched": {
-      "provider": "moonshotai-cn",
+      "provider": "moonshotai",
       "model": "kimi-k3.1-pro",
       "name": "Kimi K3.1 Pro",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (moonshotai-cn)",
+      "reason": "原厂规约匹配 (moonshotai)",
       "cost": {
-        "input": 1.9437,
-        "output": 10.1671,
-        "cache_read": 0.1944,
-        "cache_write": 1.9437
+        "input": 2,
+        "output": 10,
+        "cache_read": 0.2,
+        "cache_write": 2
       },
-      "priceString": "1.9437,10.1671,0.1944,1.9437"
+      "priceString": "2,10,0.2,2"
     }
   },
   {
@@ -2369,18 +2393,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "moonshotai-cn",
+      "provider": "moonshotai",
       "model": "kimi-k3.1-pro-highspeed",
       "name": "Kimi K3.1 Pro Highspeed",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (moonshotai-cn)",
+      "reason": "原厂规约匹配 (moonshotai)",
       "cost": {
-        "input": 3.8874,
-        "output": 20.3342,
-        "cache_read": 0.1944,
-        "cache_write": 3.8874
+        "input": 4,
+        "output": 20,
+        "cache_read": 0.2,
+        "cache_write": 4
       },
-      "priceString": "3.8874,20.3342,0.1944,3.8874"
+      "priceString": "4,20,0.2,4"
     }
   },
   {
@@ -2398,18 +2422,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "moonshotai-cn",
+      "provider": "moonshotai",
       "model": "kimi-k3",
       "name": "Kimi K3",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (moonshotai-cn)",
+      "reason": "原厂规约匹配 (moonshotai)",
       "cost": {
-        "input": 2.9879,
-        "output": 14.9395,
-        "cache_read": 0.2988,
-        "cache_write": 2.9879
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3,
+        "cache_write": 3
       },
-      "priceString": "2.9879,14.9395,0.2988,2.9879"
+      "priceString": "3,15,0.3,3"
     }
   },
   {
@@ -2427,18 +2451,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "minimax",
+      "provider": "minimax-cn",
       "model": "MiniMax-M3.1-Flash",
       "name": "MiniMax-M3.1-Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (minimax)",
+      "reason": "原厂规约匹配 (minimax-cn)",
       "cost": {
-        "input": 0.15,
-        "output": 0.6,
-        "cache_read": 0.015,
+        "input": 0.1494,
+        "output": 0.5976,
+        "cache_read": 0.0149,
         "cache_write": 0
       },
-      "priceString": "0.15,0.6,0.015,0"
+      "priceString": "0.1494,0.5976,0.0149,0"
     }
   },
   {
@@ -2673,20 +2697,28 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 3175,
+      "outputTokens": 890,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 4065,
+      "lastAt": "2026-11-11T13:57:12.507484+08:00"
+    },
     "matched": {
       "provider": "zhipuai",
-      "model": "glm-5.3-flash",
-      "name": "GLM-5.3-Flash",
+      "model": "glm-5.3-flashx",
+      "name": "GLM-5.3-FlashX",
       "confidence": "exact",
       "reason": "原厂规约匹配 (zhipuai)",
       "cost": {
-        "input": 0.11952,
-        "output": 0.41831,
-        "cache_read": 0.03436,
+        "input": 0.29879,
+        "output": 1.04577,
+        "cache_read": 0.08516,
         "cache_write": 0
       },
-      "priceString": "0.11952,0.41831,0.03436,0"
+      "priceString": "0.29879,1.04577,0.08516,0"
     }
   },
   {
@@ -2705,17 +2737,17 @@
     "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
-      "model": "glm-5.3-flash",
-      "name": "GLM-5.3-Flash",
+      "model": "glm-5.3-flashx",
+      "name": "GLM-5.3-FlashX",
       "confidence": "exact",
       "reason": "原厂规约匹配 (zhipuai)",
       "cost": {
-        "input": 0.11952,
-        "output": 0.41831,
-        "cache_read": 0.03436,
+        "input": 0.29879,
+        "output": 1.04577,
+        "cache_read": 0.08516,
         "cache_write": 0
       },
-      "priceString": "0.11952,0.41831,0.03436,0"
+      "priceString": "0.29879,1.04577,0.08516,0"
     }
   },
   {
@@ -2734,17 +2766,17 @@
     "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
-      "model": "glm-5.3-flash",
-      "name": "GLM-5.3-Flash",
+      "model": "glm-5.3-flashx",
+      "name": "GLM-5.3-FlashX",
       "confidence": "exact",
       "reason": "原厂规约匹配 (zhipuai)",
       "cost": {
-        "input": 0.11952,
-        "output": 0.41831,
-        "cache_read": 0.03436,
+        "input": 0.29879,
+        "output": 1.04577,
+        "cache_read": 0.08516,
         "cache_write": 0
       },
-      "priceString": "0.11952,0.41831,0.03436,0"
+      "priceString": "0.29879,1.04577,0.08516,0"
     }
   },
   {
@@ -2763,17 +2795,17 @@
     "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
-      "model": "glm-5.3-flash",
-      "name": "GLM-5.3-Flash",
+      "model": "glm-5.3-flashx",
+      "name": "GLM-5.3-FlashX",
       "confidence": "exact",
       "reason": "原厂规约匹配 (zhipuai)",
       "cost": {
-        "input": 0.11952,
-        "output": 0.41831,
-        "cache_read": 0.03436,
+        "input": 0.29879,
+        "output": 1.04577,
+        "cache_read": 0.08516,
         "cache_write": 0
       },
-      "priceString": "0.11952,0.41831,0.03436,0"
+      "priceString": "0.29879,1.04577,0.08516,0"
     }
   },
   {
@@ -3105,18 +3137,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "moonshotai-cn",
+      "provider": "moonshotai",
       "model": "kimi-k2.7-code",
       "name": "Kimi K2.7 Code",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (moonshotai-cn)",
+      "reason": "原厂规约匹配 (moonshotai)",
       "cost": {
-        "input": 0.9711,
-        "output": 4.0337,
-        "cache_read": 0.1942,
+        "input": 0.95,
+        "output": 4,
+        "cache_read": 0.19,
         "cache_write": 0
       },
-      "priceString": "0.9711,4.0337,0.1942,0"
+      "priceString": "0.95,4,0.19,0"
     }
   },
   {
@@ -3137,13 +3169,13 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 3105,
-      "inputTokens": 20025810,
-      "outputTokens": 1759588,
-      "cacheRead": 728580466,
+      "requests": 3390,
+      "inputTokens": 20765018,
+      "outputTokens": 1976430,
+      "cacheRead": 749138162,
       "cacheWrite": 0,
-      "totalTokens": 21785398,
-      "lastAt": "2026-11-10T11:27:59.422821+08:00"
+      "totalTokens": 22741448,
+      "lastAt": "2026-11-11T15:13:05.849808+08:00"
     },
     "matched": {
       "provider": "deepseek",
@@ -3459,18 +3491,18 @@
       "lastAt": "2026-11-07T07:37:20.155916+08:00"
     },
     "matched": {
-      "provider": "moonshotai-cn",
+      "provider": "moonshotai",
       "model": "kimi-k3.1-pro",
       "name": "Kimi K3.1 Pro",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (moonshotai-cn)",
+      "reason": "原厂规约匹配 (moonshotai)",
       "cost": {
-        "input": 1.9437,
-        "output": 10.1671,
-        "cache_read": 0.1944,
-        "cache_write": 1.9437
+        "input": 2,
+        "output": 10,
+        "cache_read": 0.2,
+        "cache_write": 2
       },
-      "priceString": "1.9437,10.1671,0.1944,1.9437"
+      "priceString": "2,10,0.2,2"
     }
   },
   {
@@ -3488,18 +3520,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "moonshotai-cn",
+      "provider": "moonshotai",
       "model": "kimi-k3.1-pro",
       "name": "Kimi K3.1 Pro",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (moonshotai-cn)",
+      "reason": "原厂规约匹配 (moonshotai)",
       "cost": {
-        "input": 1.9437,
-        "output": 10.1671,
-        "cache_read": 0.1944,
-        "cache_write": 1.9437
+        "input": 2,
+        "output": 10,
+        "cache_read": 0.2,
+        "cache_write": 2
       },
-      "priceString": "1.9437,10.1671,0.1944,1.9437"
+      "priceString": "2,10,0.2,2"
     }
   },
   {
@@ -3517,18 +3549,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "moonshotai-cn",
+      "provider": "moonshotai",
       "model": "kimi-k3",
       "name": "Kimi K3",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (moonshotai-cn)",
+      "reason": "原厂规约匹配 (moonshotai)",
       "cost": {
-        "input": 2.9879,
-        "output": 14.9395,
-        "cache_read": 0.2988,
-        "cache_write": 2.9879
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3,
+        "cache_write": 3
       },
-      "priceString": "2.9879,14.9395,0.2988,2.9879"
+      "priceString": "3,15,0.3,3"
     }
   },
   {
@@ -3546,18 +3578,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "moonshotai-cn",
+      "provider": "moonshotai",
       "model": "kimi-k3",
       "name": "Kimi K3",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (moonshotai-cn)",
+      "reason": "原厂规约匹配 (moonshotai)",
       "cost": {
-        "input": 2.9879,
-        "output": 14.9395,
-        "cache_read": 0.2988,
-        "cache_write": 2.9879
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3,
+        "cache_write": 3
       },
-      "priceString": "2.9879,14.9395,0.2988,2.9879"
+      "priceString": "3,15,0.3,3"
     }
   },
   {
@@ -3633,18 +3665,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "qiniu-ai",
+      "provider": "opencode",
       "model": "kimi-k2",
       "name": "Kimi K2",
       "confidence": "exact",
-      "reason": "渠道精准匹配 (qiniu-ai)",
+      "reason": "渠道精准匹配 (opencode)",
       "cost": {
-        "input": 0.57971014,
-        "output": 2.31884058,
-        "cache_read": 0,
+        "input": 0.4,
+        "output": 2.5,
+        "cache_read": 0.4,
         "cache_write": 0
       },
-      "priceString": "0.57971014,2.31884058,0,0"
+      "priceString": "0.4,2.5,0.4,0"
     }
   },
   {
@@ -3823,18 +3855,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "minimax",
+      "provider": "minimax-cn",
       "model": "MiniMax-M3.1-Flash",
       "name": "MiniMax-M3.1-Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (minimax)",
+      "reason": "原厂规约匹配 (minimax-cn)",
       "cost": {
-        "input": 0.15,
-        "output": 0.6,
-        "cache_read": 0.015,
+        "input": 0.1494,
+        "output": 0.5976,
+        "cache_read": 0.0149,
         "cache_write": 0
       },
-      "priceString": "0.15,0.6,0.015,0"
+      "priceString": "0.1494,0.5976,0.0149,0"
     }
   },
   {
@@ -3852,18 +3884,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "minimax",
+      "provider": "minimax-cn",
       "model": "MiniMax-M3.1-Flash",
       "name": "MiniMax-M3.1-Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (minimax)",
+      "reason": "原厂规约匹配 (minimax-cn)",
       "cost": {
-        "input": 0.15,
-        "output": 0.6,
-        "cache_read": 0.015,
+        "input": 0.1494,
+        "output": 0.5976,
+        "cache_read": 0.0149,
         "cache_write": 0
       },
-      "priceString": "0.15,0.6,0.015,0"
+      "priceString": "0.1494,0.5976,0.0149,0"
     }
   },
   {
@@ -3881,18 +3913,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "minimax",
+      "provider": "minimax-cn",
       "model": "MiniMax-M3",
       "name": "MiniMax-M3",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (minimax)",
+      "reason": "原厂规约匹配 (minimax-cn)",
       "cost": {
-        "input": 0.3,
-        "output": 1.2,
-        "cache_read": 0.06,
+        "input": 0.3137,
+        "output": 1.2549,
+        "cache_read": 0.0627,
         "cache_write": 0
       },
-      "priceString": "0.3,1.2,0.06,0"
+      "priceString": "0.3137,1.2549,0.0627,0"
     }
   },
   {
@@ -3910,18 +3942,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "minimax",
+      "provider": "minimax-cn",
       "model": "MiniMax-M3",
       "name": "MiniMax-M3",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (minimax)",
+      "reason": "原厂规约匹配 (minimax-cn)",
       "cost": {
-        "input": 0.3,
-        "output": 1.2,
-        "cache_read": 0.06,
+        "input": 0.3137,
+        "output": 1.2549,
+        "cache_read": 0.0627,
         "cache_write": 0
       },
-      "priceString": "0.3,1.2,0.06,0"
+      "priceString": "0.3137,1.2549,0.0627,0"
     }
   },
   {
@@ -3968,18 +4000,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "minimax",
+      "provider": "minimax-cn",
       "model": "MiniMax-M2.1",
       "name": "MiniMax-M2.1",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (minimax)",
+      "reason": "原厂规约匹配 (minimax-cn)",
       "cost": {
-        "input": 0.3,
-        "output": 1.2,
-        "cache_read": 0.03,
-        "cache_write": 0.375
+        "input": 0.3137,
+        "output": 1.2549,
+        "cache_read": 0.0314,
+        "cache_write": 0.3922
       },
-      "priceString": "0.3,1.2,0.03,0.375"
+      "priceString": "0.3137,1.2549,0.0314,0.3922"
     }
   },
   {
@@ -3997,18 +4029,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "minimax",
+      "provider": "minimax-cn",
       "model": "MiniMax-M2",
       "name": "MiniMax-M2",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (minimax)",
+      "reason": "原厂规约匹配 (minimax-cn)",
       "cost": {
-        "input": 0.3,
-        "output": 1.2,
-        "cache_read": 0,
-        "cache_write": 0
+        "input": 0.3137,
+        "output": 1.2549,
+        "cache_read": 0.0314,
+        "cache_write": 0.3922
       },
-      "priceString": "0.3,1.2,0,0"
+      "priceString": "0.3137,1.2549,0.0314,0.3922"
     }
   },
   {
@@ -4026,18 +4058,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "stepfun",
+      "provider": "stepfun-ai",
       "model": "step-5-preview",
       "name": "Step 5 Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (stepfun)",
+      "reason": "原厂规约匹配 (stepfun-ai)",
       "cost": {
-        "input": 1.04613,
-        "output": 2.98895,
-        "cache_read": 0.10461,
+        "input": 1,
+        "output": 2.7,
+        "cache_read": 0.1,
         "cache_write": 0
       },
-      "priceString": "1.04613,2.98895,0.10461,0"
+      "priceString": "1,2.7,0.1,0"
     }
   },
   {
@@ -4055,18 +4087,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "stepfun",
+      "provider": "stepfun-ai",
       "model": "step-5-preview",
       "name": "Step 5 Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (stepfun)",
+      "reason": "原厂规约匹配 (stepfun-ai)",
       "cost": {
-        "input": 1.04613,
-        "output": 2.98895,
-        "cache_read": 0.10461,
+        "input": 1,
+        "output": 2.7,
+        "cache_read": 0.1,
         "cache_write": 0
       },
-      "priceString": "1.04613,2.98895,0.10461,0"
+      "priceString": "1,2.7,0.1,0"
     }
   },
   {
@@ -4088,18 +4120,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "alibaba",
+      "provider": "alibaba-cn",
       "model": "qwen3.8-flash",
       "name": "Qwen3.8 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (alibaba)",
+      "reason": "原厂规约匹配 (alibaba-cn)",
       "cost": {
-        "input": 0.15,
-        "output": 0.47,
-        "cache_read": 0.016,
-        "cache_write": 0.2
+        "input": 0.11875,
+        "output": 0.40073,
+        "cache_read": 0.014844,
+        "cache_write": 0.185547
       },
-      "priceString": "0.15,0.47,0.016,0.2"
+      "priceString": "0.11875,0.40073,0.014844,0.185547"
     }
   },
   {
@@ -4121,18 +4153,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "alibaba",
+      "provider": "alibaba-cn",
       "model": "qwen3.8-flash",
       "name": "Qwen3.8 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (alibaba)",
+      "reason": "原厂规约匹配 (alibaba-cn)",
       "cost": {
-        "input": 0.15,
-        "output": 0.47,
-        "cache_read": 0.016,
-        "cache_write": 0.2
+        "input": 0.11875,
+        "output": 0.40073,
+        "cache_read": 0.014844,
+        "cache_write": 0.185547
       },
-      "priceString": "0.15,0.47,0.016,0.2"
+      "priceString": "0.11875,0.40073,0.014844,0.185547"
     }
   },
   {
@@ -4154,18 +4186,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "alibaba",
+      "provider": "alibaba-cn",
       "model": "qwen3.8-max",
       "name": "Qwen3.8 Max",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (alibaba)",
+      "reason": "原厂规约匹配 (alibaba-cn)",
       "cost": {
-        "input": 2,
-        "output": 6,
-        "cache_read": 0.25,
-        "cache_write": 2.5
+        "input": 1.77744,
+        "output": 5.33231,
+        "cache_read": 0.22218,
+        "cache_write": 2.22179
       },
-      "priceString": "2,6,0.25,2.5"
+      "priceString": "1.77744,5.33231,0.22218,2.22179"
     }
   },
   {
@@ -4220,18 +4252,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "alibaba",
+      "provider": "alibaba-cn",
       "model": "qwen-max",
       "name": "Qwen Max",
       "confidence": "medium",
-      "reason": "关联厂商模型 (alibaba)",
+      "reason": "关联厂商模型 (alibaba-cn)",
       "cost": {
-        "input": 1.6,
-        "output": 6.4,
+        "input": 0.345,
+        "output": 1.377,
         "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "1.6,6.4,0,0"
+      "priceString": "0.345,1.377,0,0"
     }
   },
   {
@@ -4253,18 +4285,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "alibaba",
+      "provider": "alibaba-cn",
       "model": "qwen-max",
       "name": "Qwen Max",
       "confidence": "medium",
-      "reason": "关联厂商模型 (alibaba)",
+      "reason": "关联厂商模型 (alibaba-cn)",
       "cost": {
-        "input": 1.6,
-        "output": 6.4,
+        "input": 0.345,
+        "output": 1.377,
         "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "1.6,6.4,0,0"
+      "priceString": "0.345,1.377,0,0"
     }
   },
   {
@@ -4286,18 +4318,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "alibaba",
+      "provider": "alibaba-cn",
       "model": "qwen-max",
       "name": "Qwen Max",
       "confidence": "medium",
-      "reason": "关联厂商模型 (alibaba)",
+      "reason": "关联厂商模型 (alibaba-cn)",
       "cost": {
-        "input": 1.6,
-        "output": 6.4,
+        "input": 0.345,
+        "output": 1.377,
         "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "1.6,6.4,0,0"
+      "priceString": "0.345,1.377,0,0"
     }
   },
   {
@@ -4319,18 +4351,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "helicone",
+      "provider": "opencode",
       "model": "qwen3-coder",
-      "name": "Qwen3 Coder 480B A35B Instruct Turbo",
+      "name": "Qwen3 Coder",
       "confidence": "exact",
-      "reason": "渠道精准匹配 (helicone)",
+      "reason": "渠道精准匹配 (opencode)",
       "cost": {
-        "input": 0.22,
-        "output": 0.95,
+        "input": 0.45,
+        "output": 1.8,
         "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "0.22,0.95,0,0"
+      "priceString": "0.45,1.8,0,0"
     }
   },
   {
@@ -4454,18 +4486,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "moonshotai-cn",
+      "provider": "moonshotai",
       "model": "kimi-k2.6",
       "name": "Kimi K2.6",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (moonshotai-cn)",
+      "reason": "原厂规约匹配 (moonshotai)",
       "cost": {
-        "input": 0.9711,
-        "output": 4.0337,
-        "cache_read": 0.1643,
+        "input": 0.95,
+        "output": 4,
+        "cache_read": 0.16,
         "cache_write": 0
       },
-      "priceString": "0.9711,4.0337,0.1643,0"
+      "priceString": "0.95,4,0.16,0"
     }
   },
   {
@@ -4647,18 +4679,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "ofox",
-      "model": "volcengine/doubao-seed-2.0-code",
+      "provider": "requesty",
+      "model": "seed-2.0-code",
       "name": "Seed 2.0 Code",
       "confidence": "medium",
-      "reason": "模糊推荐匹配 (ofox)",
+      "reason": "模糊推荐匹配 (requesty)",
       "cost": {
-        "input": 0.67,
-        "output": 3.36,
-        "cache_read": 0.14,
-        "cache_write": 0.0024
+        "input": 0.5,
+        "output": 3,
+        "cache_read": 0.1,
+        "cache_write": 0
       },
-      "priceString": "0.67,3.36,0.14,0.0024"
+      "priceString": "0.5,3,0.1,0"
     }
   },
   {
@@ -4680,18 +4712,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "alibaba",
+      "provider": "alibaba-cn",
       "model": "qwen-max",
       "name": "Qwen Max",
       "confidence": "medium",
-      "reason": "关联厂商模型 (alibaba)",
+      "reason": "关联厂商模型 (alibaba-cn)",
       "cost": {
-        "input": 1.6,
-        "output": 6.4,
+        "input": 0.345,
+        "output": 1.377,
         "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "1.6,6.4,0,0"
+      "priceString": "0.345,1.377,0,0"
     }
   },
   {
@@ -4713,18 +4745,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "alibaba",
+      "provider": "alibaba-cn",
       "model": "qwen-max",
       "name": "Qwen Max",
       "confidence": "medium",
-      "reason": "关联厂商模型 (alibaba)",
+      "reason": "关联厂商模型 (alibaba-cn)",
       "cost": {
-        "input": 1.6,
-        "output": 6.4,
+        "input": 0.345,
+        "output": 1.377,
         "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "1.6,6.4,0,0"
+      "priceString": "0.345,1.377,0,0"
     }
   },
   {
@@ -4742,18 +4774,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "minimax",
-      "model": "MiniMax-M2.1",
-      "name": "MiniMax-M2.1",
+      "provider": "minimax-cn",
+      "model": "MiniMax-M2",
+      "name": "MiniMax-M2",
       "confidence": "medium",
-      "reason": "关联厂商模型 (minimax)",
+      "reason": "关联厂商模型 (minimax-cn)",
       "cost": {
-        "input": 0.3,
-        "output": 1.2,
-        "cache_read": 0.03,
-        "cache_write": 0.375
+        "input": 0.3137,
+        "output": 1.2549,
+        "cache_read": 0.0314,
+        "cache_write": 0.3922
       },
-      "priceString": "0.3,1.2,0.03,0.375"
+      "priceString": "0.3137,1.2549,0.0314,0.3922"
     }
   },
   {
@@ -4771,18 +4803,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "minimax",
+      "provider": "minimax-cn",
       "model": "MiniMax-M2",
       "name": "MiniMax-M2",
       "confidence": "medium",
-      "reason": "关联厂商模型 (minimax)",
+      "reason": "关联厂商模型 (minimax-cn)",
       "cost": {
-        "input": 0.3,
-        "output": 1.2,
-        "cache_read": 0,
-        "cache_write": 0
+        "input": 0.3137,
+        "output": 1.2549,
+        "cache_read": 0.0314,
+        "cache_write": 0.3922
       },
-      "priceString": "0.3,1.2,0,0"
+      "priceString": "0.3137,1.2549,0.0314,0.3922"
     }
   },
   {
@@ -4858,18 +4890,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "moonshotai-cn",
-      "model": "kimi-k3",
-      "name": "Kimi K3",
+      "provider": "moonshotai",
+      "model": "kimi-k3.1-pro",
+      "name": "Kimi K3.1 Pro",
       "confidence": "medium",
-      "reason": "关联厂商模型 (moonshotai-cn)",
+      "reason": "关联厂商模型 (moonshotai)",
       "cost": {
-        "input": 2.9879,
-        "output": 14.9395,
-        "cache_read": 0.2988,
-        "cache_write": 2.9879
+        "input": 2,
+        "output": 10,
+        "cache_read": 0.2,
+        "cache_write": 2
       },
-      "priceString": "2.9879,14.9395,0.2988,2.9879"
+      "priceString": "2,10,0.2,2"
     }
   },
   {
@@ -4887,18 +4919,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "moonshotai-cn",
-      "model": "kimi-k3",
-      "name": "Kimi K3",
+      "provider": "moonshotai",
+      "model": "kimi-k3.1-pro",
+      "name": "Kimi K3.1 Pro",
       "confidence": "medium",
-      "reason": "关联厂商模型 (moonshotai-cn)",
+      "reason": "关联厂商模型 (moonshotai)",
       "cost": {
-        "input": 2.9879,
-        "output": 14.9395,
-        "cache_read": 0.2988,
-        "cache_write": 2.9879
+        "input": 2,
+        "output": 10,
+        "cache_read": 0.2,
+        "cache_write": 2
       },
-      "priceString": "2.9879,14.9395,0.2988,2.9879"
+      "priceString": "2,10,0.2,2"
     }
   },
   {
@@ -4916,18 +4948,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "moonshotai-cn",
+      "provider": "moonshotai",
       "model": "kimi-k3",
       "name": "Kimi K3",
       "confidence": "medium",
-      "reason": "关联厂商模型 (moonshotai-cn)",
+      "reason": "关联厂商模型 (moonshotai)",
       "cost": {
-        "input": 2.9879,
-        "output": 14.9395,
-        "cache_read": 0.2988,
-        "cache_write": 2.9879
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3,
+        "cache_write": 3
       },
-      "priceString": "2.9879,14.9395,0.2988,2.9879"
+      "priceString": "3,15,0.3,3"
     }
   },
   {
@@ -4945,18 +4977,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "moonshotai-cn",
+      "provider": "moonshotai",
       "model": "kimi-k3",
       "name": "Kimi K3",
       "confidence": "medium",
-      "reason": "关联厂商模型 (moonshotai-cn)",
+      "reason": "关联厂商模型 (moonshotai)",
       "cost": {
-        "input": 2.9879,
-        "output": 14.9395,
-        "cache_read": 0.2988,
-        "cache_write": 2.9879
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3,
+        "cache_write": 3
       },
-      "priceString": "2.9879,14.9395,0.2988,2.9879"
+      "priceString": "3,15,0.3,3"
     }
   },
   {
@@ -5061,18 +5093,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "minimax",
+      "provider": "minimax-cn",
       "model": "MiniMax-M2.7",
       "name": "MiniMax-M2.7",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (minimax)",
+      "reason": "原厂规约匹配 (minimax-cn)",
       "cost": {
-        "input": 0.3,
-        "output": 1.2,
-        "cache_read": 0.06,
-        "cache_write": 0.375
+        "input": 0.3137,
+        "output": 1.2549,
+        "cache_read": 0.0627,
+        "cache_write": 0.3922
       },
-      "priceString": "0.3,1.2,0.06,0.375"
+      "priceString": "0.3137,1.2549,0.0627,0.3922"
     }
   },
   {
@@ -5215,17 +5247,17 @@
     "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
-      "model": "glm-5.3-flash",
-      "name": "GLM-5.3-Flash",
+      "model": "glm-5.3-flashx",
+      "name": "GLM-5.3-FlashX",
       "confidence": "exact",
       "reason": "原厂规约匹配 (zhipuai)",
       "cost": {
-        "input": 0.11952,
-        "output": 0.41831,
-        "cache_read": 0.03436,
+        "input": 0.29879,
+        "output": 1.04577,
+        "cache_read": 0.08516,
         "cache_write": 0
       },
-      "priceString": "0.11952,0.41831,0.03436,0"
+      "priceString": "0.29879,1.04577,0.08516,0"
     }
   },
   {
@@ -5243,11 +5275,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "opencode-go",
+      "provider": "opencode",
       "model": "longcat-2.5-free",
       "name": "LongCat 2.5 Free",
       "confidence": "exact",
-      "reason": "渠道精准匹配 (opencode-go)",
+      "reason": "渠道精准匹配 (opencode)",
       "cost": {
         "input": 0,
         "output": 0,
@@ -5330,11 +5362,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "opencode-go",
+      "provider": "opencode",
       "model": "beam-free",
       "name": "Beam Free",
       "confidence": "exact",
-      "reason": "渠道精准匹配 (opencode-go)",
+      "reason": "渠道精准匹配 (opencode)",
       "cost": {
         "input": 0,
         "output": 0,
@@ -5417,11 +5449,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "aihubmix",
+      "provider": "opencode",
       "model": "nemotron-3.5-lightning-free",
-      "name": "Nemotron 3.5 Lightning 30B A3B (free)",
+      "name": "Nemotron 3.5 Lightning Free",
       "confidence": "exact",
-      "reason": "渠道精准匹配 (aihubmix)",
+      "reason": "渠道精准匹配 (opencode)",
       "cost": {
         "input": 0,
         "output": 0,
@@ -5446,18 +5478,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "minimax",
+      "provider": "minimax-cn",
       "model": "MiniMax-M3.1-Flash",
       "name": "MiniMax-M3.1-Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (minimax)",
+      "reason": "原厂规约匹配 (minimax-cn)",
       "cost": {
-        "input": 0.15,
-        "output": 0.6,
-        "cache_read": 0.015,
+        "input": 0.1494,
+        "output": 0.5976,
+        "cache_read": 0.0149,
         "cache_write": 0
       },
-      "priceString": "0.15,0.6,0.015,0"
+      "priceString": "0.1494,0.5976,0.0149,0"
     }
   },
   {
@@ -5479,18 +5511,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "alibaba",
-      "model": "qwen3.6-flash",
-      "name": "Qwen3.6 Flash",
+      "provider": "alibaba-cn",
+      "model": "deepseek-v4.1-flash",
+      "name": "DeepSeek V4.1 Flash",
       "confidence": "medium",
-      "reason": "关联厂商模型 (alibaba)",
+      "reason": "关联厂商模型 (alibaba-cn)",
       "cost": {
-        "input": 0.25,
-        "output": 1.5,
-        "cache_read": 0.025,
-        "cache_write": 0.3125
+        "input": 0.29754,
+        "output": 1.19015,
+        "cache_read": 0.01488,
+        "cache_write": 0
       },
-      "priceString": "0.25,1.5,0.025,0.3125"
+      "priceString": "0.29754,1.19015,0.01488,0"
     }
   },
   {
@@ -5527,6 +5559,39 @@
     }
   },
   {
+    "model": "qwenwork/frontier-1",
+    "name": "Qwen4-Max 预览版",
+    "provider": "qwenwork",
+    "providerName": "QwenWork",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": true,
+      "provider": "alibaba",
+      "rule": "deepseek",
+      "discount": 0.5,
+      "name": "百炼/千问 闲时策略"
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "kilo",
+      "model": "kilo-auto/frontier",
+      "name": "Auto Frontier",
+      "confidence": "high",
+      "reason": "渠道规格匹配 (kilo)",
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      },
+      "priceString": "5,25,0.5,6.25"
+    }
+  },
+  {
     "model": "qwenwork/qwen3.8-max-preview",
     "name": "Qwen3.8-Max",
     "provider": "qwenwork",
@@ -5545,18 +5610,18 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "alibaba",
+      "provider": "alibaba-cn",
       "model": "qwen3.8-max",
       "name": "Qwen3.8 Max",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (alibaba)",
+      "reason": "原厂规约匹配 (alibaba-cn)",
       "cost": {
-        "input": 2,
-        "output": 6,
-        "cache_read": 0.25,
-        "cache_write": 2.5
+        "input": 1.77744,
+        "output": 5.33231,
+        "cache_read": 0.22218,
+        "cache_write": 2.22179
       },
-      "priceString": "2,6,0.25,2.5"
+      "priceString": "1.77744,5.33231,0.22218,2.22179"
     }
   },
   {
@@ -5572,22 +5637,22 @@
       "supported": false
     },
     "usage": {
-      "requests": 2,
+      "requests": 3,
       "inputTokens": 18645,
       "outputTokens": 19,
       "cacheRead": 3456,
       "cacheWrite": 0,
       "totalTokens": 18664,
-      "lastAt": "2026-10-22T14:24:31.403756+08:00"
+      "lastAt": "2026-11-11T13:56:38.377512+08:00"
     },
     "bareUsage": {
-      "requests": 2,
+      "requests": 3,
       "inputTokens": 18645,
       "outputTokens": 19,
       "cacheRead": 3456,
       "cacheWrite": 0,
       "totalTokens": 18664,
-      "lastAt": "2026-10-22T14:24:31.403756+08:00"
+      "lastAt": "2026-11-11T13:56:38.377512+08:00"
     },
     "matched": {
       "provider": "openai",
@@ -5685,11 +5750,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3.1-pro-preview",
       "name": "Gemini 3.1 Pro Preview",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 2,
         "output": 12,
@@ -5714,11 +5779,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3.6-flash",
       "name": "Gemini 3.6 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.75,
         "output": 3.75,
@@ -5742,20 +5807,20 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 6889,
+      "requests": 6890,
       "inputTokens": 76724053,
       "outputTokens": 3733746,
       "cacheRead": 736000591,
       "cacheWrite": 0,
       "totalTokens": 80457799,
-      "lastAt": "2026-11-09T14:29:03.017067+08:00"
+      "lastAt": "2026-11-11T13:55:08.81503+08:00"
     },
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3.8-flash",
       "name": "Gemini 3.8 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.75,
         "output": 3.75,
@@ -5780,11 +5845,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3.7-flash",
       "name": "Gemini 3.7 Flash",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.75,
         "output": 3.75,
@@ -5809,11 +5874,11 @@
     "usage": null,
     "bareUsage": null,
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-3.5-flash-lite",
       "name": "Gemini 3.5 Flash Lite",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 0.3,
         "output": 2.5,
@@ -5846,11 +5911,11 @@
       "lastAt": "2026-11-10T11:26:28.583561+08:00"
     },
     "matched": {
-      "provider": "google-vertex",
+      "provider": "google",
       "model": "gemini-4-argon",
       "name": "Gemini 4 Argon",
       "confidence": "exact",
-      "reason": "原厂规约匹配 (google-vertex)",
+      "reason": "原厂规约匹配 (google)",
       "cost": {
         "input": 2,
         "output": 10,
@@ -5859,33 +5924,533 @@
       },
       "priceString": "2,10,0.1,0"
     }
+  },
+  {
+    "model": "mclaw/blian_qwen38_flash",
+    "name": "Qwen3.8-Flash",
+    "provider": "mclaw",
+    "providerName": "MClaw",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": true,
+      "provider": "alibaba",
+      "rule": "deepseek",
+      "discount": 0.5,
+      "name": "百炼/千问 闲时策略"
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "alibaba-cn",
+      "model": "qwen3-max",
+      "name": "Qwen3 Max",
+      "confidence": "medium",
+      "reason": "关联厂商模型 (alibaba-cn)",
+      "cost": {
+        "input": 0.359,
+        "output": 1.434,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "priceString": "0.359,1.434,0,0"
+    }
+  },
+  {
+    "model": "mclaw/blian_qwen38_max",
+    "name": "Qwen3.8-Max",
+    "provider": "mclaw",
+    "providerName": "MClaw",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": true,
+      "provider": "alibaba",
+      "rule": "deepseek",
+      "discount": 0.5,
+      "name": "百炼/千问 闲时策略"
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "alibaba-cn",
+      "model": "qwen3-max",
+      "name": "Qwen3 Max",
+      "confidence": "medium",
+      "reason": "关联厂商模型 (alibaba-cn)",
+      "cost": {
+        "input": 0.359,
+        "output": 1.434,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "priceString": "0.359,1.434,0,0"
+    }
+  },
+  {
+    "model": "mclaw/huoshan_glm_5_3",
+    "name": "GLM-5.3",
+    "provider": "mclaw",
+    "providerName": "MClaw",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": null
+  },
+  {
+    "model": "mclaw/blian_qwen37_plus",
+    "name": "Qwen3.7-Plus",
+    "provider": "mclaw",
+    "providerName": "MClaw",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": true,
+      "provider": "alibaba",
+      "rule": "deepseek",
+      "discount": 0.5,
+      "name": "百炼/千问 闲时策略"
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "alibaba-cn",
+      "model": "qwen3-max",
+      "name": "Qwen3 Max",
+      "confidence": "medium",
+      "reason": "关联厂商模型 (alibaba-cn)",
+      "cost": {
+        "input": 0.359,
+        "output": 1.434,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "priceString": "0.359,1.434,0,0"
+    }
+  },
+  {
+    "model": "mclaw/blian_qwen36_plus",
+    "name": "Qwen3.6-Plus",
+    "provider": "mclaw",
+    "providerName": "MClaw",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": true,
+      "provider": "alibaba",
+      "rule": "deepseek",
+      "discount": 0.5,
+      "name": "百炼/千问 闲时策略"
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "alibaba-cn",
+      "model": "qwen3-max",
+      "name": "Qwen3 Max",
+      "confidence": "medium",
+      "reason": "关联厂商模型 (alibaba-cn)",
+      "cost": {
+        "input": 0.359,
+        "output": 1.434,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "priceString": "0.359,1.434,0,0"
+    }
+  },
+  {
+    "model": "mclaw/blian_qwen35_plus",
+    "name": "Qwen3.5-Plus",
+    "provider": "mclaw",
+    "providerName": "MClaw",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": true,
+      "provider": "alibaba",
+      "rule": "deepseek",
+      "discount": 0.5,
+      "name": "百炼/千问 闲时策略"
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "alibaba-cn",
+      "model": "qwen3-max",
+      "name": "Qwen3 Max",
+      "confidence": "medium",
+      "reason": "关联厂商模型 (alibaba-cn)",
+      "cost": {
+        "input": 0.359,
+        "output": 1.434,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "priceString": "0.359,1.434,0,0"
+    }
+  },
+  {
+    "model": "mclaw/blian_deepseek_v4_pro",
+    "name": "DeepSeek-V4-Pro",
+    "provider": "mclaw",
+    "providerName": "MClaw",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": true,
+      "provider": "deepseek",
+      "rule": "deepseek",
+      "discount": 0.5,
+      "name": "DeepSeek 官方峰谷 (闲时5折)"
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": null
+  },
+  {
+    "model": "mclaw/vlm_huoshan_2_0_lite_thinking_vision",
+    "name": "Seed-2.0-Lite",
+    "provider": "mclaw",
+    "providerName": "MClaw",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": null
+  },
+  {
+    "model": "mclaw/vlm_huoshan_2_0_mini_thinking_vision",
+    "name": "Seed-2.0-Mini",
+    "provider": "mclaw",
+    "providerName": "MClaw",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": null
+  },
+  {
+    "model": "mclaw/huoshan_deepseek_v4_1_flash",
+    "name": "DeepSeek-V4.1-Flash",
+    "provider": "mclaw",
+    "providerName": "MClaw",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": true,
+      "provider": "deepseek",
+      "rule": "deepseek",
+      "discount": 0.5,
+      "name": "DeepSeek 官方峰谷 (闲时5折)"
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": null
+  },
+  {
+    "model": "marvis/deepseek-v4-1-flash-261017",
+    "name": "deepseek-v4-1-flash-261017",
+    "provider": "marvis",
+    "providerName": "腾讯 Marvis TENCENT",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": true,
+      "provider": "deepseek",
+      "rule": "deepseek",
+      "discount": 0.5,
+      "name": "DeepSeek 官方峰谷 (闲时5折)"
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 333,
+      "inputTokens": 2029338,
+      "outputTokens": 379132,
+      "cacheRead": 50087296,
+      "cacheWrite": 0,
+      "totalTokens": 2408470,
+      "lastAt": "2026-11-11T15:14:15.237321+08:00"
+    },
+    "matched": {
+      "provider": "neon",
+      "model": "deepseek-v4-1-flash",
+      "name": "DeepSeek V4.1 Flash",
+      "confidence": "medium",
+      "reason": "模糊推荐匹配 (neon)",
+      "cost": {
+        "input": 0.3,
+        "output": 1.2,
+        "cache_read": 0.03,
+        "cache_write": 0
+      },
+      "priceString": "0.3,1.2,0.03,0"
+    }
+  },
+  {
+    "model": "marvis/deepseek-v4-pro-202606",
+    "name": "deepseek-v4-pro-202606",
+    "provider": "marvis",
+    "providerName": "腾讯 Marvis TENCENT",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": true,
+      "provider": "deepseek",
+      "rule": "deepseek",
+      "discount": 0.5,
+      "name": "DeepSeek 官方峰谷 (闲时5折)"
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "deepseek",
+      "model": "deepseek-v4-pro",
+      "name": "DeepSeek V4 Pro",
+      "confidence": "medium",
+      "reason": "关联厂商模型 (deepseek)",
+      "cost": {
+        "input": 0.66,
+        "output": 1.98,
+        "cache_read": 0.022,
+        "cache_write": 0
+      },
+      "priceString": "0.66,1.98,0.022,0"
+    }
+  },
+  {
+    "model": "marvis/deepseek-v4-flash-ga-260731",
+    "name": "deepseek-v4-flash-ga-260731",
+    "provider": "marvis",
+    "providerName": "腾讯 Marvis TENCENT",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": true,
+      "provider": "deepseek",
+      "rule": "deepseek",
+      "discount": 0.5,
+      "name": "DeepSeek 官方峰谷 (闲时5折)"
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "volcengine",
+      "model": "deepseek-v4-flash-ga-260731",
+      "name": "DeepSeek V4 Flash 0731",
+      "confidence": "exact",
+      "reason": "官方原厂精准匹配",
+      "cost": {
+        "input": 0.4453,
+        "output": 1.3359,
+        "cache_read": 0.01484,
+        "cache_write": 0
+      },
+      "priceString": "0.4453,1.3359,0.01484,0"
+    }
+  },
+  {
+    "model": "marvis/hy3",
+    "name": "hy3",
+    "provider": "marvis",
+    "providerName": "腾讯 Marvis TENCENT",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "tencent-tokenhub",
+      "model": "hy3",
+      "name": "Hy3",
+      "confidence": "exact",
+      "reason": "原厂规约匹配 (tencent-tokenhub)",
+      "cost": {
+        "input": 0,
+        "output": 0,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "priceString": "0,0,0,0"
+    }
+  },
+  {
+    "model": "marvis/claude-sonnet-4-6",
+    "name": "claude-sonnet-4-6",
+    "provider": "marvis",
+    "providerName": "腾讯 Marvis TENCENT",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": false,
+    "currentPrice": "List: $3/$15 in/out",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 14,
+      "outputTokens": 4,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 18,
+      "lastAt": "2026-11-02T12:18:35.337624+08:00"
+    },
+    "matched": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-6",
+      "name": "Claude Sonnet 4.6",
+      "confidence": "exact",
+      "reason": "原厂规约匹配 (anthropic)",
+      "cost": {
+        "input": 3,
+        "output": 15,
+        "cache_read": 0.3,
+        "cache_write": 3.75
+      },
+      "priceString": "3,15,0.3,3.75"
+    }
+  },
+  {
+    "model": "marvis/claude-opus-4-6",
+    "name": "claude-opus-4-6",
+    "provider": "marvis",
+    "providerName": "腾讯 Marvis TENCENT",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": false,
+    "currentPrice": "List: $5/$25 in/out",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "anthropic",
+      "model": "claude-opus-4-6",
+      "name": "Claude Opus 4.6",
+      "confidence": "exact",
+      "reason": "原厂规约匹配 (anthropic)",
+      "cost": {
+        "input": 5,
+        "output": 25,
+        "cache_read": 0.5,
+        "cache_write": 6.25
+      },
+      "priceString": "5,25,0.5,6.25"
+    }
+  },
+  {
+    "model": "marvis/gpt-5.4-2026-03-05",
+    "name": "gpt-5.4-2026-03-05",
+    "provider": "marvis",
+    "providerName": "腾讯 Marvis TENCENT",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "openai",
+      "model": "gpt-5.4",
+      "name": "GPT-5.4",
+      "confidence": "medium",
+      "reason": "关联厂商模型 (openai)",
+      "cost": {
+        "input": 2.5,
+        "output": 15,
+        "cache_read": 0.25,
+        "cache_write": 0
+      },
+      "priceString": "2.5,15,0.25,0"
+    }
+  },
+  {
+    "model": "marvis/HY-Vision-2.0-instruct",
+    "name": "HY-Vision-2.0-instruct",
+    "provider": "marvis",
+    "providerName": "腾讯 Marvis TENCENT",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": null
   }
 ];
   g.__MAGPIE_USAGE_SUMMARY__ = {
-  "requests": 16448,
-  "inputTokens": 165090690,
-  "outputTokens": 8486910,
-  "cacheRead": 2395303594,
-  "totalTokens": 173577600
+  "requests": 17069,
+  "inputTokens": 167862411,
+  "outputTokens": 9083774,
+  "cacheRead": 2465948586,
+  "totalTokens": 176946185
 };
   g.__MAGPIE_BARE_USAGE__ = {
   "gpt-6-luna": {
-    "requests": 2,
+    "requests": 3,
     "inputTokens": 18645,
     "outputTokens": 19,
     "cacheRead": 3456,
     "cacheWrite": 0,
     "totalTokens": 18664,
-    "lastAt": "2026-10-22T14:24:31.403756+08:00"
+    "lastAt": "2026-11-11T13:56:38.377512+08:00"
   },
   "deepseek-v4.1-flash": {
-    "requests": 3105,
-    "inputTokens": 20025810,
-    "outputTokens": 1759588,
-    "cacheRead": 728580466,
+    "requests": 3390,
+    "inputTokens": 20765018,
+    "outputTokens": 1976430,
+    "cacheRead": 749138162,
     "cacheWrite": 0,
-    "totalTokens": 21785398,
-    "lastAt": "2026-11-10T11:27:59.422821+08:00"
+    "totalTokens": 22741448,
+    "lastAt": "2026-11-11T15:13:05.849808+08:00"
   },
   "gemini-3.8-flash-tiered": {
     "requests": 5388,
@@ -5897,13 +6462,13 @@
     "lastAt": "2026-11-02T14:27:53.129928+08:00"
   },
   "gemini-3.8-flash": {
-    "requests": 6889,
+    "requests": 6890,
     "inputTokens": 76724053,
     "outputTokens": 3733746,
     "cacheRead": 736000591,
     "cacheWrite": 0,
     "totalTokens": 80457799,
-    "lastAt": "2026-11-09T14:29:03.017067+08:00"
+    "lastAt": "2026-11-11T13:55:08.81503+08:00"
   },
   "deepseek-v4.1-flash-sg": {
     "requests": 352,
@@ -6048,6 +6613,24 @@
     "cacheWrite": 0,
     "totalTokens": 0,
     "lastAt": "2026-11-06T09:41:38.983275+08:00"
+  },
+  "deepseek-v4-1-flash-261017": {
+    "requests": 333,
+    "inputTokens": 2029338,
+    "outputTokens": 379132,
+    "cacheRead": 50087296,
+    "cacheWrite": 0,
+    "totalTokens": 2408470,
+    "lastAt": "2026-11-11T15:14:15.237321+08:00"
+  },
+  "glm-5.3-flash": {
+    "requests": 1,
+    "inputTokens": 3175,
+    "outputTokens": 890,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 4065,
+    "lastAt": "2026-11-11T13:57:12.507484+08:00"
   }
 };
 })(typeof window !== "undefined" ? window : globalThis);

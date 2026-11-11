@@ -987,3 +987,72 @@ h1 {
   margin: 6px 0 0;
   line-height: 1.4;
 }
+
+/* 刷新按钮与动画 */
+.btn-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 500;
+  height: 32px;
+  padding: 0 10px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  color: var(--fg);
+  border-radius: 6px;
+  transition: all .15s ease;
+}
+
+.btn-refresh:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.btn-refresh:active {
+  transform: scale(0.97);
+}
+
+.refresh-icon {
+  display: inline-block;
+  font-size: 13px;
+  line-height: 1;
+  transform-origin: center;
+  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.refresh-icon.spin {
+  animation: refresh-spin 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes refresh-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 未定价快速操作按钮 */
+.badge-unpriced-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-quick-set {
+  padding: 1px 7px;
+  font-size: 10.5px;
+  border-radius: 4px;
+  border: 1px dashed var(--line);
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all .15s ease;
+}
+
+.btn-quick-set:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  border-style: solid;
+}

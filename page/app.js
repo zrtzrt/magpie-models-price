@@ -21,7 +21,9 @@
   }
 
   // Load models data and options
-  const rawModels = window.__MAGPIE_MODELS_DATA__ || [];
+  let rawModels = window.__MAGPIE_MODELS_DATA__ || [];
+  const liveProviderNames = new Map();
+  let isRefreshing = false;
   let pluginOptions = {};
   let customPrices = {};
   let globalMode = "all-equivalent"; // "all-equivalent" or "api-only"
@@ -141,6 +143,157 @@
     return fullName.includes("/") ? fullName.split("/").slice(1).join("/") : fullName;
   }
 
+  // 2.1 动态合并 Magpie 实时供应商列表 (Live Providers & Unpriced Channels Sync)
+  function mergeLiveProviders(liveList) {
+    if (!Array.isArray(liveList)) return;
+
+    const modelMap = new Map();
+    for (const item of rawModels) {
+      modelMap.set(item.model, item);
+    }
+
+    for (const p of liveList) {
+      if (!p || !p.id) continue;
+      const pId = p.id;
+      const pName = p.name || pId;
+      liveProviderNames.set(pId, pName);
+
+      const isProviderOn = !p.off;
+      const isSub = !!p.account || pId.includes("free") || pId.includes("plan");
+      const pKind = isSub ? "subscription" : "api";
+
+      const pModels = Array.isArray(p.models) ? p.models : [];
+      for (const m of pModels) {
+        const mId = typeof m === "object" ? m.id : m;
+        if (!mId) continue;
+        const mName = (typeof m === "object" && m.name) ? m.name : mId;
+        const fullName = `${pId}/${mId}`;
+        const isModelOn = typeof m === "object" ? m.on !== false : true;
+        const isEnabled = isProviderOn && isModelOn;
+
+        if (modelMap.has(fullName)) {
+          const item = modelMap.get(fullName);
+          item.enabled = isEnabled;
+          item.providerName = pName;
+          if (mName && mName !== mId && (!item.name || item.name === mId)) {
+            item.name = mName;
+          }
+        } else {
+          // 新添加的供应商模型（尚未包含在静态基准数据中）
+          const bare = getBareModel(fullName);
+          const sibling = rawModels.find(
+            (it) => it.matched && getBareModel(it.model) === bare
+          );
+
+          const newItem = {
+            provider: pId,
+            providerName: pName,
+            providerKind: pKind,
+            model: fullName,
+            id: mId,
+            name: mName,
+            enabled: isEnabled,
+            free: typeof m === "object" ? !!m.free : false,
+            listPrice: (typeof m === "object" && m.list) || null,
+            currentPrice: sibling?.matched?.cost
+              ? `List: $${sibling.matched.cost.input}/$${sibling.matched.cost.output}`
+              : "未定价",
+            matched: sibling?.matched || null,
+            isUnpriced: !sibling?.matched,
+            offPeakPreset: sibling?.offPeakPreset || null
+          };
+          rawModels.push(newItem);
+          modelMap.set(fullName, newItem);
+        }
+      }
+    }
+  }
+
+  // 2.2 动态合并用量数据 (Live Usage Summary Sync)
+  function mergeLiveUsage(liveUsage) {
+    if (!liveUsage || typeof liveUsage !== "object") return;
+    if (liveUsage.summary) {
+      window.__MAGPIE_USAGE_SUMMARY__ = {
+        ...(window.__MAGPIE_USAGE_SUMMARY__ || {}),
+        ...liveUsage.summary
+      };
+    }
+    if (liveUsage.models && typeof liveUsage.models === "object") {
+      window.__MAGPIE_BARE_USAGE__ = {
+        ...(window.__MAGPIE_BARE_USAGE__ || {}),
+        ...liveUsage.models
+      };
+    }
+  }
+
+  // 2.3 核心数据刷新控制器 (Manual & Auto-Refresh)
+  async function syncLiveMagpieData(isManual = false) {
+    if (isRefreshing) return;
+    isRefreshing = true;
+
+    const refreshIcon = $("refresh-icon");
+    if (refreshIcon) {
+      refreshIcon.classList.remove("spin");
+      void refreshIcon.offsetWidth;
+      refreshIcon.classList.add("spin");
+    }
+
+    try {
+      if (globalThis.magpie) {
+        // 读取插件选项与定价
+        try {
+          pluginOptions = (await magpie.options.get()) || {};
+          customPrices = pluginOptions.customPrices || {};
+          globalMode = pluginOptions.mode || "all-equivalent";
+        } catch (e) {
+          console.warn("Failed to get magpie options:", e);
+        }
+
+        // 读取实时供应商与模型列表
+        if (magpie.read) {
+          try {
+            const liveList = await magpie.read("providers:list");
+            if (Array.isArray(liveList) && liveList.length > 0) {
+              mergeLiveProviders(liveList);
+            }
+          } catch (e) {
+            console.warn("Failed to read providers:list:", e);
+          }
+
+          // 读取实时用量统计
+          try {
+            const liveUsage = await magpie.read("usage:summary");
+            if (liveUsage && typeof liveUsage === "object") {
+              mergeLiveUsage(liveUsage);
+            }
+          } catch (e) {
+            console.warn("Failed to read usage:summary:", e);
+          }
+        }
+      }
+
+      updatePeakStatusBar();
+      renderModeUI();
+      renderProviderFilter();
+      renderStats();
+      renderList();
+
+      if (isManual) {
+        showToast(t("toast_refreshed"));
+      }
+    } catch (err) {
+      console.error("syncLiveMagpieData error:", err);
+      if (isManual) {
+        showToast(err.message || "刷新数据失败");
+      }
+    } finally {
+      setTimeout(() => {
+        if (refreshIcon) refreshIcon.classList.remove("spin");
+        isRefreshing = false;
+      }, 700);
+    }
+  }
+
   // 3. 模型分组逻辑 (Group models by bare model identity)
   function buildModelGroups(models) {
     const map = new Map();
@@ -238,13 +391,22 @@
     return sorted;
   }
 
-  // 4. 供应商图标获取辅助函数 (基于 page/icons.js 官方资源)
-  function getProviderIconHtml(providerId) {
+  // 4. 供应商图标获取辅助函数 (基于 page/icons.js 官方资源与生成式彩色图标降级)
+  function getProviderIconHtml(providerId, providerName) {
     if (window.getIconSvg) {
       const svg = window.getIconSvg(providerId);
-      if (svg) return svg;
+      if (svg && !svg.includes("M8 2.2 13.2 5.1v5.8L8 13.8")) return svg;
     }
-    return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/></svg>`;
+    const name = providerName || liveProviderNames.get(providerId) || providerId || "?";
+    const initial = name.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, "").slice(0, 2).toUpperCase() || name.slice(0, 2).toUpperCase();
+    let hash = 0;
+    const str = String(providerId || "prov");
+    for (let i = 0; i < str.length; i++) hash = (hash << 5) - hash + str.charCodeAt(i);
+    const hue = Math.abs(hash) % 360;
+    return `<svg viewBox="0 0 32 32" width="100%" height="100%" style="flex:none;line-height:1;border-radius:6px;">
+      <rect width="32" height="32" rx="7" fill="hsl(${hue}, 60%, 42%)" />
+      <text x="16" y="21" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">${initial}</text>
+    </svg>`;
   }
 
   // 5. 峰谷分时时段计算 (Time-of-Use & DeepSeek Official Schedule)
@@ -404,11 +566,18 @@
     const provMap = new Map();
     for (const m of rawModels) {
       const provId = m.provider || "other";
-      const provName = m.providerName || provId;
+      const provName = m.providerName || liveProviderNames.get(provId) || provId;
       if (!provMap.has(provId)) {
         provMap.set(provId, { id: provId, name: provName, count: 0 });
       }
       provMap.get(provId).count++;
+    }
+
+    // 确保从 Magpie 实时读取到的新供应商（即便初始没有价格或模型）也能正常出现在下拉筛选中
+    for (const [pId, pName] of liveProviderNames.entries()) {
+      if (!provMap.has(pId)) {
+        provMap.set(pId, { id: pId, name: pName, count: 0 });
+      }
     }
 
     const currentVal = selectedProvider || "all";
@@ -416,7 +585,11 @@
 
     const optAll = document.createElement("option");
     optAll.value = "all";
-    optAll.textContent = `🏢 ${t("provider_filter_all")} (${rawModels.length})`;
+    const isZh = getLocale().startsWith("zh");
+    const allLabel = isZh
+      ? `🏢 ${t("provider_filter_all")} (${provMap.size} 厂商 / ${rawModels.length} 模型)`
+      : `🏢 ${t("provider_filter_all")} (${provMap.size} providers / ${rawModels.length} models)`;
+    optAll.textContent = allLabel;
     select.appendChild(optAll);
 
     const sorted = Array.from(provMap.values()).sort((a, b) => b.count - a.count);
@@ -588,7 +761,7 @@
         iconDiv.className = "provider-squircle-icon";
         iconDiv.style.zIndex = zIdx--;
         iconDiv.title = pName;
-        iconDiv.innerHTML = getProviderIconHtml(pId);
+        iconDiv.innerHTML = getProviderIconHtml(pId, pName);
         stackDiv.appendChild(iconDiv);
       }
 
@@ -671,7 +844,21 @@
         const unpricedSpan = document.createElement("span");
         unpricedSpan.className = "badge-tag badge-unpriced";
         unpricedSpan.textContent = t("badge_unpriced");
-        priceSummary.append(unpricedSpan);
+
+        const quickSetBtn = document.createElement("button");
+        quickSetBtn.type = "button";
+        quickSetBtn.className = "btn-quick-set";
+        quickSetBtn.textContent = `+ ${t("btn_set_price")}`;
+        quickSetBtn.title = `为 ${group.bare} 设定价格`;
+        quickSetBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openEditModal(firstPricedItem, "wildcard");
+        });
+
+        const wrap = document.createElement("div");
+        wrap.className = "badge-unpriced-wrap";
+        wrap.append(unpricedSpan, quickSetBtn);
+        priceSummary.append(wrap);
       }
 
       // Status badge (Custom vs Consistent)
@@ -739,7 +926,7 @@
           const pIcon = document.createElement("div");
           pIcon.className = "provider-squircle-icon subrow-icon";
           pIcon.title = item.providerName || item.provider || "Channel";
-          pIcon.innerHTML = getProviderIconHtml(item.provider);
+          pIcon.innerHTML = getProviderIconHtml(item.provider, item.providerName);
 
           const provName = document.createElement("span");
           provName.className = "subrow-pname";
@@ -802,7 +989,8 @@
           const btnEdit = document.createElement("button");
           btnEdit.type = "button";
           btnEdit.className = "btn btn-small";
-          btnEdit.textContent = t("btn_edit_price");
+          const hasItemCustom = !!customPrices[item.model];
+          btnEdit.textContent = hasItemCustom ? t("btn_edit_price") : (itemPrice ? t("btn_edit_price") : `+ ${t("btn_set_price")}`);
           btnEdit.addEventListener("click", (e) => {
             e.stopPropagation();
             openEditModal(item, "specific");
@@ -1076,6 +1264,23 @@
 
   $("modal-btn-save").addEventListener("click", saveModelPrice);
   $("btn-sync-all").addEventListener("click", syncAllMatched);
+  $("btn-refresh")?.addEventListener("click", () => syncLiveMagpieData(true));
+
+  // 自动刷新机制 (Tab 切回、窗口聚焦、30秒定时器)
+  if (globalThis.magpie && typeof magpie.onVisibility === "function") {
+    magpie.onVisibility((visible) => {
+      if (visible) syncLiveMagpieData(false);
+    });
+  }
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") syncLiveMagpieData(false);
+  });
+  window.addEventListener("focus", () => {
+    syncLiveMagpieData(false);
+  });
+  setInterval(() => {
+    if (document.visibilityState === "visible") syncLiveMagpieData(false);
+  }, 30000);
 
   $("modal-btn-match").addEventListener("click", () => {
     if (editingModel && editingModel.matched) {
@@ -1177,4 +1382,7 @@
   renderStats();
   handleUrlHash();
   renderList();
+
+  // 初始动态同步 live providers 与 usage
+  syncLiveMagpieData(false);
 })();

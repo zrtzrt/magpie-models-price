@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="16" fill="#b5462e"/>
+  <!-- F 字母融合人形：竖线是身体+头部，横线是手臂和连接 -->
+  <circle cx="24" cy="18" r="5.5" fill="#fff"/>
+  <!-- F 的竖线 = 身体 -->
+  <path d="M24 26 L24 48" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+  <!-- F 上横线 = 伸展的手臂 -->
+  <path d="M24 30 L42 30" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+  <!-- F 下横线，微微上扬，暗示连接/向前 -->
+  <path d="M24 40 L38 40" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+  <!-- 右侧小圆点 = 社区节点/伙伴 -->
+  <circle cx="46" cy="22" r="3.5" fill="#fff" opacity=".7"/>
+  <circle cx="46" cy="40" r="2.5" fill="#fff" opacity=".45"/>
+</svg>

@@ -26,38 +26,79 @@ const ICONS = {
   "cline": "<svg width=\"22\" height=\"22\" style=\"flex:none;line-height:1;\" fill=\"currentColor\" fill-rule=\"evenodd\"   viewBox=\"0 0 24 24\"  xmlns=\"http://www.w3.org/2000/svg\"><title>Cline</title><path d=\"M17.035 3.991c2.75 0 4.98 2.24 4.98 5.003v1.667l1.45 2.896a1.01 1.01 0 01-.002.909l-1.448 2.864v1.668c0 2.762-2.23 5.002-4.98 5.002H7.074c-2.751 0-4.98-2.24-4.98-5.002V17.33l-1.48-2.855a1.01 1.01 0 01-.003-.927l1.482-2.887V8.994c0-2.763 2.23-5.003 4.98-5.003h9.962zM8.265 9.6a2.274 2.274 0 00-2.274 2.274v4.042a2.274 2.274 0 004.547 0v-4.042A2.274 2.274 0 008.265 9.6zm7.326 0a2.274 2.274 0 00-2.274 2.274v4.042a2.274 2.274 0 104.548 0v-4.042A2.274 2.274 0 0015.59 9.6z\"></path><path d=\"M12.054 5.558a2.779 2.779 0 100-5.558 2.779 2.779 0 000 5.558z\"></path></svg>",
   "copilot": "<svg width=\"22\" height=\"22\" style=\"flex:none;line-height:1;\"   viewBox=\"0 0 24 24\"  xmlns=\"http://www.w3.org/2000/svg\"><title>Copilot</title><path d=\"M17.533 1.829A2.528 2.528 0 0015.11 0h-.737a2.531 2.531 0 00-2.484 2.087l-1.263 6.937.314-1.08a2.528 2.528 0 012.424-1.833h4.284l1.797.706 1.731-.706h-.505a2.528 2.528 0 01-2.423-1.829l-.715-2.453z\" fill=\"url(#lobe-icons-copilot-0-_R_0_)\" transform=\"translate(0 1)\"></path><path d=\"M6.726 20.16A2.528 2.528 0 009.152 22h1.566c1.37 0 2.49-1.1 2.525-2.48l.17-6.69-.357 1.228a2.528 2.528 0 01-2.423 1.83h-4.32l-1.54-.842-1.667.843h.497c1.124 0 2.113.75 2.426 1.84l.697 2.432z\" fill=\"url(#lobe-icons-copilot-1-_R_0_)\" transform=\"translate(0 1)\"></path><path d=\"M15 0H6.252c-2.5 0-4 3.331-5 6.662-1.184 3.947-2.734 9.225 1.75 9.225H6.78c1.13 0 2.12-.753 2.43-1.847.657-2.317 1.809-6.359 2.713-9.436.46-1.563.842-2.906 1.43-3.742A1.97 1.97 0 0115 0\" fill=\"url(#lobe-icons-copilot-2-_R_0_)\" transform=\"translate(0 1)\"></path><path d=\"M15 0H6.252c-2.5 0-4 3.331-5 6.662-1.184 3.947-2.734 9.225 1.75 9.225H6.78c1.13 0 2.12-.753 2.43-1.847.657-2.317 1.809-6.359 2.713-9.436.46-1.563.842-2.906 1.43-3.742A1.97 1.97 0 0115 0\" fill=\"url(#lobe-icons-copilot-3-_R_0_)\" transform=\"translate(0 1)\"></path><path d=\"M9 22h8.749c2.5 0 4-3.332 5-6.663 1.184-3.948 2.734-9.227-1.75-9.227H17.22c-1.129 0-2.12.754-2.43 1.848a1149.2 1149.2 0 01-2.713 9.437c-.46 1.564-.842 2.907-1.43 3.743A1.97 1.97 0 019 22\" fill=\"url(#lobe-icons-copilot-4-_R_0_)\" transform=\"translate(0 1)\"></path><path d=\"M9 22h8.749c2.5 0 4-3.332 5-6.663 1.184-3.948 2.734-9.227-1.75-9.227H17.22c-1.129 0-2.12.754-2.43 1.848a1149.2 1149.2 0 01-2.713 9.437c-.46 1.564-.842 2.907-1.43 3.743A1.97 1.97 0 019 22\" fill=\"url(#lobe-icons-copilot-5-_R_0_)\" transform=\"translate(0 1)\"></path><defs><radialGradient cx=\"85.44%\" cy=\"100.653%\" fx=\"85.44%\" fy=\"100.653%\" gradientTransform=\"scale(-.8553 -1) rotate(50.927 2.041 -1.946)\" id=\"lobe-icons-copilot-0-_R_0_\" r=\"105.116%\"><stop offset=\"9.6%\" stop-color=\"#00AEFF\"></stop><stop offset=\"77.3%\" stop-color=\"#2253CE\"></stop><stop offset=\"100%\" stop-color=\"#0736C4\"></stop></radialGradient><radialGradient cx=\"18.143%\" cy=\"32.928%\" fx=\"18.143%\" fy=\"32.928%\" gradientTransform=\"scale(.8897 1) rotate(52.069 .193 .352)\" id=\"lobe-icons-copilot-1-_R_0_\" r=\"95.612%\"><stop offset=\"0%\" stop-color=\"#FFB657\"></stop><stop offset=\"63.4%\" stop-color=\"#FF5F3D\"></stop><stop offset=\"92.3%\" stop-color=\"#C02B3C\"></stop></radialGradient><radialGradient cx=\"82.987%\" cy=\"-9.792%\" fx=\"82.987%\" fy=\"-9.792%\" gradientTransform=\"scale(-1 -.9441) rotate(-70.872 .142 1.17)\" id=\"lobe-icons-copilot-4-_R_0_\" r=\"140.622%\"><stop offset=\"6.6%\" stop-color=\"#8C48FF\"></stop><stop offset=\"50%\" stop-color=\"#F2598A\"></stop><stop offset=\"89.6%\" stop-color=\"#FFB152\"></stop></radialGradient><linearGradient id=\"lobe-icons-copilot-2-_R_0_\" x1=\"39.465%\" x2=\"46.884%\" y1=\"12.117%\" y2=\"103.774%\"><stop offset=\"15.6%\" stop-color=\"#0D91E1\"></stop><stop offset=\"48.7%\" stop-color=\"#52B471\"></stop><stop offset=\"65.2%\" stop-color=\"#98BD42\"></stop><stop offset=\"93.7%\" stop-color=\"#FFC800\"></stop></linearGradient><linearGradient id=\"lobe-icons-copilot-3-_R_0_\" x1=\"45.949%\" x2=\"50%\" y1=\"0%\" y2=\"100%\"><stop offset=\"0%\" stop-color=\"#3DCBFF\"></stop><stop offset=\"24.7%\" stop-color=\"#0588F7\" stop-opacity=\"0\"></stop></linearGradient><linearGradient id=\"lobe-icons-copilot-5-_R_0_\" x1=\"83.507%\" x2=\"83.453%\" y1=\"-6.106%\" y2=\"21.131%\"><stop offset=\"5.8%\" stop-color=\"#F8ADFA\"></stop><stop offset=\"70.8%\" stop-color=\"#A86EDD\" stop-opacity=\"0\"></stop></linearGradient></defs></svg>",
   "zed": "<svg width=\"22\" height=\"22\" style=\"flex:none;line-height:1;\" fill=\"currentColor\" fill-rule=\"evenodd\"   viewBox=\"0 0 96 96\"  xmlns=\"http://www.w3.org/2000/svg\"><title>Zed</title><path clip-rule=\"evenodd\" d=\"M9 6C7.34315 6 6 7.34315 6 9V75H0V9C0 4.02944 4.02944 0 9 0H89.3787C93.3878 0 95.3955 4.84715 92.5607 7.68198L43.0551 57.1875H57V51H63V58.6875C63 61.1728 60.9853 63.1875 58.5 63.1875H37.0551L26.7426 73.5H73.5V36H79.5V73.5C79.5 76.8137 76.8137 79.5 73.5 79.5H20.7426L10.2426 90H87C88.6569 90 90 88.6569 90 87V21H96V87C96 91.9706 91.9706 96 87 96H6.62132C2.61224 96 0.604504 91.1529 3.43934 88.318L52.7574 39H39V45H33V37.5C33 35.0147 35.0147 33 37.5 33H58.7574L69.2574 22.5H22.5V60H16.5V22.5C16.5 19.1863 19.1863 16.5 22.5 16.5H75.2574L85.7574 6H9Z\"/></svg>",
-  "mclaw": "<svg width=\"22\" height=\"22\" style=\"flex:none;line-height:1;\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 120 120\"><title>MClaw</title><g fill=\"#ff5722\"><path fill-rule=\"evenodd\" d=\"M60 10C30 10 15 35 15 55C15 75 30 95 45 100L45 110L55 110L55 100C55 100 60 102 65 100L65 110L75 110L75 100C90 95 105 75 105 55C105 35 90 10 60 10ZM39 35a6 6 0 1 0 12 0a6 6 0 1 0-12 0ZM69 35a6 6 0 1 0 12 0a6 6 0 1 0-12 0Z\"/><path d=\"M20 45C5 40 0 50 5 60C10 70 20 65 25 55C28 48 25 45 20 45Z\"/><path d=\"M100 45C115 40 120 50 115 60C110 70 100 65 95 55C92 48 95 45 100 45Z\"/></g><g fill=\"none\" stroke=\"#ff5722\" stroke-width=\"3\" stroke-linecap=\"round\"><path d=\"M45 15Q35 5 30 8\"/><path d=\"M75 15Q85 5 90 8\"/></g></svg>",
-  "openclaw": "<svg width=\"22\" height=\"22\" style=\"flex:none;line-height:1;\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 120 120\"><title>OpenClaw</title><g fill=\"#ff5722\"><path fill-rule=\"evenodd\" d=\"M60 10C30 10 15 35 15 55C15 75 30 95 45 100L45 110L55 110L55 100C55 100 60 102 65 100L65 110L75 110L75 100C90 95 105 75 105 55C105 35 90 10 60 10ZM39 35a6 6 0 1 0 12 0a6 6 0 1 0-12 0ZM69 35a6 6 0 1 0 12 0a6 6 0 1 0-12 0Z\"/><path d=\"M20 45C5 40 0 50 5 60C10 70 20 65 25 55C28 48 25 45 20 45Z\"/><path d=\"M100 45C115 40 120 50 115 60C110 70 100 65 95 55C92 48 95 45 100 45Z\"/></g><g fill=\"none\" stroke=\"#ff5722\" stroke-width=\"3\" stroke-linecap=\"round\"><path d=\"M45 15Q35 5 30 8\"/><path d=\"M75 15Q85 5 90 8\"/></g></svg>",
-  "marvis": "<svg width=\"22\" height=\"22\" style=\"flex:none;line-height:1;\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><title>Marvis</title><circle cx=\"12\" cy=\"12\" fill=\"#0055E9\" r=\"12\"></circle><path d=\"M12 0c.518 0 1.028.033 1.528.096A6.188 6.188 0 0112.12 12.28l-.12.001c-2.99 0-5.242 2.179-5.554 5.11-.223 2.086.353 4.412 2.242 6.146C3.672 22.1 0 17.479 0 12 0 5.373 5.373 0 12 0z\" fill=\"#A8DFF5\"></path><path d=\"M5.286 5a2.438 2.438 0 01.682 3.38c-3.962 5.966-3.215 10.743 2.648 15.136C3.636 22.056 0 17.452 0 12c0-1.787.39-3.482 1.09-5.006.253-.435.525-.872.817-1.311A2.438 2.438 0 015.286 5z\" fill=\"#0055E9\"></path><path d=\"M12.98.04c.272.021.543.053.81.093.583.106 1.117.254 1.538.44 6.638 2.927 8.07 10.052 1.748 15.642a4.125 4.125 0 01-5.822-.358c-1.51-1.706-1.3-4.184.357-5.822.858-.848 3.108-1.223 4.045-2.441 1.257-1.634 2.122-6.009-2.523-7.506L12.98.039z\" fill=\"#00BCFF\"></path><path d=\"M13.528.096A6.187 6.187 0 0112 12.281a5.75 5.75 0 00-1.71.255c.147-.905.595-1.784 1.321-2.501.858-.848 3.108-1.223 4.045-2.441 1.27-1.651 2.14-6.104-2.676-7.554.184.014.367.033.548.056z\" fill=\"#ECECEE\"></path></svg>",
+  "mclaw": "<img src=\"icons/9bfce7ccdaaaa0fe.png\" class=\"provider-img-icon\" alt=\"MClaw\" draggable=\"false\">",
+  "openclaw": "<img src=\"icons/9bfce7ccdaaaa0fe.png\" class=\"provider-img-icon\" alt=\"MClaw\" draggable=\"false\">",
+  "marvis": "<img src=\"icons/4636929b8040eb80.png\" class=\"provider-img-icon\" alt=\"Marvis\" draggable=\"false\">",
   "hunyuan": "<svg width=\"22\" height=\"22\" style=\"flex:none;line-height:1;\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><title>Hunyuan</title><circle cx=\"12\" cy=\"12\" fill=\"#0055E9\" r=\"12\"></circle><path d=\"M12 0c.518 0 1.028.033 1.528.096A6.188 6.188 0 0112.12 12.28l-.12.001c-2.99 0-5.242 2.179-5.554 5.11-.223 2.086.353 4.412 2.242 6.146C3.672 22.1 0 17.479 0 12 0 5.373 5.373 0 12 0z\" fill=\"#A8DFF5\"></path><path d=\"M5.286 5a2.438 2.438 0 01.682 3.38c-3.962 5.966-3.215 10.743 2.648 15.136C3.636 22.056 0 17.452 0 12c0-1.787.39-3.482 1.09-5.006.253-.435.525-.872.817-1.311A2.438 2.438 0 015.286 5z\" fill=\"#0055E9\"></path><path d=\"M12.98.04c.272.021.543.053.81.093.583.106 1.117.254 1.538.44 6.638 2.927 8.07 10.052 1.748 15.642a4.125 4.125 0 01-5.822-.358c-1.51-1.706-1.3-4.184.357-5.822.858-.848 3.108-1.223 4.045-2.441 1.257-1.634 2.122-6.009-2.523-7.506L12.98.039z\" fill=\"#00BCFF\"></path><path d=\"M13.528.096A6.187 6.187 0 0112 12.281a5.75 5.75 0 00-1.71.255c.147-.905.595-1.784 1.321-2.501.858-.848 3.108-1.223 4.045-2.441 1.27-1.651 2.14-6.104-2.676-7.554.184.014.367.033.548.056z\" fill=\"#ECECEE\"></path></svg>",
   "tencent": "<svg width=\"22\" height=\"22\" style=\"flex:none;line-height:1;\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"><title>Tencent</title><path d=\"M9.976 1L24 9.8l-10.587.015L10.723 23H5.489L8.18 9.8H3.244L1 5.4h8.077L9.976 1z\" fill=\"#0052D9\" fill-rule=\"evenodd\"></path></svg>",
   "default": "<svg viewBox=\"0 0 16 16\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.4\" stroke-linecap=\"round\" stroke-linejoin=\"round\" style=\"flex:none;line-height:1;\"><path d=\"M8 2.2 13.2 5.1v5.8L8 13.8 2.8 10.9V5.1Z M8 8v5.8 M2.8 5.1 8 8l5.2-2.9\"/></svg>"
 };
 
+// 预置 Magpie 别名与原生文件映射
+ICONS["antigravity-color"] = ICONS.antigravity;
+ICONS["geminicli-color"] = ICONS.gemini;
+ICONS["workbuddy-color"] = ICONS.workbuddy;
+ICONS["codex-color"] = ICONS.codex;
+ICONS["file:9bfce7ccdaaaa0fe.png"] = ICONS.mclaw;
+ICONS["file:4636929b8040eb80.png"] = ICONS.marvis;
+ICONS["file:cc6a0440158dad34.svg"] = "<img src=\"icons/cc6a0440158dad34.svg\" class=\"provider-img-icon\" alt=\"Google AI Studio\" draggable=\"false\">";
+ICONS["file:808e1ca7659cb52e.ico"] = "<img src=\"icons/808e1ca7659cb52e.ico\" class=\"provider-img-icon\" alt=\"OpenCode Zen Free\" draggable=\"false\">";
+ICONS["file:d3dbde503259f194.png"] = "<img src=\"icons/d3dbde503259f194.png\" class=\"provider-img-icon\" alt=\"QwenWork\" draggable=\"false\">";
+
 function getIconSvg(idOrIcon, fallbackIcon) {
   const raw = String(idOrIcon || fallbackIcon || "").trim();
   if (!raw) return ICONS.default;
 
+  // 1. 优先读取全局 Base64 Data URLs (支持离线、零延迟与免跨域沙箱)
+  const g = typeof window !== "undefined" ? window : (typeof globalThis !== "undefined" ? globalThis : {});
+  const dataUrls = g.__MAGPIE_PROVIDER_DATA_URLS__ || {};
+  if (dataUrls[raw]) {
+    return `<img src="${dataUrls[raw]}" class="provider-img-icon" alt="" draggable="false">`;
+  }
+  const cleanRaw = raw.replace(/^file:/, "");
+  if (dataUrls[cleanRaw]) {
+    return `<img src="${dataUrls[cleanRaw]}" class="provider-img-icon" alt="" draggable="false">`;
+  }
+
+  // 2. 检查 Magpie 供应商图标映射表
+  const provIcons = g.__MAGPIE_PROVIDER_ICONS__ || {};
+  if (provIcons[raw] && provIcons[raw] !== raw) {
+    return getIconSvg(provIcons[raw], fallbackIcon);
+  }
+
+  // 3. 处理 file:<hash> 文件引用 (直接从本地 page/icons/ 相对路径加载)
+  if (raw.startsWith("file:")) {
+    const file = raw.slice(5);
+    return `<img src="icons/${file}" class="provider-img-icon" alt="" draggable="false" onerror="this.onerror=null;this.style.opacity='0.6';">`;
+  }
+
   const key = raw.toLowerCase().replace(/^file:/, "").replace(/\.(svg|png|ico|webp)$/g, "").trim();
 
-  // 1. 完全匹配
+  // 4. 完全字典匹配
+  if (ICONS[raw]) return ICONS[raw];
   if (ICONS[key]) return ICONS[key];
 
-  // 2. 特征哈希映射 (Magpie 本地缓存文件名)
+  // 5. 特征哈希映射 (Magpie 本地缓存文件名与供应商名)
+  if (key.includes("9bfce7ccdaaaa0fe") || key === "mclaw") {
+    return ICONS.mclaw;
+  }
+  if (key.includes("4636929b8040eb80") || key === "marvis") {
+    return ICONS.marvis;
+  }
   if (key.includes("cc6a0440158dad34") || key.includes("ai-studio") || key.includes("aistudio") || key.includes("gemini-web")) {
     return ICONS["ai-studio"];
   }
-  if (key.includes("d3dbde503259f194") || key.includes("qwen")) {
+  if (key.includes("d3dbde503259f194") || key.includes("qwen") || key === "qwenwork") {
     return ICONS.qwenwork;
   }
   if (key.includes("808e1ca7659cb52e") || key.includes("opencode") || key.includes("zen")) {
     return ICONS["opencode-zen-free"];
   }
 
-  // 3. 供应商与客户端语义模糊匹配
+  // 6. 供应商与客户端语义模糊匹配
   if (key.includes("antigravity") || key === "agy") return ICONS.antigravity;
   if (key.includes("workbuddy") || key.includes("codebuddy")) return ICONS.workbuddy;
-  if (key.includes("trae")) return ICONS["trae-cn"];
+  if (key.includes("trae")) return ICONS["trae-cn"] || ICONS.trae;
   if (key.includes("codex")) return ICONS.codex;
   if (key.includes("gemini")) return ICONS.gemini;
   if (key.includes("deepseek") || key.includes("dsh")) return ICONS.deepseek;
@@ -67,10 +108,8 @@ function getIconSvg(idOrIcon, fallbackIcon) {
   if (key.includes("copilot")) return ICONS.copilot;
   if (key.includes("zed")) return ICONS.zed;
   if (key.includes("openai")) return ICONS.openai;
-  if (key.includes("marvis") || key.includes("tencent") || key.includes("hunyuan")) return ICONS.marvis;
-  if (key.includes("mclaw") || key.includes("claw")) return ICONS.mclaw;
 
-  // 4. 次级参数 fallbackIcon 递归解析
+  // 7. 次级参数 fallbackIcon 递归解析
   if (fallbackIcon && fallbackIcon !== idOrIcon) {
     return getIconSvg(fallbackIcon);
   }

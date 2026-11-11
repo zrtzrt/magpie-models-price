@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="dai-cloud-title dai-cloud-desc">
+  <title id="dai-cloud-title">D.AI cloud mascot</title>
+  <desc id="dai-cloud-desc">A friendly rounded cloud character on a black squircle.</desc>
+  <rect x="4" y="4" width="120" height="120" rx="38" fill="#000000" />
+  <g transform="translate(11.5 8) scale(.82)">
+    <path fill="#F5F5F5" d="M27 124C16.5 124 8 115.5 8 105C8 95.3 15.3 87.3 24.7 86.1C25.1 63.1 40 44 58.4 44C72.1 44 83.9 52.2 89.1 64C105.7 64.1 119 77.5 119 94C119 110.6 105.6 124 89 124H27Z" />
+    <circle cx="51" cy="90" r="5" fill="#000000" />
+    <circle cx="78" cy="90" r="5" fill="#000000" />
+  </g>
+</svg>

@@ -175,6 +175,7 @@
           const item = modelMap.get(fullName);
           item.enabled = isEnabled;
           item.providerName = pName;
+          if (p.icon && !item.providerIcon) item.providerIcon = p.icon;
           if (mName && mName !== mId && (!item.name || item.name === mId)) {
             item.name = mName;
           }
@@ -188,6 +189,7 @@
           const newItem = {
             provider: pId,
             providerName: pName,
+            providerIcon: p.icon || null,
             providerKind: pKind,
             model: fullName,
             id: mId,
@@ -392,9 +394,9 @@
   }
 
   // 4. 供应商图标获取辅助函数 (基于 page/icons.js 官方资源与生成式彩色图标降级)
-  function getProviderIconHtml(providerId, providerName) {
-    if (window.getIconSvg) {
-      const svg = window.getIconSvg(providerId);
+  function getProviderIconHtml(providerId, providerName, providerIcon) {
+    if (typeof window.getIconSvg === "function") {
+      const svg = window.getIconSvg(providerIcon || providerId, providerId);
       if (svg && !svg.includes("M8 2.2 13.2 5.1v5.8L8 13.8")) return svg;
     }
     const name = providerName || liveProviderNames.get(providerId) || providerId || "?";
@@ -748,7 +750,10 @@
       for (const item of group.items) {
         const pKey = item.provider || "other";
         if (!seenProviders.has(pKey)) {
-          seenProviders.set(pKey, item.providerName || pKey);
+          seenProviders.set(pKey, {
+            name: item.providerName || pKey,
+            icon: item.providerIcon || null
+          });
         }
       }
 
@@ -756,12 +761,12 @@
       const stackDiv = document.createElement("div");
       stackDiv.className = "provider-icon-stack";
       let zIdx = seenProviders.size;
-      for (const [pId, pName] of seenProviders.entries()) {
+      for (const [pId, pMeta] of seenProviders.entries()) {
         const iconDiv = document.createElement("div");
         iconDiv.className = "provider-squircle-icon";
         iconDiv.style.zIndex = zIdx--;
-        iconDiv.title = pName;
-        iconDiv.innerHTML = getProviderIconHtml(pId, pName);
+        iconDiv.title = pMeta.name;
+        iconDiv.innerHTML = getProviderIconHtml(pId, pMeta.name, pMeta.icon);
         stackDiv.appendChild(iconDiv);
       }
 
@@ -926,7 +931,7 @@
           const pIcon = document.createElement("div");
           pIcon.className = "provider-squircle-icon subrow-icon";
           pIcon.title = item.providerName || item.provider || "Channel";
-          pIcon.innerHTML = getProviderIconHtml(item.provider, item.providerName);
+          pIcon.innerHTML = getProviderIconHtml(item.provider, item.providerName, item.providerIcon);
 
           const provName = document.createElement("span");
           provName.className = "subrow-pname";
@@ -1264,7 +1269,6 @@
 
   $("modal-btn-save").addEventListener("click", saveModelPrice);
   $("btn-sync-all").addEventListener("click", syncAllMatched);
-  $("btn-refresh")?.addEventListener("click", () => syncLiveMagpieData(true));
 
   // 自动刷新机制 (Tab 切回、窗口聚焦、30秒定时器)
   if (globalThis.magpie && typeof magpie.onVisibility === "function") {

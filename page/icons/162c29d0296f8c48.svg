@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">Magpie Seed Translation</title>
+  <desc id="desc">A friendly green frog reading an open book.</desc>
+  <g stroke="#183e30" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path fill="#70c788" d="M45 99Q39 64 57 45q21-22 45-6 15 9 18 29h16q3-20 18-29 24-16 45 6 18 19 12 54 24 20 24 49 0 51-107 51T21 148q0-29 24-49Z"/>
+    <ellipse cx="80" cy="71" rx="19" ry="24" fill="#f5f8e9" stroke="none"/>
+    <ellipse cx="176" cy="71" rx="19" ry="24" fill="#f5f8e9" stroke="none"/>
+    <path d="M91 139q37 30 74 0" fill="none"/>
+    <path fill="#f5f8e9" d="M128 186q-36-24-79-25v61q45 1 79 20 34-19 79-20v-61q-43 1-79 25Z"/>
+    <path d="M128 186v56" fill="none"/>
+    <path d="m67 184 39 12m-39 9 39 12m44-21 39-12m-39 33 39-12" fill="none" stroke="#89b99a" stroke-width="6"/>
+    <path fill="#70c788" d="M49 183q-20-7-20 10t20 13m158-23q20-7 20 10t-20 13"/>
+  </g>
+  <ellipse cx="83" cy="76" rx="8" ry="12" fill="#183e30"/>
+  <ellipse cx="173" cy="76" rx="8" ry="12" fill="#183e30"/>
+  <circle cx="85" cy="72" r="3" fill="#fff"/>
+  <circle cx="175" cy="72" r="3" fill="#fff"/>
+  <ellipse cx="59" cy="128" rx="12" ry="7" fill="#a6dda2"/>
+  <ellipse cx="197" cy="128" rx="12" ry="7" fill="#a6dda2"/>
+</svg>

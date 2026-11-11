@@ -103,6 +103,7 @@ function getProviderClassifications() {
       const isSub = !!p.account || p.id.includes('free') || p.id.includes('plan');
       kinds[p.id] = {
         name: p.name || p.id,
+        icon: p.icon || null,
         isSubscription: isSub,
         kind: isSub ? 'subscription' : 'api',
         planName: p.account?.plan || (p.key?.set ? 'API Key' : 'Account')
@@ -132,6 +133,7 @@ function getMagpieModels() {
       models.push({
         provider: providerId,
         providerName: pInfo.name,
+        providerIcon: p.icon || pInfo.icon || null,
         providerKind: pInfo.kind,
         id: m.id,
         fullName: providerId + '/' + m.id,
@@ -370,6 +372,7 @@ function scanAll() {
       name: s.modelObj.name,
       provider: s.modelObj.provider,
       providerName: s.modelObj.providerName,
+      providerIcon: s.modelObj.providerIcon || null,
       providerKind: s.modelObj.providerKind,
       enabled: s.modelObj.enabled !== false,
       isUnpriced: s.isUnpriced,

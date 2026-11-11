@@ -464,12 +464,11 @@ h1 {
 }
 
 .provider-squircle-icon {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   border-radius: 6px;
-  background: #1c1c1f;
-  border: 1.5px solid var(--card);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  background: var(--card);
+  box-shadow: 0 0 0 1.5px var(--card), 0 1px 3px rgba(0, 0, 0, 0.4);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -481,13 +480,12 @@ h1 {
 }
 
 [data-theme="light"] .provider-squircle-icon {
-  background: #f0f0f4;
-  border: 1.5px solid var(--card);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  background: var(--card);
+  box-shadow: 0 0 0 1.5px var(--card), 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
 .provider-icon-stack .provider-squircle-icon + .provider-squircle-icon {
-  margin-left: -7px;
+  margin-left: -6px;
 }
 
 .provider-icon-stack .provider-squircle-icon:hover {
@@ -497,19 +495,21 @@ h1 {
 }
 
 .provider-squircle-icon svg {
-  width: 15px;
-  height: 15px;
-  max-width: 15px;
-  max-height: 15px;
+  width: 18px;
+  height: 18px;
+  max-width: 18px;
+  max-height: 18px;
   display: block;
 }
 
-.provider-squircle-icon img {
-  width: 15px;
-  height: 15px;
-  max-width: 15px;
-  max-height: 15px;
+.provider-squircle-icon img,
+.provider-img-icon {
+  width: 18px;
+  height: 18px;
+  max-width: 18px;
+  max-height: 18px;
   object-fit: contain;
+  border-radius: 4px;
   display: block;
 }
 

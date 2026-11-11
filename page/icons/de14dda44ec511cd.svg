@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1024.0000" height="1024.0000"
+     viewBox="0 0 1024.0000 1024.0000">
+
+  <defs>
+    <linearGradient id="mark-primary-primary-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#96AC8C"/>
+      <stop offset="48%" stop-color="#6F8666"/>
+      <stop offset="100%" stop-color="#465C3F"/>
+    </linearGradient>
+    <radialGradient id="mark-primary-primary-glow" cx="21%" cy="13%" r="85%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity=".16"/>
+      <stop offset="56%" stop-color="#FFFFFF" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#1E2A19" stop-opacity=".10"/>
+    </radialGradient>
+    <linearGradient id="mark-primary-star-cream" x1="0%" y1="18%" x2="100%" y2="82%">
+      <stop offset="0%" stop-color="#E7E3D8"/>
+      <stop offset="47%" stop-color="#F2EFE8"/>
+      <stop offset="100%" stop-color="#FFFFFF"/>
+    </linearGradient>
+    <linearGradient id="mark-primary-star-green" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#96AC8C"/>
+      <stop offset="55%" stop-color="#465C3F"/>
+      <stop offset="100%" stop-color="#1E2A19"/>
+    </linearGradient>
+    <clipPath id="mark-primary-star-clip">
+      <path d="M512 174 C521 342 570 457 778 512 C574 547 527 674 512 870 C497 674 450 547 246 512 C454 457 503 342 512 174 Z"/>
+    </clipPath>
+  </defs>
+
+    <g transform="translate(0.0000 0.0000) scale(1.00000000)">
+
+      <rect x="32" y="32" width="960" height="960" rx="224" fill="url(#mark-primary-primary-bg)"/>
+      <rect x="32" y="32" width="960" height="960" rx="224" fill="url(#mark-primary-primary-glow)"/>
+
+      <path d="M512 174 C521 342 570 457 778 512 C574 547 527 674 512 870 C497 674 450 547 246 512 C454 457 503 342 512 174 Z" fill="url(#mark-primary-star-cream)"/>
+
+      <path d="M512 174 C521 342 570 457 778 512 C618 501 551 503 512 512 Z"
+            fill="#FFFFFF" opacity=".16" clip-path="url(#mark-primary-star-clip)"/>
+      <path d="M246 512 C454 457 503 342 512 174 L512 512 Z"
+            fill="#D5D3C8" opacity=".18" clip-path="url(#mark-primary-star-clip)"/>
+    </g>
+</svg>

@@ -328,6 +328,7 @@ h1 {
 }
 
 .provider-select,
+.kind-select,
 .sort-select {
   background: var(--card);
   color: var(--fg);
@@ -339,11 +340,12 @@ h1 {
   cursor: pointer;
   outline: none;
   height: 32px;
-  min-width: 130px;
+  min-width: 120px;
   transition: border-color .15s ease;
 }
 
 .provider-select:focus,
+.kind-select:focus,
 .sort-select:focus {
   border-color: var(--accent);
 }

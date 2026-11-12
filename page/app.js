@@ -27,7 +27,8 @@
   let pluginOptions = {};
   let customPrices = {};
   let globalMode = "all-equivalent"; // "all-equivalent" or "api-only"
-  let filter = "all";
+  let filter = "enabled";
+  let selectedKind = "all"; // "all", "api", "subscription"
   let search = "";
   let selectedProvider = "all";
   let currentSort = "default";
@@ -710,6 +711,10 @@
       } else {
         list = list.filter((g) => g.items.some((it) => it.enabled));
       }
+    } else if (filter === "api") {
+      list = list.filter((g) => g.items.some((it) => it.providerKind === "api"));
+    } else if (filter === "login" || filter === "subscription") {
+      list = list.filter((g) => g.items.some((it) => it.providerKind === "subscription"));
     } else if (filter === "custom") {
       list = list.filter((g) => {
         return !!customPrices["*/" + g.bare] || g.items.some((it) => !!customPrices[it.model]);
@@ -730,6 +735,15 @@
           })
         );
       });
+    }
+
+    // Filter by selected provider type (kind: API vs 登录)
+    if (selectedKind && selectedKind !== "all") {
+      if (selectedKind === "api") {
+        list = list.filter((g) => g.items.some((it) => it.providerKind === "api" && (filter !== "enabled" || it.enabled)));
+      } else if (selectedKind === "subscription" || selectedKind === "login") {
+        list = list.filter((g) => g.items.some((it) => it.providerKind === "subscription" && (filter !== "enabled" || it.enabled)));
+      }
     }
 
     // Filter by selected provider
@@ -1270,8 +1284,25 @@
       .forEach((b) => b.removeAttribute("aria-selected"));
     btn.setAttribute("aria-selected", "true");
     filter = btn.dataset.filter;
+
+    const kindSelect = $("kind-filter");
+    if (filter === "api" && kindSelect) {
+      kindSelect.value = "api";
+      selectedKind = "api";
+    } else if (filter === "login" && kindSelect) {
+      kindSelect.value = "subscription";
+      selectedKind = "subscription";
+    }
     renderList();
   });
+
+  const kindSelect = $("kind-filter");
+  if (kindSelect) {
+    kindSelect.addEventListener("change", (e) => {
+      selectedKind = e.target.value;
+      renderList();
+    });
+  }
 
   $("mode-btn-all").addEventListener("click", () => setGlobalMode("all-equivalent"));
   $("mode-btn-api").addEventListener("click", () => setGlobalMode("api-only"));

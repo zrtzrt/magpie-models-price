@@ -20,8 +20,10 @@
     <span id="header-title-sub" style="font-size: 12px; font-weight: normal; color: var(--muted);"></span>
   </h1>
   <div class="seg" role="tablist" id="filter-seg">
-    <button type="button" role="tab" data-filter="all" aria-selected="true" data-i18n="tab_all">全部</button>
-    <button type="button" role="tab" data-filter="enabled" data-i18n="tab_enabled">🟢 已启用</button>
+    <button type="button" role="tab" data-filter="all" data-i18n="tab_all">全部</button>
+    <button type="button" role="tab" data-filter="enabled" aria-selected="true" data-i18n="tab_enabled">🟢 已启用</button>
+    <button type="button" role="tab" data-filter="api" data-i18n="tab_api">💳 付费 API</button>
+    <button type="button" role="tab" data-filter="login" data-i18n="tab_login">🔑 账号登录</button>
     <button type="button" role="tab" data-filter="offpeak" data-i18n="tab_offpeak">峰谷定价</button>
     <button type="button" role="tab" data-filter="custom" data-i18n="tab_custom">自定义</button>
     <button type="button" role="tab" data-filter="matched" data-i18n="tab_matched">已配公价</button>
@@ -87,6 +89,11 @@
     <div class="filter-row">
       <select class="provider-select" id="provider-filter" aria-label="供应商筛选">
         <option value="all" data-i18n="provider_filter_all">🏢 全部供应商</option>
+      </select>
+      <select class="kind-select" id="kind-filter" aria-label="渠道类型筛选">
+        <option value="all" selected data-i18n="kind_filter_all">⚡ 全部类型</option>
+        <option value="api" data-i18n="kind_filter_api">💳 付费 API</option>
+        <option value="subscription" data-i18n="kind_filter_login">🔑 账号登录</option>
       </select>
       <select class="sort-select" id="sort-select" aria-label="排序方式">
         <option value="default" selected data-i18n="sort_default">🔥 默认用量降序</option>

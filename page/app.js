@@ -333,16 +333,17 @@
     }
   }
 
-  // 3. 模型分组逻辑 (Group models by bare model identity)
+  // 3. 模型分组逻辑 (Group models by clean base model identity)
   function buildModelGroups(models) {
     const map = new Map();
     const bareUsageMap = window.__MAGPIE_BARE_USAGE__ || {};
 
     for (const item of models) {
       const bare = getBareModel(item.model);
-      if (!map.has(bare)) {
-        const cleaned = cleanModelName(bare);
-        const bu = bareUsageMap[bare] || bareUsageMap[cleaned] || {
+      const groupKey = cleanModelName(bare) || bare;
+
+      if (!map.has(groupKey)) {
+        const bu = bareUsageMap[groupKey] || bareUsageMap[bare] || {
           requests: 0,
           totalTokens: 0,
           inputTokens: 0,
@@ -350,17 +351,17 @@
           cacheRead: 0,
           cacheWrite: 0
         };
-        map.set(bare, {
-          bare,
-          name: item.name || bare,
+        map.set(groupKey, {
+          bare: groupKey,
+          name: (item.name && item.name !== item.model && !item.name.includes('-control')) ? item.name : (item.matched?.name || groupKey),
           matched: item.matched,
           offPeakPreset: item.offPeakPreset,
           usage: { ...bu },
           items: []
         });
       }
-      const g = map.get(bare);
-      if ((!g.name || g.name === bare) && item.name && item.name !== item.model) {
+      const g = map.get(groupKey);
+      if ((!g.name || g.name === groupKey) && item.name && item.name !== item.model && !item.name.includes('-control')) {
         g.name = item.name;
       }
       if (!g.matched && item.matched) {

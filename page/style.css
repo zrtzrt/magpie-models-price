@@ -348,25 +348,25 @@ h1 {
   border-color: var(--accent);
 }
 
-/* 用量统计徽章 (Usage Pill) */
+/* 用量统计徽章 (Usage Pill) - 非彩色中性设计 (Neutral Monochrome) */
 .usage-pill {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   padding: 2px 7px;
-  border-radius: 12px;
+  border-radius: 6px;
   font-size: 11px;
   font-weight: 500;
-  background: rgba(255, 149, 0, 0.12);
-  border: 1px solid rgba(255, 149, 0, 0.3);
-  color: #ff9f0a;
+  background: var(--card-2);
+  border: 1px solid var(--line-2);
+  color: var(--muted);
   white-space: nowrap;
 }
 
 [data-theme="light"] .usage-pill {
-  background: rgba(245, 158, 11, 0.14);
-  border-color: rgba(245, 158, 11, 0.4);
-  color: #b45309;
+  background: var(--card-2);
+  border-color: var(--line-2);
+  color: var(--muted);
 }
 
 /* 启用/停用状态徽章 (Enabled / Disabled Badge) */
@@ -397,13 +397,13 @@ h1 {
 
 .subrow-usage {
   font-size: 11px;
-  color: #ff9f0a;
+  color: var(--muted);
   white-space: nowrap;
   margin-right: 4px;
 }
 
 [data-theme="light"] .subrow-usage {
-  color: #b45309;
+  color: var(--muted);
 }
 
 .provider-subrow.is-disabled {

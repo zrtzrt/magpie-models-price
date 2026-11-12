@@ -179,14 +179,15 @@ function getMagpieModels() {
         if (!line.trim()) continue;
         try {
           const r = JSON.parse(line);
-          const prov = r.provider || 'unknown';
+          if (!r.provider || r.provider === 'unknown' || r.operation === 'execute_tool') continue;
+          const prov = r.provider;
           const candidates = [
             r.model,
             r.served,
             r.req ? (r.req.includes('/') ? r.req.split('/')[1] : r.req) : null
           ];
           for (const mId of candidates) {
-            if (!mId || mId === 'probe' || mId.startsWith('group/') || mId.includes('__') || mId.includes('search')) continue;
+            if (!mId || mId === 'probe' || mId === 'unknown' || mId.startsWith('group/') || mId.includes('__') || mId.includes('search') || mId === 'find_tools' || mId === 'Tavily' || mId === 'web_fetch') continue;
             const full = prov + '/' + mId;
             if (!seen.has(full)) {
               seen.add(full);
@@ -265,9 +266,14 @@ function getUsageData() {
       if (!line.trim()) continue;
       try {
         const r = JSON.parse(line);
-        // 排除测试请求 (Magpie 自身健康探针、provider_test、model_list 等测试请求)
-        const isTest = (
+        // 排除测试请求与工具调用 (Magpie 自身健康探针、execute_tool、mcp、无有效模型等)
+        const isToolOrTest = (
+          !r.provider ||
+          r.provider === 'unknown' ||
+          r.operation === 'execute_tool' ||
           r.source === 'probe' ||
+          r.source === 'tool' ||
+          r.kind === 'tool' ||
           r.agent === 'magpie' ||
           r.kind === 'provider_test' ||
           r.kind === 'model_list' ||
@@ -276,10 +282,11 @@ function getUsageData() {
           (typeof r.kind === 'string' && r.kind.toLowerCase().includes('test')) ||
           (typeof r.operation === 'string' && r.operation.toLowerCase().includes('test'))
         );
-        if (isTest) continue;
+        if (isToolOrTest) continue;
 
-        const req = r.req || (r.provider + '/' + r.model);
-        const bare = r.model || r.served || (r.req ? (r.req.includes('/') ? r.req.split('/')[1] : r.req) : 'unknown');
+        const bare = r.model || r.served || (r.req ? (r.req.includes('/') ? r.req.split('/')[1] : r.req) : null);
+        if (!bare || bare === 'unknown' || bare === 'probe' || bare === 'find_tools' || bare === 'Tavily' || bare === 'web_fetch') continue;
+        const req = r.req || (r.provider + '/' + bare);
         const inT = r.in || 0;
         const outT = r.out || 0;
         const cRead = r.cache_read || 0;
@@ -635,6 +642,13 @@ function applyGlobalMode(mode, customOverrides = {}) {
           newPrices['*/' + bare] = basePrice;
         }
       }
+    }
+  }
+
+  // Remove any unknown/ invalid keys
+  for (const k of Object.keys(newPrices)) {
+    if (k.startsWith('unknown/') || k === '*/unknown' || k.includes('/unknown')) {
+      delete newPrices[k];
     }
   }
 

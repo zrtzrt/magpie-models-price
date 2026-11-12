@@ -2179,15 +2179,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-06T09:41:38.983275+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "openai",
       "model": "gpt-5.6-terra",
@@ -5799,15 +5791,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-06T09:41:38.983275+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "openai",
       "model": "gpt-5.6-terra",
@@ -7097,119 +7081,6 @@
     }
   },
   {
-    "model": "unknown/find_tools",
-    "name": "find_tools",
-    "provider": "unknown",
-    "providerName": "unknown",
-    "providerIcon": null,
-    "providerKind": "subscription",
-    "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
-    "offPeakPreset": {
-      "supported": false
-    },
-    "usage": null,
-    "bareUsage": {
-      "requests": 4,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T10:23:26.841062+08:00"
-    },
-    "matched": null
-  },
-  {
-    "model": "unknown/Tavily",
-    "name": "Tavily",
-    "provider": "unknown",
-    "providerName": "unknown",
-    "providerIcon": null,
-    "providerKind": "subscription",
-    "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
-    "offPeakPreset": {
-      "supported": false
-    },
-    "usage": null,
-    "bareUsage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T10:23:31.857828+08:00"
-    },
-    "matched": null
-  },
-  {
-    "model": "unknown/web_fetch",
-    "name": "web_fetch",
-    "provider": "unknown",
-    "providerName": "unknown",
-    "providerIcon": null,
-    "providerKind": "subscription",
-    "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
-    "offPeakPreset": {
-      "supported": false
-    },
-    "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-05T10:23:51.184946+08:00"
-    },
-    "matched": null
-  },
-  {
-    "model": "unknown/gpt-5.6-terra",
-    "name": "gpt-5.6-terra",
-    "provider": "unknown",
-    "providerName": "unknown",
-    "providerIcon": null,
-    "providerKind": "subscription",
-    "enabled": true,
-    "isUnpriced": false,
-    "currentPrice": "Custom: $2/$12 in/out (cache: $0.2/$2.5)",
-    "offPeakPreset": {
-      "supported": false
-    },
-    "usage": null,
-    "bareUsage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-06T09:41:38.983275+08:00"
-    },
-    "matched": {
-      "provider": "openai",
-      "model": "gpt-5.6-terra",
-      "name": "GPT-5.6 Terra",
-      "confidence": "exact",
-      "reason": "原厂规约匹配 (openai)",
-      "cost": {
-        "input": 2,
-        "output": 12,
-        "cache_read": 0.2,
-        "cache_write": 2.5
-      },
-      "priceString": "2,12,0.2,2.5"
-    }
-  },
-  {
     "model": "marvis/deepseek-v4.1-flash",
     "name": "deepseek-v4.1-flash",
     "provider": "marvis",
@@ -7253,7 +7124,7 @@
   }
 ];
   g.__MAGPIE_USAGE_SUMMARY__ = {
-  "requests": 17107,
+  "requests": 17074,
   "inputTokens": 168353313,
   "outputTokens": 9125822,
   "cacheRead": 2475766698,
@@ -7395,24 +7266,6 @@
     "totalTokens": 4749886,
     "lastAt": "2026-11-10T11:26:28.583561+08:00"
   },
-  "chrome-devtools__list_pages": {
-    "requests": 4,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T09:58:01.62293+08:00"
-  },
-  "chrome-devtools--list-pages": {
-    "requests": 4,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T09:58:01.62293+08:00"
-  },
   "hy4free": {
     "requests": 1,
     "inputTokens": 54,
@@ -7467,159 +7320,6 @@
     "totalTokens": 284,
     "lastAt": "2026-11-04T13:13:20.842697+08:00"
   },
-  "chrome-devtools__navigate_page": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T10:00:23.416535+08:00"
-  },
-  "chrome-devtools--navigate-page": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T10:00:23.416535+08:00"
-  },
-  "find_tools": {
-    "requests": 4,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T10:23:26.841062+08:00"
-  },
-  "find-tools": {
-    "requests": 4,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T10:23:26.841062+08:00"
-  },
-  "chrome-devtools__evaluate_script": {
-    "requests": 10,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T10:08:08.555765+08:00"
-  },
-  "chrome-devtools--evaluate-script": {
-    "requests": 10,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T10:08:08.555765+08:00"
-  },
-  "Tavily": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T10:23:31.857828+08:00"
-  },
-  "tavily": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T10:23:31.857828+08:00"
-  },
-  "web_search": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T10:23:31.838637+08:00"
-  },
-  "web-search": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T10:23:31.838637+08:00"
-  },
-  "search__web_search": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T10:23:31.820323+08:00"
-  },
-  "search--web-search": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T10:23:31.820323+08:00"
-  },
-  "web_fetch": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T10:23:51.184946+08:00"
-  },
-  "web-fetch": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T10:23:51.184946+08:00"
-  },
-  "search__web_fetch": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T10:23:51.182818+08:00"
-  },
-  "search--web-fetch": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-05T10:23:51.182818+08:00"
-  },
-  "gpt-5.6-terra": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-06T09:41:38.983275+08:00"
-  },
   "deepseek-v4-1-flash-261017": {
     "requests": 366,
     "inputTokens": 2493283,
@@ -7637,42 +7337,6 @@
     "cacheWrite": 0,
     "totalTokens": 4065,
     "lastAt": "2026-11-11T13:57:12.507484+08:00"
-  },
-  "memory_search": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-12T09:09:09.54925+08:00"
-  },
-  "memory-search": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-12T09:09:09.54925+08:00"
-  },
-  "magpie-memory__memory_search": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-12T09:09:09.526798+08:00"
-  },
-  "magpie-memory--memory-search": {
-    "requests": 2,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-12T09:09:09.526798+08:00"
   }
 };
   g.__MAGPIE_PROVIDER_ICONS__ = {

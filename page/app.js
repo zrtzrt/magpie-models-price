@@ -339,6 +339,7 @@
     const bareUsageMap = window.__MAGPIE_BARE_USAGE__ || {};
 
     for (const item of models) {
+      if (!item.provider || item.provider === "unknown") continue;
       const bare = getBareModel(item.model);
       const groupKey = cleanModelName(bare) || bare;
 
@@ -606,7 +607,8 @@
 
     const provMap = new Map();
     for (const m of rawModels) {
-      const provId = m.provider || "other";
+      const provId = m.provider;
+      if (!provId || provId === "unknown" || provId === "other") continue;
       const provName = m.providerName || liveProviderNames.get(provId) || provId;
       if (!provMap.has(provId)) {
         provMap.set(provId, { id: provId, name: provName, count: 0 });
@@ -616,6 +618,7 @@
 
     // 确保从 Magpie 实时读取到的新供应商（即便初始没有价格或模型）也能正常出现在下拉筛选中
     for (const [pId, pName] of liveProviderNames.entries()) {
+      if (!pId || pId === "unknown" || pId === "other") continue;
       if (!provMap.has(pId)) {
         provMap.set(pId, { id: pId, name: pName, count: 0 });
       }

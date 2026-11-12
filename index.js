@@ -19,13 +19,21 @@ function syncModeAndPrices(options) {
 
 // OpenCode / Magpie Plugin export
 async function MagpieModelPricesPlugin(input, options) {
-  if (options) {
-    syncModeAndPrices(options);
+  const getOpts = () => (typeof input?.magpie?.options === 'function' ? input.magpie.options() : null) || options || {};
+  syncModeAndPrices(getOpts());
+
+  // Periodically check and synchronize new models from providers-state.json to settings.json
+  if (typeof setInterval === 'function') {
+    setInterval(() => {
+      try {
+        syncModeAndPrices(getOpts());
+      } catch {}
+    }, 60000);
   }
 
   return {
     async config(cfg) {
-      const opts = input?.magpie?.options?.() || options;
+      const opts = getOpts();
       if (opts) {
         syncModeAndPrices(opts);
       }
@@ -34,7 +42,8 @@ async function MagpieModelPricesPlugin(input, options) {
 }
 
 module.exports = MagpieModelPricesPlugin;
-module.exports.default = MagpieModelPricesPlugin;
+module.exports.default = { id: 'models-price', server: MagpieModelPricesPlugin };
+module.exports.server = MagpieModelPricesPlugin;
 module.exports.MagpieModelPricesPlugin = MagpieModelPricesPlugin;
 
 // CLI runner when executed directly

@@ -143,6 +143,38 @@
     return fullName.includes("/") ? fullName.split("/").slice(1).join("/") : fullName;
   }
 
+  function cleanModelName(str) {
+    if (!str) return "";
+    let s = str.toLowerCase()
+      .replace(/^[a-z0-9_-]+\//, '')
+      .replace(/^(blian_|huoshan_|vlm_huoshan_)/, '')
+      .replace(/(-\d{6,8}|-\d{4}-\d{2}-\d{2})$/, '')
+      .replace(/-ga(-\d+)?$/, '')
+      .replace(/-tiered$/, '')
+      .replace(/-sg$/, '')
+      .replace(/-preview.*$/, '')
+      .replace(/-thinking$/, '')
+      .replace(/-agent$/, '')
+      .replace(/-flashx/, '-flash')
+      .replace(/-code$/, '')
+      .replace(/_advisor_doubao$/, '')
+      .replace(/-free$/, '')
+      .replace(/-disabled$/, '')
+      .replace(/-1$/, '')
+      .replace(/_/g, '-');
+
+    s = s.replace(/qwen(\d)(\d)/, (_, a, b) => 'qwen' + a + '.' + b);
+    s = s.replace(/glm-(\d)-(\d)/, (_, a, b) => 'glm-' + a + '.' + b);
+    s = s.replace(/v4[.-]1/, 'v4');
+    s = s.replace(/v4p1/, 'v4');
+
+    if (s.includes('2-0-lite') || s.includes('2.0-lite')) return 'doubao-seed-2.0-lite';
+    if (s.includes('2-0-mini') || s.includes('2.0-mini')) return 'doubao-seed-2.0-mini';
+    if (s.includes('hy-vision') || s.includes('hunyuan-vision')) return 'hunyuan-2.0-instruct';
+
+    return s;
+  }
+
   // 2.1 动态合并 Magpie 实时供应商列表 (Live Providers & Unpriced Channels Sync)
   function mergeLiveProviders(liveList) {
     if (!Array.isArray(liveList)) return;
@@ -182,8 +214,9 @@
         } else {
           // 新添加的供应商模型（尚未包含在静态基准数据中）
           const bare = getBareModel(fullName);
+          const cleaned = cleanModelName(fullName);
           const sibling = rawModels.find(
-            (it) => it.matched && getBareModel(it.model) === bare
+            (it) => it.matched && (getBareModel(it.model) === bare || cleanModelName(it.model) === cleaned)
           );
 
           const newItem = {
@@ -795,7 +828,7 @@
 
       const namesDiv = document.createElement("div");
       namesDiv.className = "provider-names-text";
-      namesDiv.textContent = Array.from(seenProviders.values()).join(" · ");
+      namesDiv.textContent = Array.from(seenProviders.values()).map(p => p.name).join(" · ");
 
       titleBlock.append(nameRow, namesDiv);
       leftDiv.append(stackDiv, titleBlock);

@@ -73,6 +73,14 @@ if (fs.existsSync(PROVIDERS_STATE_PATH)) {
 const report = matcher.scanAll();
 const { totalSummary, bareUsage } = matcher.getUsageData();
 
+// Automatically synchronize matched prices into Magpie settings.json
+try {
+  const syncedCount = matcher.applyGlobalMode('all-equivalent');
+  console.log('Synchronized', syncedCount, 'prices to Magpie settings.json');
+} catch (e) {
+  console.warn('Failed to sync prices to settings.json:', e.message);
+}
+
 const jsContent =
   ';(function(g){\n' +
   '  g.__MAGPIE_MODELS_DATA__ = ' + JSON.stringify(report, null, 2) + ';\n' +

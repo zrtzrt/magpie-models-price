@@ -17,19 +17,20 @@ const OFFICIAL_MAKERS = [
 
 function getVendorHints(target) {
   const t = target.toLowerCase();
-  if (t.includes('qwen') || t.startsWith('qwenwork/')) return ['qwen', 'alibaba'];
-  if (t.includes('deepseek')) return ['deepseek'];
-  if (t.includes('gemini') || t.startsWith('gemini/')) return ['google'];
-  if (t.includes('claude')) return ['anthropic'];
-  if (t.includes('gpt-') || t.includes('codex/')) return ['openai'];
-  if (t.includes('kimi')) return ['moonshot', 'moonshotai'];
-  if (t.includes('glm')) return ['zhipu', 'zhipuai'];
-  if (t.includes('doubao') || t.includes('seed-')) return ['bytedance', 'volcengine'];
-  if (t.includes('minimax')) return ['minimax'];
-  if (t.includes('mimo')) return ['xiaomi'];
-  if (t.includes('hy3') || t.includes('hy4') || t.includes('hunyuan')) return ['tencent'];
-  if (t.includes('step-')) return ['stepfun'];
-  return [];
+  const hints = [];
+  if (t.includes('qwen') || t.startsWith('qwenwork/') || t.includes('blian')) hints.push('qwen', 'alibaba', 'bailian');
+  if (t.includes('deepseek')) hints.push('deepseek');
+  if (t.includes('gemini') || t.startsWith('gemini/')) hints.push('google');
+  if (t.includes('claude')) hints.push('anthropic');
+  if (t.includes('gpt-') || t.includes('codex/')) hints.push('openai');
+  if (t.includes('kimi')) hints.push('moonshot', 'moonshotai');
+  if (t.includes('glm')) hints.push('zhipu', 'zhipuai', 'glm', 'bigmodel');
+  if (t.includes('doubao') || t.includes('seed-') || t.includes('huoshan')) hints.push('volcengine', 'bytedance', 'doubao');
+  if (t.includes('minimax')) hints.push('minimax');
+  if (t.includes('mimo')) hints.push('xiaomi');
+  if (t.includes('hy3') || t.includes('hy4') || t.includes('hunyuan')) hints.push('tencent');
+  if (t.includes('step-')) hints.push('stepfun');
+  return hints;
 }
 
 function loadCatalog() {
@@ -71,23 +72,34 @@ function loadCatalog() {
 }
 
 function cleanModelName(str) {
-  return str.toLowerCase()
+  let s = str.toLowerCase()
     .replace(/^[a-z0-9_-]+\//, '')
+    .replace(/^(blian_|huoshan_|vlm_huoshan_)/, '')
+    .replace(/(-\d{6,8}|-\d{4}-\d{2}-\d{2})$/, '')
+    .replace(/-ga(-\d+)?$/, '')
     .replace(/-tiered$/, '')
     .replace(/-sg$/, '')
     .replace(/-preview.*$/, '')
     .replace(/-thinking$/, '')
     .replace(/-agent$/, '')
-    .replace(/-max$/, '')
     .replace(/-flashx/, '-flash')
-    .replace(/v4\.1/, 'v4')
-    .replace(/v4p1/, 'v4')
-    .replace(/_1_6$/, '-1.6')
     .replace(/-code$/, '')
     .replace(/_advisor_doubao$/, '')
     .replace(/-free$/, '')
     .replace(/-disabled$/, '')
-    .replace(/-1$/, '');
+    .replace(/-1$/, '')
+    .replace(/_/g, '-');
+
+  s = s.replace(/qwen(\d)(\d)/, (_, a, b) => 'qwen' + a + '.' + b);
+  s = s.replace(/glm-(\d)-(\d)/, (_, a, b) => 'glm-' + a + '.' + b);
+  s = s.replace(/v4[.-]1/, 'v4');
+  s = s.replace(/v4p1/, 'v4');
+
+  if (s.includes('2-0-lite') || s.includes('2.0-lite')) return 'doubao-seed-2.0-lite';
+  if (s.includes('2-0-mini') || s.includes('2.0-mini')) return 'doubao-seed-2.0-mini';
+  if (s.includes('hy-vision') || s.includes('hunyuan-vision')) return 'hunyuan-2.0-instruct';
+
+  return s;
 }
 
 /**
@@ -308,13 +320,25 @@ function matchModel(target, catalog) {
   function pickBest(list) {
     if (!list.length) return null;
     const sorted = [...list].sort((a, b) => {
-      const aHint = hints.some(h => a.provider.toLowerCase().includes(h)) ? 1 : 0;
-      const bHint = hints.some(h => b.provider.toLowerCase().includes(h)) ? 1 : 0;
-      if (aHint !== bHint) return bHint - aHint;
+      // 0. Exact provider name match for vendor hint (e.g. 'google' === 'google' over 'google-vertex')
+      const aExactProv = hints.some(h => a.provider.toLowerCase() === h) ? 1 : 0;
+      const bExactProv = hints.some(h => b.provider.toLowerCase() === h) ? 1 : 0;
+      if (aExactProv !== bExactProv) return bExactProv - aExactProv;
 
+      // 1. Direct provider match for vendor hint (e.g. provider 'deepseek' for 'deepseek')
+      const aProvHint = hints.some(h => a.provider.toLowerCase().includes(h) || h.includes(a.provider.toLowerCase())) ? 1 : 0;
+      const bProvHint = hints.some(h => b.provider.toLowerCase().includes(h) || h.includes(b.provider.toLowerCase())) ? 1 : 0;
+      if (aProvHint !== bProvHint) return bProvHint - aProvHint;
+
+      // 2. Official maker preference
       const aOff = isOfficialMaker(a.provider) ? 1 : 0;
       const bOff = isOfficialMaker(b.provider) ? 1 : 0;
       if (aOff !== bOff) return bOff - aOff;
+
+      // 3. Model name match for vendor hint
+      const aModelHint = hints.some(h => a.model.toLowerCase().includes(h)) ? 1 : 0;
+      const bModelHint = hints.some(h => b.model.toLowerCase().includes(h)) ? 1 : 0;
+      if (aModelHint !== bModelHint) return bModelHint - aModelHint;
 
       const aNonZero = (a.cost.input > 0 || a.cost.output > 0) ? 1 : 0;
       const bNonZero = (b.cost.input > 0 || b.cost.output > 0) ? 1 : 0;
@@ -437,7 +461,7 @@ function resetPrice(model) {
 function applyGlobalMode(mode, customOverrides = {}) {
   const report = scanAll();
   const s = JSON.parse(fs.readFileSync(SETTINGS_PATH, 'utf8'));
-  const newPrices = {};
+  const newPrices = { ...(s.modelPrices || {}) };
 
   if (mode === 'api-only') {
     // Only apply prices for paid API providers or explicit custom overrides
@@ -478,6 +502,20 @@ function applyGlobalMode(mode, customOverrides = {}) {
   for (const [k, v] of Object.entries(customOverrides)) {
     if (k.startsWith('*/') && v) {
       newPrices[k] = v;
+    }
+  }
+
+  // Add wildcard fallbacks for bare model names and cleaned names so any un-prefixed request matches
+  for (const item of report) {
+    if (newPrices[item.model]) {
+      const bare = item.model.includes('/') ? item.model.split('/')[1] : item.model;
+      if (!newPrices['*/' + bare]) {
+        newPrices['*/' + bare] = newPrices[item.model];
+      }
+      const cleaned = cleanModelName(bare);
+      if (cleaned && !newPrices['*/' + cleaned]) {
+        newPrices['*/' + cleaned] = newPrices[item.model];
+      }
     }
   }
 
@@ -573,6 +611,7 @@ function hasOffPeakPreset(modelName = '', provider = '') {
 
 module.exports = {
   loadCatalog,
+  cleanModelName,
   getMagpieModels,
   getPricingStatus,
   getProviderClassifications,

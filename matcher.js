@@ -5,6 +5,7 @@ const path = require('path');
 const HOME = process.env.HOME || process.env.USERPROFILE || '';
 const CACHE_MODELS_PATH = path.join(HOME, '.cache/magpie/models.json');
 const PROVIDERS_STATE_PATH = path.join(HOME, '.cache/magpie/providers-state.json');
+const PROVIDERS_CONFIG_PATH = path.join(HOME, '.config/magpie/providers.json');
 const SETTINGS_PATH = path.join(HOME, '.config/magpie/settings.json');
 const USAGE_PATH = path.join(HOME, '.config/magpie/usage.jsonl');
 
@@ -131,10 +132,29 @@ function getProviderClassifications() {
   }
 }
 
+/**
+ * Retrieve routing group IDs configured in Magpie providers.json
+ */
+function getRoutingGroupIds() {
+  const groupIds = new Set(['never-stuck', 'free']);
+  if (fs.existsSync(PROVIDERS_CONFIG_PATH)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(PROVIDERS_CONFIG_PATH, 'utf8'));
+      const groups = data.groups || [];
+      for (const g of groups) {
+        if (g && g.id) groupIds.add(g.id);
+      }
+    } catch {}
+  }
+  return groupIds;
+}
+
 function getMagpieModels() {
   const models = [];
   const seen = new Set();
+  const providerDeclaredModels = new Set();
   const classifications = getProviderClassifications();
+  const routingGroupIds = getRoutingGroupIds();
 
   if (fs.existsSync(PROVIDERS_STATE_PATH)) {
     try {
@@ -147,10 +167,12 @@ function getMagpieModels() {
         const pInfo = classifications[providerId] || { kind: 'api', name: providerId };
         const pModels = p.models || [];
         for (const m of pModels) {
+          if (!m.id || m.id.startsWith('group/') || m.id === 'never-stuck') continue;
           const isModelOn = m.on !== false;
           const isEnabled = isProviderOn && isModelOn;
           const fullName = providerId + '/' + m.id;
           seen.add(fullName);
+          providerDeclaredModels.add(fullName);
           models.push({
             provider: providerId,
             providerName: pInfo.name,
@@ -170,7 +192,7 @@ function getMagpieModels() {
     } catch {}
   }
 
-  // Also include models observed in usage.jsonl or recent sessions/calls
+  // Also include models observed in usage.jsonl or recent sessions/calls (excluding routing groups)
   if (fs.existsSync(USAGE_PATH)) {
     try {
       const content = fs.readFileSync(USAGE_PATH, 'utf8');
@@ -181,14 +203,32 @@ function getMagpieModels() {
           const r = JSON.parse(line);
           if (!r.provider || r.provider === 'unknown' || r.operation === 'execute_tool') continue;
           const prov = r.provider;
+          const isGroupReq = r.req && (r.req.startsWith('group/') || r.req.startsWith('group:'));
           const candidates = [
             r.model,
             r.served,
-            r.req ? (r.req.includes('/') ? r.req.split('/')[1] : r.req) : null
+            (!isGroupReq && r.req) ? (r.req.includes('/') ? r.req.split('/')[1] : r.req) : null
           ];
           for (const mId of candidates) {
-            if (!mId || mId === 'probe' || mId === 'unknown' || mId.startsWith('group/') || mId.includes('__') || mId.includes('search') || mId === 'find_tools' || mId === 'Tavily' || mId === 'web_fetch') continue;
+            if (
+              !mId ||
+              mId === 'probe' ||
+              mId === 'unknown' ||
+              mId.startsWith('group/') ||
+              mId === 'never-stuck' ||
+              mId.includes('__') ||
+              mId.includes('search') ||
+              mId === 'find_tools' ||
+              mId === 'Tavily' ||
+              mId === 'web_fetch'
+            ) {
+              continue;
+            }
             const full = prov + '/' + mId;
+            // Exclude routing group names that are not actually declared provider models
+            if (routingGroupIds.has(mId) && !providerDeclaredModels.has(full)) {
+              continue;
+            }
             if (!seen.has(full)) {
               seen.add(full);
               const pInfo = classifications[prov] || { kind: 'subscription', name: prov };
@@ -284,9 +324,24 @@ function getUsageData() {
         );
         if (isToolOrTest) continue;
 
-        const bare = r.model || r.served || (r.req ? (r.req.includes('/') ? r.req.split('/')[1] : r.req) : null);
-        if (!bare || bare === 'unknown' || bare === 'probe' || bare === 'find_tools' || bare === 'Tavily' || bare === 'web_fetch') continue;
-        const req = r.req || (r.provider + '/' + bare);
+        const isGroupReq = r.req && (r.req.startsWith('group/') || r.req.startsWith('group:'));
+        const actualModel = r.model || r.served;
+        const bare = actualModel || (!isGroupReq && r.req ? (r.req.includes('/') ? r.req.split('/')[1] : r.req) : null);
+        if (
+          !bare ||
+          bare === 'unknown' ||
+          bare === 'probe' ||
+          bare === 'find_tools' ||
+          bare === 'Tavily' ||
+          bare === 'web_fetch' ||
+          bare === 'never-stuck' ||
+          bare.startsWith('group/')
+        ) {
+          continue;
+        }
+        const req = (!isGroupReq && r.req && r.req.includes('/') && !r.req.startsWith('group/'))
+          ? r.req
+          : (r.provider + '/' + bare);
         const inT = r.in || 0;
         const outT = r.out || 0;
         const cRead = r.cache_read || 0;
@@ -645,9 +700,17 @@ function applyGlobalMode(mode, customOverrides = {}) {
     }
   }
 
-  // Remove any unknown/ invalid keys
+  // Remove any unknown/ invalid keys or routing groups
   for (const k of Object.keys(newPrices)) {
-    if (k.startsWith('unknown/') || k === '*/unknown' || k.includes('/unknown')) {
+    if (
+      k.startsWith('unknown/') ||
+      k === '*/unknown' ||
+      k.includes('/unknown') ||
+      k.includes('never-stuck') ||
+      k.startsWith('group/') ||
+      k.includes('/group/') ||
+      k === '*/free'
+    ) {
       delete newPrices[k];
     }
   }

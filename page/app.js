@@ -340,9 +340,19 @@
     const bareUsageMap = window.__MAGPIE_BARE_USAGE__ || {};
 
     for (const item of models) {
-      if (!item.provider || item.provider === "unknown") continue;
+      if (!item.provider || item.provider === "unknown" || item.provider === "group") continue;
       const bare = getBareModel(item.model);
+      if (
+        bare === "never-stuck" ||
+        bare.startsWith("group/") ||
+        item.model?.startsWith("group/") ||
+        item.model?.includes("/never-stuck") ||
+        item.id === "never-stuck"
+      ) {
+        continue;
+      }
       const groupKey = cleanModelName(bare) || bare;
+      if (groupKey === "never-stuck" || groupKey.startsWith("group/")) continue;
 
       if (!map.has(groupKey)) {
         const bu = bareUsageMap[groupKey] || bareUsageMap[bare] || {

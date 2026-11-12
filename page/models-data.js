@@ -14,12 +14,12 @@
       "supported": false
     },
     "usage": {
-      "requests": 6458,
-      "inputTokens": 72556668,
-      "outputTokens": 3445527,
-      "cacheRead": 689115765,
+      "requests": 6801,
+      "inputTokens": 76462615,
+      "outputTokens": 3693478,
+      "cacheRead": 735964621,
       "cacheWrite": 0,
-      "totalTokens": 76002195,
+      "totalTokens": 80156093,
       "lastAt": "2026-11-09T14:29:03.017067+08:00"
     },
     "bareUsage": {
@@ -362,12 +362,12 @@
       "supported": false
     },
     "usage": {
-      "requests": 4882,
-      "inputTokens": 53980634,
-      "outputTokens": 2220140,
-      "cacheRead": 736364716,
+      "requests": 5388,
+      "inputTokens": 58482165,
+      "outputTokens": 2488427,
+      "cacheRead": 781618847,
       "cacheWrite": 0,
-      "totalTokens": 56200774,
+      "totalTokens": 60970592,
       "lastAt": "2026-11-02T14:27:53.129928+08:00"
     },
     "bareUsage": {
@@ -1387,13 +1387,13 @@
       "name": "DeepSeek 官方峰谷 (闲时5折)"
     },
     "usage": {
-      "requests": 2395,
-      "inputTokens": 6653424,
-      "outputTokens": 1242024,
-      "cacheRead": 401557106,
+      "requests": 3264,
+      "inputTokens": 17930704,
+      "outputTokens": 1901284,
+      "cacheRead": 703722354,
       "cacheWrite": 0,
-      "totalTokens": 7895448,
-      "lastAt": "2026-11-10T11:27:59.422821+08:00"
+      "totalTokens": 19831988,
+      "lastAt": "2026-11-11T15:19:38.649287+08:00"
     },
     "bareUsage": {
       "requests": 3391,
@@ -1975,13 +1975,13 @@
       "name": "DeepSeek 官方峰谷 (闲时5折)"
     },
     "usage": {
-      "requests": 216,
-      "inputTokens": 1634300,
-      "outputTokens": 60735,
-      "cacheRead": 61802112,
+      "requests": 352,
+      "inputTokens": 4330409,
+      "outputTokens": 134466,
+      "cacheRead": 117564288,
       "cacheWrite": 0,
-      "totalTokens": 1695035,
-      "lastAt": "2026-10-28T14:18:54.171638+08:00"
+      "totalTokens": 4464875,
+      "lastAt": "2026-10-29T09:52:33.133626+08:00"
     },
     "bareUsage": {
       "requests": 352,
@@ -3112,7 +3112,15 @@
       "discount": 0.5,
       "name": "DeepSeek 官方峰谷 (闲时5折)"
     },
-    "usage": null,
+    "usage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-10-30T16:13:19.103035+08:00"
+    },
     "bareUsage": {
       "requests": 1,
       "inputTokens": 0,
@@ -3244,7 +3252,15 @@
       "discount": 0.5,
       "name": "DeepSeek 官方峰谷 (闲时5折)"
     },
-    "usage": null,
+    "usage": {
+      "requests": 9,
+      "inputTokens": 8550,
+      "outputTokens": 22038,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 30588,
+      "lastAt": "2026-10-30T16:16:07.323955+08:00"
+    },
     "bareUsage": {
       "requests": 3391,
       "inputTokens": 20791975,
@@ -6378,7 +6394,15 @@
       "discount": 0.5,
       "name": "DeepSeek 官方峰谷 (闲时5折)"
     },
-    "usage": null,
+    "usage": {
+      "requests": 366,
+      "inputTokens": 2493283,
+      "outputTokens": 420900,
+      "cacheRead": 59904768,
+      "cacheWrite": 0,
+      "totalTokens": 2914183,
+      "lastAt": "2026-11-11T15:24:20.155234+08:00"
+    },
     "bareUsage": {
       "requests": 366,
       "inputTokens": 2493283,
@@ -6835,48 +6859,6 @@
     }
   },
   {
-    "model": "workbuddy-ai/deepseek-v4.1-flash",
-    "name": "deepseek-v4.1-flash",
-    "provider": "workbuddy-ai",
-    "providerName": "WorkBuddy AI",
-    "providerIcon": "workbuddy-color",
-    "providerKind": "subscription",
-    "enabled": true,
-    "isUnpriced": false,
-    "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.003/$0)",
-    "offPeakPreset": {
-      "supported": true,
-      "provider": "deepseek",
-      "rule": "deepseek",
-      "discount": 0.5,
-      "name": "DeepSeek 官方峰谷 (闲时5折)"
-    },
-    "usage": null,
-    "bareUsage": {
-      "requests": 3391,
-      "inputTokens": 20791975,
-      "outputTokens": 1976710,
-      "cacheRead": 749138802,
-      "cacheWrite": 0,
-      "totalTokens": 22768685,
-      "lastAt": "2026-11-11T15:19:38.649287+08:00"
-    },
-    "matched": {
-      "provider": "deepseek",
-      "model": "deepseek-v4-flash",
-      "name": "DeepSeek V4 Flash",
-      "confidence": "exact",
-      "reason": "原厂规约匹配 (deepseek)",
-      "cost": {
-        "input": 0.15,
-        "output": 0.6,
-        "cache_read": 0.003,
-        "cache_write": 0
-      },
-      "priceString": "0.15,0.6,0.003,0"
-    }
-  },
-  {
     "model": "workbuddy-ai/primary-model",
     "name": "primary-model",
     "provider": "workbuddy-ai",
@@ -6922,57 +6904,6 @@
       },
       "priceString": "0.325,1.95,0.0325,0.40625"
     }
-  },
-  {
-    "model": "antigravity/never-stuck",
-    "name": "never-stuck",
-    "provider": "antigravity",
-    "providerName": "Antigravity",
-    "providerIcon": "antigravity-color",
-    "providerKind": "subscription",
-    "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
-    "offPeakPreset": {
-      "supported": false
-    },
-    "usage": null,
-    "bareUsage": null,
-    "matched": null
-  },
-  {
-    "model": "workbuddy-ai/never-stuck",
-    "name": "never-stuck",
-    "provider": "workbuddy-ai",
-    "providerName": "WorkBuddy AI",
-    "providerIcon": "workbuddy-color",
-    "providerKind": "subscription",
-    "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
-    "offPeakPreset": {
-      "supported": false
-    },
-    "usage": null,
-    "bareUsage": null,
-    "matched": null
-  },
-  {
-    "model": "trae-cn/never-stuck",
-    "name": "never-stuck",
-    "provider": "trae-cn",
-    "providerName": "Trae CN",
-    "providerIcon": "trae",
-    "providerKind": "subscription",
-    "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
-    "offPeakPreset": {
-      "supported": false
-    },
-    "usage": null,
-    "bareUsage": null,
-    "matched": null
   },
   {
     "model": "workbuddy/hy4-free",
@@ -7078,48 +7009,6 @@
         "cache_write": 0
       },
       "priceString": "2,10,0.1,0"
-    }
-  },
-  {
-    "model": "marvis/deepseek-v4.1-flash",
-    "name": "deepseek-v4.1-flash",
-    "provider": "marvis",
-    "providerName": "腾讯 Marvis TENCENT",
-    "providerIcon": "file:4636929b8040eb80.png",
-    "providerKind": "subscription",
-    "enabled": true,
-    "isUnpriced": false,
-    "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.003/$0)",
-    "offPeakPreset": {
-      "supported": true,
-      "provider": "deepseek",
-      "rule": "deepseek",
-      "discount": 0.5,
-      "name": "DeepSeek 官方峰谷 (闲时5折)"
-    },
-    "usage": null,
-    "bareUsage": {
-      "requests": 3391,
-      "inputTokens": 20791975,
-      "outputTokens": 1976710,
-      "cacheRead": 749138802,
-      "cacheWrite": 0,
-      "totalTokens": 22768685,
-      "lastAt": "2026-11-11T15:19:38.649287+08:00"
-    },
-    "matched": {
-      "provider": "deepseek",
-      "model": "deepseek-v4-flash",
-      "name": "DeepSeek V4 Flash",
-      "confidence": "exact",
-      "reason": "原厂规约匹配 (deepseek)",
-      "cost": {
-        "input": 0.15,
-        "output": 0.6,
-        "cache_read": 0.003,
-        "cache_write": 0
-      },
-      "priceString": "0.15,0.6,0.003,0"
     }
   }
 ];

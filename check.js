@@ -12,11 +12,12 @@ const catalog = matcher.loadCatalog();
 assert(Array.isArray(catalog) && catalog.length > 0, 'Catalog 应该成功加载且不为空');
 console.log('   ✓ Catalog 加载成功，包含模型条目:', catalog.length);
 
-// 2. 验证 Magpie 活跃模型解析
-console.log('2. 测试 Magpie 活跃模型读取...');
+// 2. 验证 Magpie 活跃模型解析与路由组排除
+console.log('2. 测试 Magpie 活跃模型读取与路由组过滤...');
 const models = matcher.getMagpieModels();
 assert(Array.isArray(models), 'Models 应该返回数组');
-console.log('   ✓ 活跃模型读取成功，当前包含:', models.length, '个');
+assert(!models.some(m => m.id === 'never-stuck' || m.fullName.includes('/never-stuck') || m.id.startsWith('group/')), '路由组(如 never-stuck 等)不应被错误识别为供应商模型');
+console.log('   ✓ 活跃模型读取成功，当前包含:', models.length, '个，已成功排除所有路由组与负载均衡端点');
 
 // 3. 验证核心厂商智能匹配算法
 console.log('3. 测试智能匹配规则...');

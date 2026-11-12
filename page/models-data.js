@@ -23,12 +23,12 @@
       "lastAt": "2026-11-09T14:29:03.017067+08:00"
     },
     "bareUsage": {
-      "requests": 6890,
-      "inputTokens": 76724053,
-      "outputTokens": 3733746,
-      "cacheRead": 736000591,
+      "requests": 12278,
+      "inputTokens": 135206218,
+      "outputTokens": 6222173,
+      "cacheRead": 1517619438,
       "cacheWrite": 0,
-      "totalTokens": 80457799,
+      "totalTokens": 141428391,
       "lastAt": "2026-11-11T13:55:08.81503+08:00"
     },
     "matched": {
@@ -147,7 +147,7 @@
     "providerKind": "subscription",
     "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.075/$0)",
+    "currentPrice": "Custom: $0.25/$0.69 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -177,7 +177,7 @@
     "providerKind": "subscription",
     "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.5/$10 in/out (cache: $0/$0)",
+    "currentPrice": "Custom: $0.3/$2.5 in/out (cache: $0.03/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -463,12 +463,12 @@
       "lastAt": "2026-11-11T13:55:08.81503+08:00"
     },
     "bareUsage": {
-      "requests": 6890,
-      "inputTokens": 76724053,
-      "outputTokens": 3733746,
-      "cacheRead": 736000591,
+      "requests": 12278,
+      "inputTokens": 135206218,
+      "outputTokens": 6222173,
+      "cacheRead": 1517619438,
       "cacheWrite": 0,
-      "totalTokens": 80457799,
+      "totalTokens": 141428391,
       "lastAt": "2026-11-11T13:55:08.81503+08:00"
     },
     "matched": {
@@ -981,12 +981,12 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 6890,
-      "inputTokens": 76724053,
-      "outputTokens": 3733746,
-      "cacheRead": 736000591,
+      "requests": 12278,
+      "inputTokens": 135206218,
+      "outputTokens": 6222173,
+      "cacheRead": 1517619438,
       "cacheWrite": 0,
-      "totalTokens": 80457799,
+      "totalTokens": 141428391,
       "lastAt": "2026-11-11T13:55:08.81503+08:00"
     },
     "matched": {
@@ -1103,7 +1103,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1/$20 in/out (cache: $0/$0)",
+    "currentPrice": "Custom: $1.25/$10 in/out (cache: $0.125/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -1133,7 +1133,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.5/$10 in/out (cache: $0/$0)",
+    "currentPrice": "Custom: $0.3/$2.5 in/out (cache: $0.03/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -1262,18 +1262,18 @@
       "lastAt": "2026-11-04T13:12:54.230795+08:00"
     },
     "matched": {
-      "provider": "tencent-tokenhub",
-      "model": "hy4",
-      "name": "Hy4",
+      "provider": "orcarouter",
+      "model": "orcarouter/free",
+      "name": "OrcaRouter Free",
       "confidence": "medium",
-      "reason": "关联厂商模型 (tencent-tokenhub)",
+      "reason": "模糊推荐匹配 (orcarouter)",
       "cost": {
-        "input": 0.834,
-        "output": 2.501,
-        "cache_read": 0.042,
+        "input": 0,
+        "output": 0,
+        "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "0.834,2.501,0.042,0"
+      "priceString": "0,0,0,0"
     }
   },
   {
@@ -1307,20 +1307,7 @@
       "totalTokens": 78192,
       "lastAt": "2026-11-07T07:38:56.971941+08:00"
     },
-    "matched": {
-      "provider": "tencent-tokenhub",
-      "model": "hy4",
-      "name": "Hy4",
-      "confidence": "medium",
-      "reason": "关联厂商模型 (tencent-tokenhub)",
-      "cost": {
-        "input": 0.834,
-        "output": 2.501,
-        "cache_read": 0.042,
-        "cache_write": 0
-      },
-      "priceString": "0.834,2.501,0.042,0"
-    }
+    "matched": null
   },
   {
     "model": "workbuddy/hy3",
@@ -1623,7 +1610,7 @@
     "providerKind": "subscription",
     "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1.9437/$10.1671 in/out (cache: $0.1944/$1.9437)",
+    "currentPrice": "Custom: $2/$10 in/out (cache: $0.2/$2)",
     "offPeakPreset": {
       "supported": false
     },
@@ -1669,7 +1656,7 @@
     "providerKind": "subscription",
     "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $2.9879/$14.9395 in/out (cache: $0.2988/$2.9879)",
+    "currentPrice": "Custom: $3/$15 in/out (cache: $0.3/$3)",
     "offPeakPreset": {
       "supported": false
     },
@@ -1779,7 +1766,7 @@
     "providerKind": "subscription",
     "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1/$2.7 in/out (cache: $0.1/$0)",
+    "currentPrice": "Custom: $1.04613/$2.98895 in/out (cache: $0.10461/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -1901,18 +1888,18 @@
       "lastAt": "2026-11-04T13:12:54.230795+08:00"
     },
     "matched": {
-      "provider": "tencent-tokenhub",
-      "model": "hy4",
-      "name": "Hy4",
+      "provider": "orcarouter",
+      "model": "orcarouter/free",
+      "name": "OrcaRouter Free",
       "confidence": "medium",
-      "reason": "关联厂商模型 (tencent-tokenhub)",
+      "reason": "模糊推荐匹配 (orcarouter)",
       "cost": {
-        "input": 0.834,
-        "output": 2.501,
-        "cache_read": 0.042,
+        "input": 0,
+        "output": 0,
+        "cache_read": 0,
         "cache_write": 0
       },
-      "priceString": "0.834,2.501,0.042,0"
+      "priceString": "0,0,0,0"
     }
   },
   {
@@ -1938,20 +1925,7 @@
       "totalTokens": 78192,
       "lastAt": "2026-11-07T07:38:56.971941+08:00"
     },
-    "matched": {
-      "provider": "tencent-tokenhub",
-      "model": "hy4",
-      "name": "Hy4",
-      "confidence": "medium",
-      "reason": "关联厂商模型 (tencent-tokenhub)",
-      "cost": {
-        "input": 0.834,
-        "output": 2.501,
-        "cache_read": 0.042,
-        "cache_write": 0
-      },
-      "priceString": "0.834,2.501,0.042,0"
-    }
+    "matched": null
   },
   {
     "model": "workbuddy-ai/hy3",
@@ -2304,12 +2278,12 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 6890,
-      "inputTokens": 76724053,
-      "outputTokens": 3733746,
-      "cacheRead": 736000591,
+      "requests": 12278,
+      "inputTokens": 135206218,
+      "outputTokens": 6222173,
+      "cacheRead": 1517619438,
       "cacheWrite": 0,
-      "totalTokens": 80457799,
+      "totalTokens": 141428391,
       "lastAt": "2026-11-11T13:55:08.81503+08:00"
     },
     "matched": {
@@ -2412,7 +2386,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1.9437/$10.1671 in/out (cache: $0.1944/$1.9437)",
+    "currentPrice": "Custom: $2/$10 in/out (cache: $0.2/$2)",
     "offPeakPreset": {
       "supported": false
     },
@@ -2458,7 +2432,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $3.8874/$20.3342 in/out (cache: $0.1944/$3.8874)",
+    "currentPrice": "Custom: $4/$20 in/out (cache: $0.2/$4)",
     "offPeakPreset": {
       "supported": false
     },
@@ -2488,7 +2462,7 @@
     "providerKind": "subscription",
     "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $2.9879/$14.9395 in/out (cache: $0.2988/$2.9879)",
+    "currentPrice": "Custom: $3/$15 in/out (cache: $0.3/$3)",
     "offPeakPreset": {
       "supported": false
     },
@@ -2697,14 +2671,27 @@
     "providerIcon": "trae",
     "providerKind": "subscription",
     "enabled": false,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.11594203/$1.15942029 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
     },
     "usage": null,
     "bareUsage": null,
-    "matched": null
+    "matched": {
+      "provider": "qiniu-ai",
+      "model": "doubao-seed-1.6",
+      "name": "Doubao-Seed 1.6",
+      "confidence": "high",
+      "reason": "渠道规格匹配 (qiniu-ai)",
+      "cost": {
+        "input": 0.11594203,
+        "output": 1.15942029,
+        "cache_read": 0,
+        "cache_write": 0
+      },
+      "priceString": "0.11594203,1.15942029,0,0"
+    }
   },
   {
     "model": "trae-cn/Doubao-Seed-Code",
@@ -2715,7 +2702,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.17/$1.12 in/out (cache: $0.034/$0)",
+    "currentPrice": "Custom: $0.17/$1.12 in/out (cache: $0.03/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -2745,7 +2732,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1.19516/$4.18306 in/out (cache: $0.29879/$0)",
+    "currentPrice": "Custom: $1.18747/$4.15615 in/out (cache: $0.29687/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -2941,7 +2928,7 @@
     "providerKind": "subscription",
     "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1.19516/$4.18306 in/out (cache: $0.29879/$0)",
+    "currentPrice": "Custom: $0.59758/$2.68911 in/out (cache: $0.1494/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -3061,7 +3048,7 @@
     "providerKind": "subscription",
     "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1.19516/$4.18306 in/out (cache: $0.29879/$0)",
+    "currentPrice": "Custom: $0.59758/$2.68911 in/out (cache: $0.1494/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -3227,7 +3214,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.9711/$4.0337 in/out (cache: $0.1942/$0)",
+    "currentPrice": "Custom: $0.95/$4 in/out (cache: $0.19/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -3583,7 +3570,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1.9437/$10.1671 in/out (cache: $0.1944/$1.9437)",
+    "currentPrice": "Custom: $2/$10 in/out (cache: $0.2/$2)",
     "offPeakPreset": {
       "supported": false
     },
@@ -3621,7 +3608,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1.9437/$10.1671 in/out (cache: $0.1944/$1.9437)",
+    "currentPrice": "Custom: $2/$10 in/out (cache: $0.2/$2)",
     "offPeakPreset": {
       "supported": false
     },
@@ -3651,7 +3638,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $2.9879/$14.9395 in/out (cache: $0.2988/$2.9879)",
+    "currentPrice": "Custom: $3/$15 in/out (cache: $0.3/$3)",
     "offPeakPreset": {
       "supported": false
     },
@@ -3681,7 +3668,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $2.9879/$14.9395 in/out (cache: $0.2988/$2.9879)",
+    "currentPrice": "Custom: $3/$15 in/out (cache: $0.3/$3)",
     "offPeakPreset": {
       "supported": false
     },
@@ -3771,7 +3758,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.57/$2.3 in/out (cache: $0.5/$0)",
+    "currentPrice": "Custom: $0.4/$2.5 in/out (cache: $0.4/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -3997,7 +3984,7 @@
     "providerKind": "subscription",
     "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.015/$0)",
+    "currentPrice": "Custom: $0.3/$1.2 in/out (cache: $0.06/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -4177,7 +4164,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1/$2.7 in/out (cache: $0.1/$0)",
+    "currentPrice": "Custom: $1.04613/$2.98895 in/out (cache: $0.10461/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -4207,7 +4194,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1/$2.7 in/out (cache: $0.1/$0)",
+    "currentPrice": "Custom: $1.04613/$2.98895 in/out (cache: $0.10461/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -4339,7 +4326,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0/$0 in/out (cache: $0/$0)",
+    "currentPrice": "Custom: $2/$6 in/out (cache: $0.25/$2.5)",
     "offPeakPreset": {
       "supported": true,
       "provider": "alibaba",
@@ -4394,7 +4381,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1.6/$6.4 in/out (cache: $0/$0)",
+    "currentPrice": "Custom: $0/$0 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": true,
       "provider": "alibaba",
@@ -4564,7 +4551,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1.2/$4 in/out (cache: $0.24/$0)",
+    "currentPrice": "Custom: $0.72/$3.2 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -4594,7 +4581,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.9711/$4.0337 in/out (cache: $0.1643/$0)",
+    "currentPrice": "Custom: $0.95/$4 in/out (cache: $0.16/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -4795,7 +4782,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.5/$3 in/out (cache: $0/$0)",
+    "currentPrice": "Custom: $0.67/$3.36 in/out (cache: $0.14/$0.0024)",
     "offPeakPreset": {
       "supported": false
     },
@@ -4867,7 +4854,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.3/$1.2 in/out (cache: $0.03/$0.375)",
+    "currentPrice": "Custom: $0.3/$1.2 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -4987,7 +4974,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1.9437/$10.1671 in/out (cache: $0.1944/$1.9437)",
+    "currentPrice": "Custom: $2/$10 in/out (cache: $0.2/$2)",
     "offPeakPreset": {
       "supported": false
     },
@@ -5017,7 +5004,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1.9437/$10.1671 in/out (cache: $0.1944/$1.9437)",
+    "currentPrice": "Custom: $2/$10 in/out (cache: $0.2/$2)",
     "offPeakPreset": {
       "supported": false
     },
@@ -5047,7 +5034,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $2.9879/$14.9395 in/out (cache: $0.2988/$2.9879)",
+    "currentPrice": "Custom: $3/$15 in/out (cache: $0.3/$3)",
     "offPeakPreset": {
       "supported": false
     },
@@ -5077,7 +5064,7 @@
     "providerKind": "subscription",
     "enabled": false,
     "isUnpriced": false,
-    "currentPrice": "Custom: $2.9879/$14.9395 in/out (cache: $0.2988/$2.9879)",
+    "currentPrice": "Custom: $3/$15 in/out (cache: $0.3/$3)",
     "offPeakPreset": {
       "supported": false
     },
@@ -5625,7 +5612,7 @@
     "providerKind": "subscription",
     "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $0.3/$1.5 in/out (cache: $0.06/$0.375)",
+    "currentPrice": "Custom: $10/$10 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": true,
       "provider": "alibaba",
@@ -5659,7 +5646,7 @@
     "providerKind": "subscription",
     "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "Custom: $1.65/$3.301 in/out (cache: $0/$0)",
+    "currentPrice": "Custom: $0/$0 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": true,
       "provider": "alibaba",
@@ -5692,8 +5679,8 @@
     "providerIcon": "file:d3dbde503259f194.png",
     "providerKind": "subscription",
     "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "isUnpriced": false,
+    "currentPrice": "Custom: $5/$25 in/out (cache: $0.5/$6.25)",
     "offPeakPreset": {
       "supported": true,
       "provider": "alibaba",
@@ -5941,12 +5928,12 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 6890,
-      "inputTokens": 76724053,
-      "outputTokens": 3733746,
-      "cacheRead": 736000591,
+      "requests": 12278,
+      "inputTokens": 135206218,
+      "outputTokens": 6222173,
+      "cacheRead": 1517619438,
       "cacheWrite": 0,
-      "totalTokens": 80457799,
+      "totalTokens": 141428391,
       "lastAt": "2026-11-11T13:55:08.81503+08:00"
     },
     "matched": {
@@ -6070,8 +6057,8 @@
     "providerIcon": "file:9bfce7ccdaaaa0fe.png",
     "providerKind": "subscription",
     "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.15/$0.47 in/out (cache: $0.016/$0.2)",
     "offPeakPreset": {
       "supported": true,
       "provider": "alibaba",
@@ -6104,8 +6091,8 @@
     "providerIcon": "file:9bfce7ccdaaaa0fe.png",
     "providerKind": "subscription",
     "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "isUnpriced": false,
+    "currentPrice": "Custom: $2/$6 in/out (cache: $0.25/$2.5)",
     "offPeakPreset": {
       "supported": true,
       "provider": "alibaba",
@@ -6138,8 +6125,8 @@
     "providerIcon": "file:9bfce7ccdaaaa0fe.png",
     "providerKind": "subscription",
     "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "isUnpriced": false,
+    "currentPrice": "Custom: $1.19516/$4.18306 in/out (cache: $0.29879/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -6168,8 +6155,8 @@
     "providerIcon": "file:9bfce7ccdaaaa0fe.png",
     "providerKind": "subscription",
     "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.4/$1.6 in/out (cache: $0.08/$0.5)",
     "offPeakPreset": {
       "supported": true,
       "provider": "alibaba",
@@ -6202,8 +6189,8 @@
     "providerIcon": "file:9bfce7ccdaaaa0fe.png",
     "providerKind": "subscription",
     "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.5/$3 in/out (cache: $0.05/$0.625)",
     "offPeakPreset": {
       "supported": true,
       "provider": "alibaba",
@@ -6236,8 +6223,8 @@
     "providerIcon": "file:9bfce7ccdaaaa0fe.png",
     "providerKind": "subscription",
     "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.4/$2.4 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": true,
       "provider": "alibaba",
@@ -6270,8 +6257,8 @@
     "providerIcon": "file:9bfce7ccdaaaa0fe.png",
     "providerKind": "subscription",
     "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.66/$1.98 in/out (cache: $0.022/$0)",
     "offPeakPreset": {
       "supported": true,
       "provider": "deepseek",
@@ -6304,8 +6291,8 @@
     "providerIcon": "file:9bfce7ccdaaaa0fe.png",
     "providerKind": "subscription",
     "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.08906/$0.53436 in/out (cache: $0.01781/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -6334,8 +6321,8 @@
     "providerIcon": "file:9bfce7ccdaaaa0fe.png",
     "providerKind": "subscription",
     "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.02969/$0.29687 in/out (cache: $0.00594/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -6364,8 +6351,8 @@
     "providerIcon": "file:9bfce7ccdaaaa0fe.png",
     "providerKind": "subscription",
     "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.4453/$1.3359 in/out (cache: $0.01484/$0)",
     "offPeakPreset": {
       "supported": true,
       "provider": "deepseek",
@@ -6398,8 +6385,8 @@
     "providerIcon": "file:4636929b8040eb80.png",
     "providerKind": "subscription",
     "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.003/$0)",
     "offPeakPreset": {
       "supported": true,
       "provider": "deepseek",
@@ -6440,8 +6427,8 @@
     "providerIcon": "file:4636929b8040eb80.png",
     "providerKind": "subscription",
     "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.66/$1.98 in/out (cache: $0.022/$0)",
     "offPeakPreset": {
       "supported": true,
       "provider": "deepseek",
@@ -6474,8 +6461,8 @@
     "providerIcon": "file:4636929b8040eb80.png",
     "providerKind": "subscription",
     "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.003/$0)",
     "offPeakPreset": {
       "supported": true,
       "provider": "deepseek",
@@ -6508,8 +6495,8 @@
     "providerIcon": "file:4636929b8040eb80.png",
     "providerKind": "subscription",
     "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0/$0 in/out (cache: $0/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -6539,7 +6526,7 @@
     "providerKind": "subscription",
     "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "List: $3/$15 in/out",
+    "currentPrice": "Custom: $3/$15 in/out (cache: $0.3/$3.75)",
     "offPeakPreset": {
       "supported": false
     },
@@ -6577,12 +6564,20 @@
     "providerKind": "subscription",
     "enabled": true,
     "isUnpriced": false,
-    "currentPrice": "List: $5/$25 in/out",
+    "currentPrice": "Custom: $5/$25 in/out (cache: $0.5/$6.25)",
     "offPeakPreset": {
       "supported": false
     },
     "usage": null,
-    "bareUsage": null,
+    "bareUsage": {
+      "requests": 41,
+      "inputTokens": 189987,
+      "outputTokens": 18019,
+      "cacheRead": 823281,
+      "cacheWrite": 0,
+      "totalTokens": 208006,
+      "lastAt": "2026-10-28T16:15:45.870654+08:00"
+    },
     "matched": {
       "provider": "anthropic",
       "model": "claude-opus-4-6",
@@ -6606,8 +6601,8 @@
     "providerIcon": "file:4636929b8040eb80.png",
     "providerKind": "subscription",
     "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
+    "isUnpriced": false,
+    "currentPrice": "Custom: $2.5/$15 in/out (cache: $0.25/$0)",
     "offPeakPreset": {
       "supported": false
     },
@@ -6636,6 +6631,126 @@
     "providerIcon": "file:4636929b8040eb80.png",
     "providerKind": "subscription",
     "enabled": true,
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.834/$2.501 in/out (cache: $0.042/$0)",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "tencent-tokenhub",
+      "model": "hy4",
+      "name": "Hy4",
+      "confidence": "high",
+      "reason": "官方规格匹配",
+      "cost": {
+        "input": 0.834,
+        "output": 2.501,
+        "cache_read": 0.042,
+        "cache_write": 0
+      },
+      "priceString": "0.834,2.501,0.042,0"
+    }
+  },
+  {
+    "model": "antigravity/gemini-3.8-flash-control",
+    "name": "gemini-3.8-flash-control",
+    "provider": "antigravity",
+    "providerName": "Antigravity",
+    "providerIcon": "antigravity-color",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.75/$3.75 in/out (cache: $0.075/$0)",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "google",
+      "model": "gemini-3.8-flash",
+      "name": "Gemini 3.8 Flash",
+      "confidence": "exact",
+      "reason": "原厂规约匹配 (google)",
+      "cost": {
+        "input": 0.75,
+        "output": 3.75,
+        "cache_read": 0.075,
+        "cache_write": 0
+      },
+      "priceString": "0.75,3.75,0.075,0"
+    }
+  },
+  {
+    "model": "antigravity/gemini-3.8-flash-n",
+    "name": "gemini-3.8-flash-n",
+    "provider": "antigravity",
+    "providerName": "Antigravity",
+    "providerIcon": "antigravity-color",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.75/$3.75 in/out (cache: $0.075/$0)",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "google",
+      "model": "gemini-3.8-flash",
+      "name": "Gemini 3.8 Flash",
+      "confidence": "exact",
+      "reason": "原厂规约匹配 (google)",
+      "cost": {
+        "input": 0.75,
+        "output": 3.75,
+        "cache_read": 0.075,
+        "cache_write": 0
+      },
+      "priceString": "0.75,3.75,0.075,0"
+    }
+  },
+  {
+    "model": "workbuddy-ai/hy4-preview",
+    "name": "hy4-preview",
+    "provider": "workbuddy-ai",
+    "providerName": "WorkBuddy AI",
+    "providerIcon": "workbuddy-color",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.834/$2.501 in/out (cache: $0.042/$0)",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "tencent-tokenhub",
+      "model": "hy4",
+      "name": "Hy4",
+      "confidence": "exact",
+      "reason": "原厂规约匹配 (tencent-tokenhub)",
+      "cost": {
+        "input": 0.834,
+        "output": 2.501,
+        "cache_read": 0.042,
+        "cache_write": 0
+      },
+      "priceString": "0.834,2.501,0.042,0"
+    }
+  },
+  {
+    "model": "workbuddy-ai/fast-model",
+    "name": "fast-model",
+    "provider": "workbuddy-ai",
+    "providerName": "WorkBuddy AI",
+    "providerIcon": "workbuddy-color",
+    "providerKind": "subscription",
+    "enabled": true,
     "isUnpriced": true,
     "currentPrice": "no price is known for it",
     "offPeakPreset": {
@@ -6643,19 +6758,497 @@
     },
     "usage": null,
     "bareUsage": null,
+    "matched": null
+  },
+  {
+    "model": "workbuddy-ai/gpt-5.5",
+    "name": "gpt-5.5",
+    "provider": "workbuddy-ai",
+    "providerName": "WorkBuddy AI",
+    "providerIcon": "workbuddy-color",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": false,
+    "currentPrice": "Custom: $5/$30 in/out (cache: $0.5/$0)",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
-      "provider": "tencent-coding-plan",
-      "model": "hunyuan-2.0-instruct",
-      "name": "Tencent HY 2.0 Instruct",
-      "confidence": "high",
-      "reason": "官方规格匹配",
+      "provider": "openai",
+      "model": "gpt-5.5",
+      "name": "GPT-5.5",
+      "confidence": "exact",
+      "reason": "原厂规约匹配 (openai)",
       "cost": {
-        "input": 0,
-        "output": 0,
-        "cache_read": 0,
+        "input": 5,
+        "output": 30,
+        "cache_read": 0.5,
         "cache_write": 0
       },
-      "priceString": "0,0,0,0"
+      "priceString": "5,30,0.5,0"
+    }
+  },
+  {
+    "model": "workbuddy-ai/gpt-5.4",
+    "name": "gpt-5.4",
+    "provider": "workbuddy-ai",
+    "providerName": "WorkBuddy AI",
+    "providerIcon": "workbuddy-color",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": false,
+    "currentPrice": "Custom: $2.5/$15 in/out (cache: $0.25/$0)",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "openai",
+      "model": "gpt-5.4",
+      "name": "GPT-5.4",
+      "confidence": "exact",
+      "reason": "原厂规约匹配 (openai)",
+      "cost": {
+        "input": 2.5,
+        "output": 15,
+        "cache_read": 0.25,
+        "cache_write": 0
+      },
+      "priceString": "2.5,15,0.25,0"
+    }
+  },
+  {
+    "model": "workbuddy-ai/glm-5.2",
+    "name": "glm-5.2",
+    "provider": "workbuddy-ai",
+    "providerName": "WorkBuddy AI",
+    "providerIcon": "workbuddy-color",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": false,
+    "currentPrice": "Custom: $1.19516/$4.18306 in/out (cache: $0.29879/$0)",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "zhipuai",
+      "model": "glm-5.2",
+      "name": "GLM-5.2",
+      "confidence": "exact",
+      "reason": "原厂规约匹配 (zhipuai)",
+      "cost": {
+        "input": 1.19516,
+        "output": 4.18306,
+        "cache_read": 0.29879,
+        "cache_write": 0
+      },
+      "priceString": "1.19516,4.18306,0.29879,0"
+    }
+  },
+  {
+    "model": "workbuddy-ai/deepseek-v4.1-flash",
+    "name": "deepseek-v4.1-flash",
+    "provider": "workbuddy-ai",
+    "providerName": "WorkBuddy AI",
+    "providerIcon": "workbuddy-color",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.003/$0)",
+    "offPeakPreset": {
+      "supported": true,
+      "provider": "deepseek",
+      "rule": "deepseek",
+      "discount": 0.5,
+      "name": "DeepSeek 官方峰谷 (闲时5折)"
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 3391,
+      "inputTokens": 20791975,
+      "outputTokens": 1976710,
+      "cacheRead": 749138802,
+      "cacheWrite": 0,
+      "totalTokens": 22768685,
+      "lastAt": "2026-11-11T15:19:38.649287+08:00"
+    },
+    "matched": {
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "name": "DeepSeek V4 Flash",
+      "confidence": "exact",
+      "reason": "原厂规约匹配 (deepseek)",
+      "cost": {
+        "input": 0.15,
+        "output": 0.6,
+        "cache_read": 0.003,
+        "cache_write": 0
+      },
+      "priceString": "0.15,0.6,0.003,0"
+    }
+  },
+  {
+    "model": "workbuddy-ai/primary-model",
+    "name": "primary-model",
+    "provider": "workbuddy-ai",
+    "providerName": "WorkBuddy AI",
+    "providerIcon": "workbuddy-color",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": null
+  },
+  {
+    "model": "workbuddy-ai/balanced-model",
+    "name": "balanced-model",
+    "provider": "workbuddy-ai",
+    "providerName": "WorkBuddy AI",
+    "providerIcon": "workbuddy-color",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.325/$1.95 in/out (cache: $0.0325/$0.40625)",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "kilo",
+      "model": "kilo-auto/balanced",
+      "name": "Auto Balanced",
+      "confidence": "medium",
+      "reason": "模糊推荐匹配 (kilo)",
+      "cost": {
+        "input": 0.325,
+        "output": 1.95,
+        "cache_read": 0.0325,
+        "cache_write": 0.40625
+      },
+      "priceString": "0.325,1.95,0.0325,0.40625"
+    }
+  },
+  {
+    "model": "antigravity/never-stuck",
+    "name": "never-stuck",
+    "provider": "antigravity",
+    "providerName": "Antigravity",
+    "providerIcon": "antigravity-color",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": null
+  },
+  {
+    "model": "workbuddy-ai/never-stuck",
+    "name": "never-stuck",
+    "provider": "workbuddy-ai",
+    "providerName": "WorkBuddy AI",
+    "providerIcon": "workbuddy-color",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": null
+  },
+  {
+    "model": "trae-cn/never-stuck",
+    "name": "never-stuck",
+    "provider": "trae-cn",
+    "providerName": "Trae CN",
+    "providerIcon": "trae",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": null
+  },
+  {
+    "model": "workbuddy/hy4-free",
+    "name": "hy4-free",
+    "provider": "workbuddy",
+    "providerName": "WorkBuddy",
+    "providerIcon": "workbuddy-color",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.834/$2.501 in/out (cache: $0.042/$0)",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "tencent-tokenhub",
+      "model": "hy4",
+      "name": "Hy4",
+      "confidence": "exact",
+      "reason": "原厂规约匹配 (tencent-tokenhub)",
+      "cost": {
+        "input": 0.834,
+        "output": 2.501,
+        "cache_read": 0.042,
+        "cache_write": 0
+      },
+      "priceString": "0.834,2.501,0.042,0"
+    }
+  },
+  {
+    "model": "workbuddy/hy4",
+    "name": "hy4",
+    "provider": "workbuddy",
+    "providerName": "WorkBuddy",
+    "providerIcon": "workbuddy-color",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.834/$2.501 in/out (cache: $0.042/$0)",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": null,
+    "matched": {
+      "provider": "tencent-tokenhub",
+      "model": "hy4",
+      "name": "Hy4",
+      "confidence": "exact",
+      "reason": "原厂规约匹配 (tencent-tokenhub)",
+      "cost": {
+        "input": 0.834,
+        "output": 2.501,
+        "cache_read": 0.042,
+        "cache_write": 0
+      },
+      "priceString": "0.834,2.501,0.042,0"
+    }
+  },
+  {
+    "model": "workbuddy/gemini-4",
+    "name": "gemini-4",
+    "provider": "workbuddy",
+    "providerName": "WorkBuddy",
+    "providerIcon": "workbuddy-color",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": false,
+    "currentPrice": "Custom: $2/$10 in/out (cache: $0.1/$0)",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-04T13:13:20.581728+08:00"
+    },
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-04T13:13:20.581728+08:00"
+    },
+    "matched": {
+      "provider": "google",
+      "model": "gemini-4-carbon",
+      "name": "Gemini 4 Carbon",
+      "confidence": "medium",
+      "reason": "关联厂商模型 (google)",
+      "cost": {
+        "input": 2,
+        "output": 10,
+        "cache_read": 0.1,
+        "cache_write": 0
+      },
+      "priceString": "2,10,0.1,0"
+    }
+  },
+  {
+    "model": "unknown/find_tools",
+    "name": "find_tools",
+    "provider": "unknown",
+    "providerName": "unknown",
+    "providerIcon": null,
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 4,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T10:23:26.841062+08:00"
+    },
+    "matched": null
+  },
+  {
+    "model": "unknown/Tavily",
+    "name": "Tavily",
+    "provider": "unknown",
+    "providerName": "unknown",
+    "providerIcon": null,
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T10:23:31.857828+08:00"
+    },
+    "matched": null
+  },
+  {
+    "model": "unknown/web_fetch",
+    "name": "web_fetch",
+    "provider": "unknown",
+    "providerName": "unknown",
+    "providerIcon": null,
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": true,
+    "currentPrice": "no price is known for it",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 1,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-05T10:23:51.184946+08:00"
+    },
+    "matched": null
+  },
+  {
+    "model": "unknown/gpt-5.6-terra",
+    "name": "gpt-5.6-terra",
+    "provider": "unknown",
+    "providerName": "unknown",
+    "providerIcon": null,
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": false,
+    "currentPrice": "Custom: $2/$12 in/out (cache: $0.2/$2.5)",
+    "offPeakPreset": {
+      "supported": false
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 2,
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 0,
+      "lastAt": "2026-11-06T09:41:38.983275+08:00"
+    },
+    "matched": {
+      "provider": "openai",
+      "model": "gpt-5.6-terra",
+      "name": "GPT-5.6 Terra",
+      "confidence": "exact",
+      "reason": "原厂规约匹配 (openai)",
+      "cost": {
+        "input": 2,
+        "output": 12,
+        "cache_read": 0.2,
+        "cache_write": 2.5
+      },
+      "priceString": "2,12,0.2,2.5"
+    }
+  },
+  {
+    "model": "marvis/deepseek-v4.1-flash",
+    "name": "deepseek-v4.1-flash",
+    "provider": "marvis",
+    "providerName": "腾讯 Marvis TENCENT",
+    "providerIcon": "file:4636929b8040eb80.png",
+    "providerKind": "subscription",
+    "enabled": true,
+    "isUnpriced": false,
+    "currentPrice": "Custom: $0.15/$0.6 in/out (cache: $0.003/$0)",
+    "offPeakPreset": {
+      "supported": true,
+      "provider": "deepseek",
+      "rule": "deepseek",
+      "discount": 0.5,
+      "name": "DeepSeek 官方峰谷 (闲时5折)"
+    },
+    "usage": null,
+    "bareUsage": {
+      "requests": 3391,
+      "inputTokens": 20791975,
+      "outputTokens": 1976710,
+      "cacheRead": 749138802,
+      "cacheWrite": 0,
+      "totalTokens": 22768685,
+      "lastAt": "2026-11-11T15:19:38.649287+08:00"
+    },
+    "matched": {
+      "provider": "deepseek",
+      "model": "deepseek-v4-flash",
+      "name": "DeepSeek V4 Flash",
+      "confidence": "exact",
+      "reason": "原厂规约匹配 (deepseek)",
+      "cost": {
+        "input": 0.15,
+        "output": 0.6,
+        "cache_read": 0.003,
+        "cache_write": 0
+      },
+      "priceString": "0.15,0.6,0.003,0"
     }
   }
 ];
@@ -6685,6 +7278,15 @@
     "totalTokens": 22768685,
     "lastAt": "2026-11-11T15:19:38.649287+08:00"
   },
+  "deepseek-v4-flash": {
+    "requests": 4109,
+    "inputTokens": 27615667,
+    "outputTokens": 2532076,
+    "cacheRead": 926607858,
+    "cacheWrite": 0,
+    "totalTokens": 30147743,
+    "lastAt": "2026-11-11T15:24:20.155234+08:00"
+  },
   "gemini-3.8-flash-tiered": {
     "requests": 5388,
     "inputTokens": 58482165,
@@ -6695,12 +7297,12 @@
     "lastAt": "2026-11-02T14:27:53.129928+08:00"
   },
   "gemini-3.8-flash": {
-    "requests": 6890,
-    "inputTokens": 76724053,
-    "outputTokens": 3733746,
-    "cacheRead": 736000591,
+    "requests": 12278,
+    "inputTokens": 135206218,
+    "outputTokens": 6222173,
+    "cacheRead": 1517619438,
     "cacheWrite": 0,
-    "totalTokens": 80457799,
+    "totalTokens": 141428391,
     "lastAt": "2026-11-11T13:55:08.81503+08:00"
   },
   "deepseek-v4.1-flash-sg": {
@@ -6713,6 +7315,15 @@
     "lastAt": "2026-10-29T09:52:33.133626+08:00"
   },
   "claude-opus-4-6-thinking": {
+    "requests": 41,
+    "inputTokens": 189987,
+    "outputTokens": 18019,
+    "cacheRead": 823281,
+    "cacheWrite": 0,
+    "totalTokens": 208006,
+    "lastAt": "2026-10-28T16:15:45.870654+08:00"
+  },
+  "claude-opus-4-6": {
     "requests": 41,
     "inputTokens": 189987,
     "outputTokens": 18019,
@@ -6738,6 +7349,15 @@
     "cacheWrite": 0,
     "totalTokens": 0,
     "lastAt": "2026-10-30T16:13:19.103035+08:00"
+  },
+  "deepseek-v4-flash-max": {
+    "requests": 3,
+    "inputTokens": 17788,
+    "outputTokens": 453,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 18241,
+    "lastAt": "2026-11-02T09:17:29.359465+08:00"
   },
   "deepseek-v4.1-flash-max": {
     "requests": 2,
@@ -6775,14 +7395,23 @@
     "totalTokens": 4749886,
     "lastAt": "2026-11-10T11:26:28.583561+08:00"
   },
-  "undefined": {
-    "requests": 31,
+  "chrome-devtools__list_pages": {
+    "requests": 4,
     "inputTokens": 0,
     "outputTokens": 0,
     "cacheRead": 0,
     "cacheWrite": 0,
     "totalTokens": 0,
-    "lastAt": "2026-11-12T09:09:09.54925+08:00"
+    "lastAt": "2026-11-05T09:58:01.62293+08:00"
+  },
+  "chrome-devtools--list-pages": {
+    "requests": 4,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T09:58:01.62293+08:00"
   },
   "hy4free": {
     "requests": 1,
@@ -6838,6 +7467,150 @@
     "totalTokens": 284,
     "lastAt": "2026-11-04T13:13:20.842697+08:00"
   },
+  "chrome-devtools__navigate_page": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T10:00:23.416535+08:00"
+  },
+  "chrome-devtools--navigate-page": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T10:00:23.416535+08:00"
+  },
+  "find_tools": {
+    "requests": 4,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T10:23:26.841062+08:00"
+  },
+  "find-tools": {
+    "requests": 4,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T10:23:26.841062+08:00"
+  },
+  "chrome-devtools__evaluate_script": {
+    "requests": 10,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T10:08:08.555765+08:00"
+  },
+  "chrome-devtools--evaluate-script": {
+    "requests": 10,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T10:08:08.555765+08:00"
+  },
+  "Tavily": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T10:23:31.857828+08:00"
+  },
+  "tavily": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T10:23:31.857828+08:00"
+  },
+  "web_search": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T10:23:31.838637+08:00"
+  },
+  "web-search": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T10:23:31.838637+08:00"
+  },
+  "search__web_search": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T10:23:31.820323+08:00"
+  },
+  "search--web-search": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T10:23:31.820323+08:00"
+  },
+  "web_fetch": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T10:23:51.184946+08:00"
+  },
+  "web-fetch": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T10:23:51.184946+08:00"
+  },
+  "search__web_fetch": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T10:23:51.182818+08:00"
+  },
+  "search--web-fetch": {
+    "requests": 1,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-05T10:23:51.182818+08:00"
+  },
   "gpt-5.6-terra": {
     "requests": 2,
     "inputTokens": 0,
@@ -6864,6 +7637,42 @@
     "cacheWrite": 0,
     "totalTokens": 4065,
     "lastAt": "2026-11-11T13:57:12.507484+08:00"
+  },
+  "memory_search": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-12T09:09:09.54925+08:00"
+  },
+  "memory-search": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-12T09:09:09.54925+08:00"
+  },
+  "magpie-memory__memory_search": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-12T09:09:09.526798+08:00"
+  },
+  "magpie-memory--memory-search": {
+    "requests": 2,
+    "inputTokens": 0,
+    "outputTokens": 0,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 0,
+    "lastAt": "2026-11-12T09:09:09.526798+08:00"
   }
 };
   g.__MAGPIE_PROVIDER_ICONS__ = {

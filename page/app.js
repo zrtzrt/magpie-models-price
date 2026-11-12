@@ -151,6 +151,8 @@
       .replace(/(-\d{6,8}|-\d{4}-\d{2}-\d{2})$/, '')
       .replace(/-ga(-\d+)?$/, '')
       .replace(/-tiered$/, '')
+      .replace(/-control$/, '')
+      .replace(/-n$/, '')
       .replace(/-sg$/, '')
       .replace(/-preview.*$/, '')
       .replace(/-thinking$/, '')
@@ -167,10 +169,12 @@
     s = s.replace(/glm-(\d)-(\d)/, (_, a, b) => 'glm-' + a + '.' + b);
     s = s.replace(/v4[.-]1/, 'v4');
     s = s.replace(/v4p1/, 'v4');
+    s = s.replace(/doubao[_-]1[_-]6/i, 'doubao-seed-1.6');
 
     if (s.includes('2-0-lite') || s.includes('2.0-lite')) return 'doubao-seed-2.0-lite';
     if (s.includes('2-0-mini') || s.includes('2.0-mini')) return 'doubao-seed-2.0-mini';
     if (s.includes('hy-vision') || s.includes('hunyuan-vision')) return 'hunyuan-2.0-instruct';
+    if (s === 'hy4' || s === 'hy4-preview' || s === 'hy4-free') return 'hunyuan-2.0-instruct';
 
     return s;
   }
@@ -337,7 +341,8 @@
     for (const item of models) {
       const bare = getBareModel(item.model);
       if (!map.has(bare)) {
-        const bu = bareUsageMap[bare] || {
+        const cleaned = cleanModelName(bare);
+        const bu = bareUsageMap[bare] || bareUsageMap[cleaned] || {
           requests: 0,
           totalTokens: 0,
           inputTokens: 0,

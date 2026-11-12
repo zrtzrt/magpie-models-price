@@ -78,6 +78,8 @@ function cleanModelName(str) {
     .replace(/(-\d{6,8}|-\d{4}-\d{2}-\d{2})$/, '')
     .replace(/-ga(-\d+)?$/, '')
     .replace(/-tiered$/, '')
+    .replace(/-control$/, '')
+    .replace(/-n$/, '')
     .replace(/-sg$/, '')
     .replace(/-preview.*$/, '')
     .replace(/-thinking$/, '')
@@ -94,10 +96,12 @@ function cleanModelName(str) {
   s = s.replace(/glm-(\d)-(\d)/, (_, a, b) => 'glm-' + a + '.' + b);
   s = s.replace(/v4[.-]1/, 'v4');
   s = s.replace(/v4p1/, 'v4');
+  s = s.replace(/doubao[_-]1[_-]6/i, 'doubao-seed-1.6');
 
   if (s.includes('2-0-lite') || s.includes('2.0-lite')) return 'doubao-seed-2.0-lite';
   if (s.includes('2-0-mini') || s.includes('2.0-mini')) return 'doubao-seed-2.0-mini';
   if (s.includes('hy-vision') || s.includes('hunyuan-vision')) return 'hunyuan-2.0-instruct';
+  if (s === 'hy4' || s === 'hy4-preview' || s === 'hy4-free') return 'hunyuan-2.0-instruct';
 
   return s;
 }
@@ -128,36 +132,114 @@ function getProviderClassifications() {
 }
 
 function getMagpieModels() {
-  if (!fs.existsSync(PROVIDERS_STATE_PATH)) return [];
-  const data = JSON.parse(fs.readFileSync(PROVIDERS_STATE_PATH, 'utf8'));
-  const providersList = data.providers?.providers || [];
-  const classifications = getProviderClassifications();
   const models = [];
+  const seen = new Set();
+  const classifications = getProviderClassifications();
 
-  for (const p of providersList) {
-    const providerId = p.id;
-    const isProviderOn = !p.off;
-    const pInfo = classifications[providerId] || { kind: 'api', name: providerId };
-    const pModels = p.models || [];
-    for (const m of pModels) {
-      const isModelOn = m.on !== false;
-      const isEnabled = isProviderOn && isModelOn;
+  if (fs.existsSync(PROVIDERS_STATE_PATH)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(PROVIDERS_STATE_PATH, 'utf8'));
+      const providersList = data.providers?.providers || [];
+
+      for (const p of providersList) {
+        const providerId = p.id;
+        const isProviderOn = !p.off;
+        const pInfo = classifications[providerId] || { kind: 'api', name: providerId };
+        const pModels = p.models || [];
+        for (const m of pModels) {
+          const isModelOn = m.on !== false;
+          const isEnabled = isProviderOn && isModelOn;
+          const fullName = providerId + '/' + m.id;
+          seen.add(fullName);
+          models.push({
+            provider: providerId,
+            providerName: pInfo.name,
+            providerIcon: p.icon || pInfo.icon || null,
+            providerKind: pInfo.kind,
+            id: m.id,
+            fullName: fullName,
+            name: m.name || m.id,
+            free: !!m.free,
+            listPrice: m.list || null,
+            enabled: isEnabled,
+            providerOff: !!p.off,
+            modelOn: isModelOn
+          });
+        }
+      }
+    } catch {}
+  }
+
+  // Also include models observed in usage.jsonl or recent sessions/calls
+  if (fs.existsSync(USAGE_PATH)) {
+    try {
+      const content = fs.readFileSync(USAGE_PATH, 'utf8');
+      const lines = content.split('\n');
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        try {
+          const r = JSON.parse(line);
+          const prov = r.provider || 'unknown';
+          const candidates = [
+            r.model,
+            r.served,
+            r.req ? (r.req.includes('/') ? r.req.split('/')[1] : r.req) : null
+          ];
+          for (const mId of candidates) {
+            if (!mId || mId === 'probe' || mId.startsWith('group/') || mId.includes('__') || mId.includes('search')) continue;
+            const full = prov + '/' + mId;
+            if (!seen.has(full)) {
+              seen.add(full);
+              const pInfo = classifications[prov] || { kind: 'subscription', name: prov };
+              models.push({
+                provider: prov,
+                providerName: pInfo.name,
+                providerIcon: pInfo.icon || null,
+                providerKind: pInfo.kind,
+                id: mId,
+                fullName: full,
+                name: mId,
+                free: false,
+                listPrice: null,
+                enabled: true,
+                providerOff: false,
+                modelOn: true
+              });
+            }
+          }
+        } catch {}
+      }
+    } catch {}
+  }
+
+  // Always ensure known Antigravity & popular variants are registered
+  const extraVariants = [
+    { prov: 'antigravity', id: 'gemini-3.8-flash-control' },
+    { prov: 'antigravity', id: 'gemini-3.8-flash-tiered' },
+    { prov: 'antigravity', id: 'gemini-3.8-flash-n' }
+  ];
+  for (const item of extraVariants) {
+    const full = item.prov + '/' + item.id;
+    if (!seen.has(full)) {
+      seen.add(full);
+      const pInfo = classifications[item.prov] || { kind: 'subscription', name: item.prov };
       models.push({
-        provider: providerId,
+        provider: item.prov,
         providerName: pInfo.name,
-        providerIcon: p.icon || pInfo.icon || null,
+        providerIcon: pInfo.icon || null,
         providerKind: pInfo.kind,
-        id: m.id,
-        fullName: providerId + '/' + m.id,
-        name: m.name || m.id,
-        free: !!m.free,
-        listPrice: m.list || null,
-        enabled: isEnabled,
-        providerOff: !!p.off,
-        modelOn: isModelOn
+        id: item.id,
+        fullName: full,
+        name: item.id,
+        free: false,
+        listPrice: null,
+        enabled: true,
+        providerOff: false,
+        modelOn: true
       });
     }
   }
+
   return models;
 }
 
@@ -197,7 +279,7 @@ function getUsageData() {
         if (isTest) continue;
 
         const req = r.req || (r.provider + '/' + r.model);
-        const bare = r.model || (r.req ? r.req.split('/')[1] : 'unknown');
+        const bare = r.model || r.served || (r.req ? (r.req.includes('/') ? r.req.split('/')[1] : r.req) : 'unknown');
         const inT = r.in || 0;
         const outT = r.out || 0;
         const cRead = r.cache_read || 0;
@@ -231,25 +313,33 @@ function getUsageData() {
           channelUsage[req].lastAt = r.t;
         }
 
-        if (!bareUsage[bare]) {
-          bareUsage[bare] = {
-            requests: 0,
-            inputTokens: 0,
-            outputTokens: 0,
-            cacheRead: 0,
-            cacheWrite: 0,
-            totalTokens: 0,
-            lastAt: r.t
-          };
-        }
-        bareUsage[bare].requests++;
-        bareUsage[bare].inputTokens += inT;
-        bareUsage[bare].outputTokens += outT;
-        bareUsage[bare].cacheRead += cRead;
-        bareUsage[bare].cacheWrite += cWrite;
-        bareUsage[bare].totalTokens += sumT;
-        if (r.t && (!bareUsage[bare].lastAt || r.t > bareUsage[bare].lastAt)) {
-          bareUsage[bare].lastAt = r.t;
+        const updateBare = (bKey) => {
+          if (!bareUsage[bKey]) {
+            bareUsage[bKey] = {
+              requests: 0,
+              inputTokens: 0,
+              outputTokens: 0,
+              cacheRead: 0,
+              cacheWrite: 0,
+              totalTokens: 0,
+              lastAt: r.t
+            };
+          }
+          bareUsage[bKey].requests++;
+          bareUsage[bKey].inputTokens += inT;
+          bareUsage[bKey].outputTokens += outT;
+          bareUsage[bKey].cacheRead += cRead;
+          bareUsage[bKey].cacheWrite += cWrite;
+          bareUsage[bKey].totalTokens += sumT;
+          if (r.t && (!bareUsage[bKey].lastAt || r.t > bareUsage[bKey].lastAt)) {
+            bareUsage[bKey].lastAt = r.t;
+          }
+        };
+
+        updateBare(bare);
+        const cleaned = cleanModelName(bare);
+        if (cleaned && cleaned !== bare) {
+          updateBare(cleaned);
         }
       } catch {}
     }
@@ -515,6 +605,35 @@ function applyGlobalMode(mode, customOverrides = {}) {
       const cleaned = cleanModelName(bare);
       if (cleaned && !newPrices['*/' + cleaned]) {
         newPrices['*/' + cleaned] = newPrices[item.model];
+      }
+      // Explicitly map common model suffix variants
+      if (cleaned === 'gemini-3.8-flash') {
+        const variants = ['control', 'tiered', 'n'];
+        for (const v of variants) {
+          const vName = `gemini-3.8-flash-${v}`;
+          if (!newPrices['*/' + vName]) newPrices['*/' + vName] = newPrices[item.model];
+          if (item.model.includes('/')) {
+            const p = item.model.split('/')[0];
+            if (!newPrices[`${p}/${vName}`]) newPrices[`${p}/${vName}`] = newPrices[item.model];
+          }
+        }
+      }
+    }
+  }
+
+  // Universal alias fallback for any observed channel/variant whose cleaned name has a price
+  const allKnownModels = getMagpieModels();
+  for (const m of allKnownModels) {
+    const full = m.fullName;
+    const bare = m.id;
+    const cleaned = cleanModelName(bare);
+    if (!newPrices[full]) {
+      const basePrice = newPrices['*/' + cleaned] || newPrices[m.provider + '/' + cleaned];
+      if (basePrice) {
+        newPrices[full] = basePrice;
+        if (!newPrices['*/' + bare]) {
+          newPrices['*/' + bare] = basePrice;
+        }
       }
     }
   }

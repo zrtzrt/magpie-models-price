@@ -89,11 +89,14 @@
       if (!data) return;
       const root = document.documentElement;
       if (data.dark !== undefined) {
-        root.dataset.theme = data.dark ? "dark" : "light";
+        const theme = data.dark ? "dark" : "light";
+        root.dataset.theme = theme;
+        if (document.body) document.body.dataset.theme = theme;
+        root.style.colorScheme = theme;
+        const bg = data.tokens?.bg || (data.dark ? "#121214" : "#f5f5f7");
+        root.style.backgroundColor = bg;
+        if (document.body) document.body.style.backgroundColor = bg;
       }
-      const bg = data.tokens?.bg || (data.dark === false ? "#f5f5f7" : "#121214");
-      root.style.backgroundColor = bg;
-      if (document.body) document.body.style.backgroundColor = bg;
       if (data.tokens) {
         for (const [k, v] of Object.entries(data.tokens)) {
           if (v) root.style.setProperty("--" + k, v);
@@ -109,25 +112,23 @@
         if (res) applyHostTheme(res);
       })
       .catch(() => {});
+
+    if (window.matchMedia) {
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+        applyHostTheme({ dark: e.matches });
+      });
+    }
   }
 
   // 2. 初始化 Magpie bridge (如果存在)
   if (globalThis.magpie) {
     try {
       const theme = await magpie.ready;
-      if (theme && theme.lang) {
-        setLocale(theme.lang);
-      }
-      if (theme && theme.dark !== undefined) {
-        document.documentElement.dataset.theme = theme.dark ? "dark" : "light";
+      if (theme) {
+        applyHostTheme(theme);
       }
       magpie.onTheme?.((tTheme) => {
-        if (tTheme.dark !== undefined) {
-          document.documentElement.dataset.theme = tTheme.dark ? "dark" : "light";
-        }
-        if (tTheme.lang) {
-          setLocale(tTheme.lang);
-        }
+        applyHostTheme(tTheme);
       });
       pluginOptions = (await magpie.options.get()) || {};
       customPrices = pluginOptions.customPrices || {};

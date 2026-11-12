@@ -1,11 +1,24 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="dark" style="background-color: #121214; min-height: 100%; width: 100%;">
+<html lang="zh-CN" style="min-height: 100%; width: 100%;">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark light">
 <title>价格</title>
 <link rel="icon" type="image/svg+xml" href="icon.svg">
+<script>
+  (function() {
+    try {
+      var isDark = true;
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        isDark = false;
+      }
+      var theme = isDark ? 'dark' : 'light';
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.style.colorScheme = theme;
+    } catch(e) {}
+  })();
+</script>
 <link rel="stylesheet" href="style.css">
 <script src="_magpie/bridge.js"></script>
 <script src="models-data.js"></script>
@@ -13,7 +26,7 @@
 <script src="i18n.js"></script>
 <script src="app.js" defer></script>
 </head>
-<body style="background-color: #121214; min-height: 100%; width: 100%;">
+<body style="min-height: 100%; width: 100%;">
 <header>
   <h1 id="header-title">
     <span data-i18n="title">价格</span>

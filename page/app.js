@@ -27,6 +27,12 @@
   let pluginOptions = {};
   let customPrices = {};
   let globalMode = "all-equivalent"; // "all-equivalent" or "api-only"
+  try {
+    const savedMode = localStorage.getItem("magpie_models_price_mode");
+    if (savedMode === "api-only" || savedMode === "all-equivalent") {
+      globalMode = savedMode;
+    }
+  } catch (e) {}
   let filter = "enabled";
   let selectedKind = "all"; // "all", "api", "subscription"
   let search = "";
@@ -538,7 +544,19 @@
     const scope = specificCustom ? "specific" : wildcardCustom ? "wildcard" : null;
 
     if (globalMode === "api-only" && isSub && !specificCustom) {
-      return null;
+      const origCost = item.matched?.cost || null;
+      return {
+        type: "subscription-free",
+        input: 0,
+        output: 0,
+        cache_read: 0,
+        cache_write: 0,
+        hasOffPeak: false,
+        isOffPeakActive: false,
+        isSubFree: true,
+        originalCost: origCost,
+        text: "$0.00"
+      };
     }
 
     // 自定义定价
@@ -735,7 +753,7 @@
         return !!customPrices["*/" + g.bare] || g.items.some((it) => !!customPrices[it.model]);
       });
     } else if (filter === "unpriced") {
-      list = list.filter((g) => !g.items.some((it) => !!getModelPrice(it)));
+      list = list.filter((g) => g.items.every((it) => !it.matched && !customPrices[it.model] && !customPrices["*/" + g.bare]));
     } else if (filter === "matched") {
       list = list.filter((g) => !!g.matched || g.items.some((it) => !!it.matched));
     } else if (filter === "offpeak") {
@@ -894,29 +912,7 @@
       const firstPricedItem = group.items.find((it) => !!getModelPrice(it)) || group.items[0];
       const repPrice = getModelPrice(firstPricedItem);
 
-      if (repPrice && (repPrice.type === "custom" || repPrice.type === "matched")) {
-        const mainRate = document.createElement("span");
-        mainRate.className = "main-rate";
-
-        const subCache = document.createElement("span");
-        subCache.className = "sub-cache";
-
-        if (repPrice.hasOffPeak) {
-          mainRate.textContent = `${t("peak_tag")} $${repPrice.peakInput}/$${repPrice.peakOutput}`;
-          subCache.className = "sub-cache rate-offpeak";
-          subCache.textContent = `${t("offpeak_tag")} $${repPrice.offPeakInput}/$${repPrice.offPeakOutput} (50% OFF)`;
-        } else {
-          mainRate.textContent = `$${repPrice.input} / $${repPrice.output}`;
-          subCache.textContent = `${t("cache_label")} $${repPrice.cache_read}/$${repPrice.cache_write}`;
-        }
-        priceSummary.append(mainRate, subCache);
-      } else if (repPrice && repPrice.type === "current") {
-        const curRate = document.createElement("span");
-        curRate.className = "main-rate";
-        curRate.style.color = "var(--green)";
-        curRate.textContent = repPrice.text;
-        priceSummary.append(curRate);
-      } else {
+      function renderUnpricedBadge() {
         const unpricedSpan = document.createElement("span");
         unpricedSpan.className = "badge-tag badge-unpriced";
         unpricedSpan.textContent = t("badge_unpriced");
@@ -935,6 +931,116 @@
         wrap.className = "badge-unpriced-wrap";
         wrap.append(unpricedSpan, quickSetBtn);
         priceSummary.append(wrap);
+      }
+
+      if (globalMode === "api-only") {
+        const apiItems = group.items.filter((it) => it.providerKind === "api");
+        const subItems = group.items.filter((it) => it.providerKind === "subscription");
+        const enabledApi = apiItems.filter((it) => it.enabled);
+        const enabledSub = subItems.filter((it) => it.enabled);
+
+        if (apiItems.length === 0) {
+          // 全部为账号登录/订阅渠道：在真实 API 支出模式下直接为 $0.00
+          const mainRate = document.createElement("span");
+          mainRate.className = "main-rate rate-zero";
+          mainRate.style.color = "var(--green)";
+          mainRate.style.fontWeight = "600";
+          mainRate.textContent = "$0.00 / 1M";
+
+          const subCache = document.createElement("span");
+          subCache.className = "sub-cache";
+          if (repPrice && repPrice.originalCost) {
+            subCache.innerHTML = `<span style="color: var(--green);">${escapeHtml(t("badge_sub_free", "免额外 API 费"))}</span> · <span style="text-decoration: line-through; opacity: 0.65;">${escapeHtml(t("market_price_prefix", "公价"))} $${repPrice.originalCost.input}/$${repPrice.originalCost.output}</span>`;
+          } else {
+            subCache.innerHTML = `<span style="color: var(--green);">${escapeHtml(t("badge_sub_free_card", "账号登录免额外 API 费"))}</span>`;
+          }
+          priceSummary.append(mainRate, subCache);
+        } else if (subItems.length > 0) {
+          // 既有按量 API 渠道，又有账号登录渠道
+          const apiRep = apiItems.find((it) => !!getModelPrice(it)) || apiItems[0];
+          const apiPrice = getModelPrice(apiRep);
+
+          if (enabledApi.length === 0 && enabledSub.length > 0) {
+            // 当前仅启用了免 API 费的账号登录渠道
+            const mainRate = document.createElement("span");
+            mainRate.className = "main-rate rate-zero";
+            mainRate.style.color = "var(--green)";
+            mainRate.style.fontWeight = "600";
+            mainRate.textContent = "$0.00 / 1M";
+
+            const subCache = document.createElement("span");
+            subCache.className = "sub-cache";
+            const apiText = apiPrice && typeof apiPrice.input === "number" ? ` · API $${apiPrice.input}/$${apiPrice.output}` : "";
+            subCache.innerHTML = `<span style="color: var(--green); font-weight: 500;">${escapeHtml(t("active_sub_channels_free", "当前启用渠道免 API 费"))}</span>${apiText}`;
+            priceSummary.append(mainRate, subCache);
+          } else {
+            // 混合启用或启用了 API 渠道
+            const mainRate = document.createElement("span");
+            mainRate.className = "main-rate";
+            if (apiPrice && apiPrice.hasOffPeak) {
+              mainRate.textContent = `${t("peak_tag")} $${apiPrice.peakInput}/$${apiPrice.peakOutput} (API)`;
+            } else if (apiPrice && typeof apiPrice.input === "number") {
+              mainRate.textContent = `$${apiPrice.input} / $${apiPrice.output} (API)`;
+            } else {
+              mainRate.textContent = "$0.00 / 1M";
+            }
+
+            const subCache = document.createElement("span");
+            subCache.className = "sub-cache";
+            subCache.innerHTML = `<span style="color: var(--green); font-weight: 500;">${escapeHtml(t("contains_free_channels", "含免 API 费账号渠道 ($0.00)"))}</span>`;
+            priceSummary.append(mainRate, subCache);
+          }
+        } else {
+          // 全部为付费 API 渠道
+          if (repPrice && (repPrice.type === "custom" || repPrice.type === "matched")) {
+            const mainRate = document.createElement("span");
+            mainRate.className = "main-rate";
+            const subCache = document.createElement("span");
+            subCache.className = "sub-cache";
+            if (repPrice.hasOffPeak) {
+              mainRate.textContent = `${t("peak_tag")} $${repPrice.peakInput}/$${repPrice.peakOutput}`;
+              subCache.className = "sub-cache rate-offpeak";
+              subCache.textContent = `${t("offpeak_tag")} $${repPrice.offPeakInput}/$${repPrice.offPeakOutput} (50% OFF)`;
+            } else {
+              mainRate.textContent = `$${repPrice.input} / $${repPrice.output}`;
+              subCache.textContent = `${t("cache_label")} $${repPrice.cache_read}/$${repPrice.cache_write} · ${t("paid_api_badge", "按量 API")}`;
+            }
+            priceSummary.append(mainRate, subCache);
+          } else if (repPrice && repPrice.type === "current") {
+            const curRate = document.createElement("span");
+            curRate.className = "main-rate";
+            curRate.style.color = "var(--green)";
+            curRate.textContent = repPrice.text;
+            priceSummary.append(curRate);
+          } else {
+            renderUnpricedBadge();
+          }
+        }
+      } else {
+        // all-equivalent 模式（显示所有渠道等值公价）
+        if (repPrice && (repPrice.type === "custom" || repPrice.type === "matched")) {
+          const mainRate = document.createElement("span");
+          mainRate.className = "main-rate";
+          const subCache = document.createElement("span");
+          subCache.className = "sub-cache";
+          if (repPrice.hasOffPeak) {
+            mainRate.textContent = `${t("peak_tag")} $${repPrice.peakInput}/$${repPrice.peakOutput}`;
+            subCache.className = "sub-cache rate-offpeak";
+            subCache.textContent = `${t("offpeak_tag")} $${repPrice.offPeakInput}/$${repPrice.offPeakOutput} (50% OFF)`;
+          } else {
+            mainRate.textContent = `$${repPrice.input} / $${repPrice.output}`;
+            subCache.textContent = `${t("cache_label")} $${repPrice.cache_read}/$${repPrice.cache_write}`;
+          }
+          priceSummary.append(mainRate, subCache);
+        } else if (repPrice && repPrice.type === "current") {
+          const curRate = document.createElement("span");
+          curRate.className = "main-rate";
+          curRate.style.color = "var(--green)";
+          curRate.textContent = repPrice.text;
+          priceSummary.append(curRate);
+        } else {
+          renderUnpricedBadge();
+        }
       }
 
       // Status badge (Custom vs Consistent)
@@ -1044,7 +1150,11 @@
           priceSpan.className = "subrow-price";
 
           const itemPrice = getModelPrice(item);
-          if (itemPrice && (itemPrice.type === "custom" || itemPrice.type === "matched")) {
+          if (globalMode === "api-only" && item.providerKind === "subscription" && !customPrices[item.model]) {
+            const orig = item.matched?.cost;
+            const origStr = orig ? `<span class="rate-del" style="font-size: 10.5px; color: var(--faint); text-decoration: line-through; margin-left: 5px;" title="${escapeHtml(t("market_price_prefix", "公价"))}">${escapeHtml(t("market_price_prefix", "公价"))} $${orig.input}/$${orig.output}</span>` : "";
+            priceSpan.innerHTML = `<span class="rate-zero" style="color: var(--green); font-weight: 600;">$0.00 / 1M</span> <span style="font-size: 11px; color: var(--muted); margin-left: 2px;">(${escapeHtml(t("badge_sub_free", "免额外API费"))})</span>${origStr}`;
+          } else if (itemPrice && (itemPrice.type === "custom" || itemPrice.type === "matched")) {
             const hasItemSpecificCustom = !!customPrices[item.model];
             const hasWildcardPrice = !hasItemSpecificCustom && !!customPrices["*/" + group.bare];
 
@@ -1053,6 +1163,9 @@
               badgeHtml = `<span class="badge-tag badge-custom" style="font-size: 10px;">${escapeHtml(t("scope_specific_badge"))}</span>`;
             } else if (hasWildcardPrice) {
               badgeHtml = `<span class="badge-tag badge-custom" style="font-size: 10px;">${escapeHtml(t("scope_wildcard_badge"))}</span>`;
+            }
+            if (globalMode === "api-only" && item.providerKind === "api") {
+              badgeHtml += ` <span style="font-size: 9.5px; color: var(--accent); border: 1px solid var(--accent); border-radius: 3px; padding: 0 3px; margin-left: 3px;">${escapeHtml(t("paid_api_badge", "按量 API"))}</span>`;
             }
 
             priceSpan.innerHTML = `$${itemPrice.input} / $${itemPrice.output} ${badgeHtml}`;
@@ -1241,27 +1354,56 @@
     showToast(t("toast_rate_reset", { model }));
   }
 
-  async function setGlobalMode(mode) {
+  function setGlobalMode(mode) {
+    if (globalMode === mode) return;
     globalMode = mode;
+    try {
+      localStorage.setItem("magpie_models_price_mode", mode);
+    } catch (e) {}
     renderModeUI();
-    await persistOptions();
     renderStats();
     renderList();
     showToast(mode === "api-only" ? t("toast_mode_api") : t("toast_mode_all"));
+    persistOptions().catch((e) => console.warn("Failed to persist options:", e));
   }
 
   async function persistOptions() {
+    const payload = {
+      mode: globalMode,
+      customPrices
+    };
+    try {
+      localStorage.setItem("magpie_models_price_options", JSON.stringify(payload));
+      localStorage.setItem("magpie_models_price_mode", globalMode);
+    } catch (e) {}
+
+    // 1. Magpie 插件 bridge
     if (globalThis.magpie && magpie.options) {
       try {
         pluginOptions = await magpie.options.set({
           ...pluginOptions,
-          mode: globalMode,
-          customPrices
+          ...payload
         });
       } catch (e) {
-        console.error("Failed to save options via magpie bridge:", e);
+        console.warn("Failed to save options via magpie bridge:", e);
       }
     }
+
+    // 2. Magpie host postMessage 通信
+    try {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ magpie: 1, method: "options:set", params: payload }, "*");
+      }
+    } catch (e) {}
+
+    // 3. Web UI 后端服务同步 (如果处于 HTTP 独立运行状态)
+    try {
+      fetch("/api/mode", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }).catch(() => {});
+    } catch (e) {}
   }
 
   async function syncAllMatched() {

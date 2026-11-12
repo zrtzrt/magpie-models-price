@@ -90,6 +90,23 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  if (pathname === '/api/mode' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        const mode = payload.mode || 'all-equivalent';
+        const customPrices = payload.customPrices || {};
+        matcher.applyGlobalMode(mode, customPrices);
+        sendJson(res, { success: true, mode });
+      } catch (e) {
+        sendJson(res, { error: e.message }, 500);
+      }
+    });
+    return;
+  }
+
   if (pathname === '/api/reset' && req.method === 'POST') {
     let body = '';
     req.on('data', chunk => body += chunk);

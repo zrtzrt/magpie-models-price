@@ -14,22 +14,22 @@
       "supported": false
     },
     "usage": {
-      "requests": 6801,
-      "inputTokens": 76462615,
-      "outputTokens": 3693478,
-      "cacheRead": 735964621,
+      "requests": 6434,
+      "inputTokens": 72485663,
+      "outputTokens": 3444778,
+      "cacheRead": 689115765,
       "cacheWrite": 0,
-      "totalTokens": 80156093,
-      "lastAt": "2026-11-09T14:29:03.017067+08:00"
+      "totalTokens": 75930441,
+      "lastAt": "2026-11-09T14:11:26.885251+08:00"
     },
     "bareUsage": {
-      "requests": 12278,
-      "inputTokens": 135206218,
-      "outputTokens": 6222173,
+      "requests": 12243,
+      "inputTokens": 135030460,
+      "outputTokens": 6221314,
       "cacheRead": 1517619438,
       "cacheWrite": 0,
-      "totalTokens": 141428391,
-      "lastAt": "2026-11-11T13:55:08.81503+08:00"
+      "totalTokens": 141251774,
+      "lastAt": "2026-11-09T14:11:26.885251+08:00"
     },
     "matched": {
       "provider": "google",
@@ -59,24 +59,8 @@
     "offPeakPreset": {
       "supported": false
     },
-    "usage": {
-      "requests": 1,
-      "inputTokens": 14,
-      "outputTokens": 4,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 18,
-      "lastAt": "2026-11-02T12:18:35.337624+08:00"
-    },
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 14,
-      "outputTokens": 4,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 18,
-      "lastAt": "2026-11-02T12:18:35.337624+08:00"
-    },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "anthropic",
       "model": "claude-sonnet-4-6",
@@ -362,7 +346,7 @@
       "supported": false
     },
     "usage": {
-      "requests": 5388,
+      "requests": 5383,
       "inputTokens": 58482165,
       "outputTokens": 2488427,
       "cacheRead": 781618847,
@@ -371,7 +355,7 @@
       "lastAt": "2026-11-02T14:27:53.129928+08:00"
     },
     "bareUsage": {
-      "requests": 5388,
+      "requests": 5383,
       "inputTokens": 58482165,
       "outputTokens": 2488427,
       "cacheRead": 781618847,
@@ -408,21 +392,21 @@
       "supported": false
     },
     "usage": {
-      "requests": 356,
-      "inputTokens": 4537468,
-      "outputTokens": 212418,
+      "requests": 336,
+      "inputTokens": 4537299,
+      "outputTokens": 212413,
       "cacheRead": 20774617,
       "cacheWrite": 0,
-      "totalTokens": 4749886,
+      "totalTokens": 4749712,
       "lastAt": "2026-11-10T11:26:28.583561+08:00"
     },
     "bareUsage": {
-      "requests": 356,
-      "inputTokens": 4537468,
-      "outputTokens": 212418,
+      "requests": 336,
+      "inputTokens": 4537299,
+      "outputTokens": 212413,
       "cacheRead": 20774617,
       "cacheWrite": 0,
-      "totalTokens": 4749886,
+      "totalTokens": 4749712,
       "lastAt": "2026-11-10T11:26:28.583561+08:00"
     },
     "matched": {
@@ -454,22 +438,22 @@
       "supported": false
     },
     "usage": {
-      "requests": 89,
-      "inputTokens": 261438,
-      "outputTokens": 40268,
+      "requests": 87,
+      "inputTokens": 261436,
+      "outputTokens": 40158,
       "cacheRead": 35970,
       "cacheWrite": 0,
-      "totalTokens": 301706,
-      "lastAt": "2026-11-11T13:55:08.81503+08:00"
+      "totalTokens": 301594,
+      "lastAt": "2026-11-07T07:37:11.068083+08:00"
     },
     "bareUsage": {
-      "requests": 12278,
-      "inputTokens": 135206218,
-      "outputTokens": 6222173,
+      "requests": 12243,
+      "inputTokens": 135030460,
+      "outputTokens": 6221314,
       "cacheRead": 1517619438,
       "cacheWrite": 0,
-      "totalTokens": 141428391,
-      "lastAt": "2026-11-11T13:55:08.81503+08:00"
+      "totalTokens": 141251774,
+      "lastAt": "2026-11-09T14:11:26.885251+08:00"
     },
     "matched": {
       "provider": "google",
@@ -981,13 +965,13 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 12278,
-      "inputTokens": 135206218,
-      "outputTokens": 6222173,
+      "requests": 12243,
+      "inputTokens": 135030460,
+      "outputTokens": 6221314,
       "cacheRead": 1517619438,
       "cacheWrite": 0,
-      "totalTokens": 141428391,
-      "lastAt": "2026-11-11T13:55:08.81503+08:00"
+      "totalTokens": 141251774,
+      "lastAt": "2026-11-09T14:11:26.885251+08:00"
     },
     "matched": {
       "provider": "google",
@@ -1206,15 +1190,7 @@
       "totalTokens": 284,
       "lastAt": "2026-11-04T13:13:20.842697+08:00"
     },
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 20,
-      "outputTokens": 264,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 284,
-      "lastAt": "2026-11-04T13:13:20.842697+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "morph",
       "model": "auto",
@@ -1243,24 +1219,8 @@
     "offPeakPreset": {
       "supported": false
     },
-    "usage": {
-      "requests": 1,
-      "inputTokens": 54,
-      "outputTokens": 10,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 64,
-      "lastAt": "2026-11-04T13:12:54.230795+08:00"
-    },
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 54,
-      "outputTokens": 10,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 64,
-      "lastAt": "2026-11-04T13:12:54.230795+08:00"
-    },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "orcarouter",
       "model": "orcarouter/free",
@@ -1290,23 +1250,15 @@
       "supported": false
     },
     "usage": {
-      "requests": 41,
-      "inputTokens": 41941,
-      "outputTokens": 36251,
+      "requests": 30,
+      "inputTokens": 41833,
+      "outputTokens": 36236,
       "cacheRead": 37504,
       "cacheWrite": 0,
-      "totalTokens": 78192,
+      "totalTokens": 78069,
       "lastAt": "2026-11-07T07:38:56.971941+08:00"
     },
-    "bareUsage": {
-      "requests": 41,
-      "inputTokens": 41941,
-      "outputTokens": 36251,
-      "cacheRead": 37504,
-      "cacheWrite": 0,
-      "totalTokens": 78192,
-      "lastAt": "2026-11-07T07:38:56.971941+08:00"
-    },
+    "bareUsage": null,
     "matched": null
   },
   {
@@ -1387,21 +1339,21 @@
       "name": "DeepSeek 官方峰谷 (闲时5折)"
     },
     "usage": {
-      "requests": 3264,
-      "inputTokens": 17930704,
-      "outputTokens": 1901284,
+      "requests": 3200,
+      "inputTokens": 17930508,
+      "outputTokens": 1901241,
       "cacheRead": 703722354,
       "cacheWrite": 0,
-      "totalTokens": 19831988,
+      "totalTokens": 19831749,
       "lastAt": "2026-11-11T15:19:38.649287+08:00"
     },
     "bareUsage": {
-      "requests": 3391,
-      "inputTokens": 20791975,
-      "outputTokens": 1976710,
+      "requests": 3326,
+      "inputTokens": 20791779,
+      "outputTokens": 1976667,
       "cacheRead": 749138802,
       "cacheWrite": 0,
-      "totalTokens": 22768685,
+      "totalTokens": 22768446,
       "lastAt": "2026-11-11T15:19:38.649287+08:00"
     },
     "matched": {
@@ -1432,24 +1384,8 @@
     "offPeakPreset": {
       "supported": false
     },
-    "usage": {
-      "requests": 1,
-      "inputTokens": 20,
-      "outputTokens": 5,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 25,
-      "lastAt": "2026-11-04T13:13:08.047491+08:00"
-    },
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 20,
-      "outputTokens": 5,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 25,
-      "lastAt": "2026-11-04T13:13:08.047491+08:00"
-    },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-5.3",
@@ -1488,12 +1424,12 @@
       "lastAt": "2026-11-11T13:57:12.507484+08:00"
     },
     "bareUsage": {
-      "requests": 1,
-      "inputTokens": 3175,
-      "outputTokens": 890,
+      "requests": 2,
+      "inputTokens": 3195,
+      "outputTokens": 1154,
       "cacheRead": 0,
       "cacheWrite": 0,
-      "totalTokens": 4065,
+      "totalTokens": 4349,
       "lastAt": "2026-11-11T13:57:12.507484+08:00"
     },
     "matched": {
@@ -1615,21 +1551,21 @@
       "supported": false
     },
     "usage": {
-      "requests": 232,
-      "inputTokens": 705148,
-      "outputTokens": 103028,
+      "requests": 214,
+      "inputTokens": 704935,
+      "outputTokens": 103008,
       "cacheRead": 9900544,
       "cacheWrite": 0,
-      "totalTokens": 808176,
+      "totalTokens": 807943,
       "lastAt": "2026-11-07T07:37:20.155916+08:00"
     },
     "bareUsage": {
-      "requests": 234,
-      "inputTokens": 705148,
-      "outputTokens": 103028,
+      "requests": 214,
+      "inputTokens": 704935,
+      "outputTokens": 103008,
       "cacheRead": 9900544,
       "cacheWrite": 0,
-      "totalTokens": 808176,
+      "totalTokens": 807943,
       "lastAt": "2026-11-07T07:37:20.155916+08:00"
     },
     "matched": {
@@ -1724,24 +1660,8 @@
       "discount": 0.5,
       "name": "DeepSeek 官方峰谷 (闲时5折)"
     },
-    "usage": {
-      "requests": 1,
-      "inputTokens": 11,
-      "outputTokens": 5,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 16,
-      "lastAt": "2026-11-04T13:13:08.048878+08:00"
-    },
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 11,
-      "outputTokens": 5,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 16,
-      "lastAt": "2026-11-04T13:13:08.048878+08:00"
-    },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "deepseek",
       "model": "deepseek-v4-pro",
@@ -1878,15 +1798,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 54,
-      "outputTokens": 10,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 64,
-      "lastAt": "2026-11-04T13:12:54.230795+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "orcarouter",
       "model": "orcarouter/free",
@@ -1916,15 +1828,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 41,
-      "inputTokens": 41941,
-      "outputTokens": 36251,
-      "cacheRead": 37504,
-      "cacheWrite": 0,
-      "totalTokens": 78192,
-      "lastAt": "2026-11-07T07:38:56.971941+08:00"
-    },
+    "bareUsage": null,
     "matched": null
   },
   {
@@ -1975,7 +1879,7 @@
       "name": "DeepSeek 官方峰谷 (闲时5折)"
     },
     "usage": {
-      "requests": 352,
+      "requests": 351,
       "inputTokens": 4330409,
       "outputTokens": 134466,
       "cacheRead": 117564288,
@@ -1984,7 +1888,7 @@
       "lastAt": "2026-10-29T09:52:33.133626+08:00"
     },
     "bareUsage": {
-      "requests": 352,
+      "requests": 351,
       "inputTokens": 4330409,
       "outputTokens": 134466,
       "cacheRead": 117564288,
@@ -2112,13 +2016,13 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 3,
+      "requests": 2,
       "inputTokens": 18645,
       "outputTokens": 19,
       "cacheRead": 3456,
       "cacheWrite": 0,
       "totalTokens": 18664,
-      "lastAt": "2026-11-11T13:56:38.377512+08:00"
+      "lastAt": "2026-10-22T14:24:31.403756+08:00"
     },
     "matched": {
       "provider": "openai",
@@ -2270,13 +2174,13 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 12278,
-      "inputTokens": 135206218,
-      "outputTokens": 6222173,
+      "requests": 12243,
+      "inputTokens": 135030460,
+      "outputTokens": 6221314,
       "cacheRead": 1517619438,
       "cacheWrite": 0,
-      "totalTokens": 141428391,
-      "lastAt": "2026-11-11T13:55:08.81503+08:00"
+      "totalTokens": 141251774,
+      "lastAt": "2026-11-09T14:11:26.885251+08:00"
     },
     "matched": {
       "provider": "google",
@@ -2307,15 +2211,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 20,
-      "outputTokens": 5,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 25,
-      "lastAt": "2026-11-04T13:13:08.047491+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-5.3",
@@ -2346,12 +2242,12 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 1,
-      "inputTokens": 3175,
-      "outputTokens": 890,
+      "requests": 2,
+      "inputTokens": 3195,
+      "outputTokens": 1154,
       "cacheRead": 0,
       "cacheWrite": 0,
-      "totalTokens": 4065,
+      "totalTokens": 4349,
       "lastAt": "2026-11-11T13:57:12.507484+08:00"
     },
     "matched": {
@@ -2382,22 +2278,14 @@
     "offPeakPreset": {
       "supported": false
     },
-    "usage": {
-      "requests": 2,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-02T14:42:38.107535+08:00"
-    },
+    "usage": null,
     "bareUsage": {
-      "requests": 234,
-      "inputTokens": 705148,
-      "outputTokens": 103028,
+      "requests": 214,
+      "inputTokens": 704935,
+      "outputTokens": 103008,
       "cacheRead": 9900544,
       "cacheWrite": 0,
-      "totalTokens": 808176,
+      "totalTokens": 807943,
       "lastAt": "2026-11-07T07:37:20.155916+08:00"
     },
     "matched": {
@@ -2760,12 +2648,12 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 1,
-      "inputTokens": 3175,
-      "outputTokens": 890,
+      "requests": 2,
+      "inputTokens": 3195,
+      "outputTokens": 1154,
       "cacheRead": 0,
       "cacheWrite": 0,
-      "totalTokens": 4065,
+      "totalTokens": 4349,
       "lastAt": "2026-11-11T13:57:12.507484+08:00"
     },
     "matched": {
@@ -2887,15 +2775,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 20,
-      "outputTokens": 5,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 25,
-      "lastAt": "2026-11-04T13:13:08.047491+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "zhipuai",
       "model": "glm-5.3",
@@ -3112,24 +2992,8 @@
       "discount": 0.5,
       "name": "DeepSeek 官方峰谷 (闲时5折)"
     },
-    "usage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-30T16:13:19.103035+08:00"
-    },
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-10-30T16:13:19.103035+08:00"
-    },
+    "usage": null,
+    "bareUsage": null,
     "matched": {
       "provider": "deepseek",
       "model": "deepseek-v4-flash",
@@ -3253,7 +3117,7 @@
       "name": "DeepSeek 官方峰谷 (闲时5折)"
     },
     "usage": {
-      "requests": 9,
+      "requests": 8,
       "inputTokens": 8550,
       "outputTokens": 22038,
       "cacheRead": 0,
@@ -3262,12 +3126,12 @@
       "lastAt": "2026-10-30T16:16:07.323955+08:00"
     },
     "bareUsage": {
-      "requests": 3391,
-      "inputTokens": 20791975,
-      "outputTokens": 1976710,
+      "requests": 3326,
+      "inputTokens": 20791779,
+      "outputTokens": 1976667,
       "cacheRead": 749138802,
       "cacheWrite": 0,
-      "totalTokens": 22768685,
+      "totalTokens": 22768446,
       "lastAt": "2026-11-11T15:19:38.649287+08:00"
     },
     "matched": {
@@ -3584,12 +3448,12 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 234,
-      "inputTokens": 705148,
-      "outputTokens": 103028,
+      "requests": 214,
+      "inputTokens": 704935,
+      "outputTokens": 103008,
       "cacheRead": 9900544,
       "cacheWrite": 0,
-      "totalTokens": 808176,
+      "totalTokens": 807943,
       "lastAt": "2026-11-07T07:37:20.155916+08:00"
     },
     "matched": {
@@ -5761,22 +5625,22 @@
       "supported": false
     },
     "usage": {
-      "requests": 3,
+      "requests": 2,
       "inputTokens": 18645,
       "outputTokens": 19,
       "cacheRead": 3456,
       "cacheWrite": 0,
       "totalTokens": 18664,
-      "lastAt": "2026-11-11T13:56:38.377512+08:00"
+      "lastAt": "2026-10-22T14:24:31.403756+08:00"
     },
     "bareUsage": {
-      "requests": 3,
+      "requests": 2,
       "inputTokens": 18645,
       "outputTokens": 19,
       "cacheRead": 3456,
       "cacheWrite": 0,
       "totalTokens": 18664,
-      "lastAt": "2026-11-11T13:56:38.377512+08:00"
+      "lastAt": "2026-10-22T14:24:31.403756+08:00"
     },
     "matched": {
       "provider": "openai",
@@ -5928,13 +5792,13 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 12278,
-      "inputTokens": 135206218,
-      "outputTokens": 6222173,
+      "requests": 12243,
+      "inputTokens": 135030460,
+      "outputTokens": 6221314,
       "cacheRead": 1517619438,
       "cacheWrite": 0,
-      "totalTokens": 141428391,
-      "lastAt": "2026-11-11T13:55:08.81503+08:00"
+      "totalTokens": 141251774,
+      "lastAt": "2026-11-09T14:11:26.885251+08:00"
     },
     "matched": {
       "provider": "google",
@@ -6026,12 +5890,12 @@
     },
     "usage": null,
     "bareUsage": {
-      "requests": 356,
-      "inputTokens": 4537468,
-      "outputTokens": 212418,
+      "requests": 336,
+      "inputTokens": 4537299,
+      "outputTokens": 212413,
       "cacheRead": 20774617,
       "cacheWrite": 0,
-      "totalTokens": 4749886,
+      "totalTokens": 4749712,
       "lastAt": "2026-11-10T11:26:28.583561+08:00"
     },
     "matched": {
@@ -6539,15 +6403,7 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 14,
-      "outputTokens": 4,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 18,
-      "lastAt": "2026-11-02T12:18:35.337624+08:00"
-    },
+    "bareUsage": null,
     "matched": {
       "provider": "anthropic",
       "model": "claude-sonnet-4-6",
@@ -6674,8 +6530,24 @@
     "offPeakPreset": {
       "supported": false
     },
-    "usage": null,
-    "bareUsage": null,
+    "usage": {
+      "requests": 15,
+      "inputTokens": 6547,
+      "outputTokens": 620,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 7167,
+      "lastAt": "2026-10-29T13:25:46.977903+08:00"
+    },
+    "bareUsage": {
+      "requests": 97,
+      "inputTokens": 35439,
+      "outputTokens": 3257,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 38696,
+      "lastAt": "2026-11-05T12:28:13.657263+08:00"
+    },
     "matched": {
       "provider": "google",
       "model": "gemini-3.8-flash",
@@ -6704,8 +6576,24 @@
     "offPeakPreset": {
       "supported": false
     },
-    "usage": null,
-    "bareUsage": null,
+    "usage": {
+      "requests": 324,
+      "inputTokens": 3794649,
+      "outputTokens": 247331,
+      "cacheRead": 46848856,
+      "cacheWrite": 0,
+      "totalTokens": 4041980,
+      "lastAt": "2026-10-29T13:27:10.62632+08:00"
+    },
+    "bareUsage": {
+      "requests": 6676,
+      "inputTokens": 76251420,
+      "outputTokens": 3689472,
+      "cacheRead": 735964621,
+      "cacheWrite": 0,
+      "totalTokens": 79940892,
+      "lastAt": "2026-11-09T14:11:26.885251+08:00"
+    },
     "matched": {
       "provider": "google",
       "model": "gemini-3.8-flash",
@@ -6722,220 +6610,6 @@
     }
   },
   {
-    "model": "workbuddy-ai/hy4-preview",
-    "name": "hy4-preview",
-    "provider": "workbuddy-ai",
-    "providerName": "WorkBuddy AI",
-    "providerIcon": "workbuddy-color",
-    "providerKind": "subscription",
-    "enabled": true,
-    "isUnpriced": false,
-    "currentPrice": "Custom: $0.834/$2.501 in/out (cache: $0.042/$0)",
-    "offPeakPreset": {
-      "supported": false
-    },
-    "usage": null,
-    "bareUsage": null,
-    "matched": {
-      "provider": "tencent-tokenhub",
-      "model": "hy4",
-      "name": "Hy4",
-      "confidence": "exact",
-      "reason": "原厂规约匹配 (tencent-tokenhub)",
-      "cost": {
-        "input": 0.834,
-        "output": 2.501,
-        "cache_read": 0.042,
-        "cache_write": 0
-      },
-      "priceString": "0.834,2.501,0.042,0"
-    }
-  },
-  {
-    "model": "workbuddy-ai/fast-model",
-    "name": "fast-model",
-    "provider": "workbuddy-ai",
-    "providerName": "WorkBuddy AI",
-    "providerIcon": "workbuddy-color",
-    "providerKind": "subscription",
-    "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
-    "offPeakPreset": {
-      "supported": false
-    },
-    "usage": null,
-    "bareUsage": null,
-    "matched": null
-  },
-  {
-    "model": "workbuddy-ai/gpt-5.5",
-    "name": "gpt-5.5",
-    "provider": "workbuddy-ai",
-    "providerName": "WorkBuddy AI",
-    "providerIcon": "workbuddy-color",
-    "providerKind": "subscription",
-    "enabled": true,
-    "isUnpriced": false,
-    "currentPrice": "Custom: $5/$30 in/out (cache: $0.5/$0)",
-    "offPeakPreset": {
-      "supported": false
-    },
-    "usage": null,
-    "bareUsage": null,
-    "matched": {
-      "provider": "openai",
-      "model": "gpt-5.5",
-      "name": "GPT-5.5",
-      "confidence": "exact",
-      "reason": "原厂规约匹配 (openai)",
-      "cost": {
-        "input": 5,
-        "output": 30,
-        "cache_read": 0.5,
-        "cache_write": 0
-      },
-      "priceString": "5,30,0.5,0"
-    }
-  },
-  {
-    "model": "workbuddy-ai/gpt-5.4",
-    "name": "gpt-5.4",
-    "provider": "workbuddy-ai",
-    "providerName": "WorkBuddy AI",
-    "providerIcon": "workbuddy-color",
-    "providerKind": "subscription",
-    "enabled": true,
-    "isUnpriced": false,
-    "currentPrice": "Custom: $2.5/$15 in/out (cache: $0.25/$0)",
-    "offPeakPreset": {
-      "supported": false
-    },
-    "usage": null,
-    "bareUsage": null,
-    "matched": {
-      "provider": "openai",
-      "model": "gpt-5.4",
-      "name": "GPT-5.4",
-      "confidence": "exact",
-      "reason": "原厂规约匹配 (openai)",
-      "cost": {
-        "input": 2.5,
-        "output": 15,
-        "cache_read": 0.25,
-        "cache_write": 0
-      },
-      "priceString": "2.5,15,0.25,0"
-    }
-  },
-  {
-    "model": "workbuddy-ai/glm-5.2",
-    "name": "glm-5.2",
-    "provider": "workbuddy-ai",
-    "providerName": "WorkBuddy AI",
-    "providerIcon": "workbuddy-color",
-    "providerKind": "subscription",
-    "enabled": true,
-    "isUnpriced": false,
-    "currentPrice": "Custom: $1.19516/$4.18306 in/out (cache: $0.29879/$0)",
-    "offPeakPreset": {
-      "supported": false
-    },
-    "usage": null,
-    "bareUsage": null,
-    "matched": {
-      "provider": "zhipuai",
-      "model": "glm-5.2",
-      "name": "GLM-5.2",
-      "confidence": "exact",
-      "reason": "原厂规约匹配 (zhipuai)",
-      "cost": {
-        "input": 1.19516,
-        "output": 4.18306,
-        "cache_read": 0.29879,
-        "cache_write": 0
-      },
-      "priceString": "1.19516,4.18306,0.29879,0"
-    }
-  },
-  {
-    "model": "workbuddy-ai/primary-model",
-    "name": "primary-model",
-    "provider": "workbuddy-ai",
-    "providerName": "WorkBuddy AI",
-    "providerIcon": "workbuddy-color",
-    "providerKind": "subscription",
-    "enabled": true,
-    "isUnpriced": true,
-    "currentPrice": "no price is known for it",
-    "offPeakPreset": {
-      "supported": false
-    },
-    "usage": null,
-    "bareUsage": null,
-    "matched": null
-  },
-  {
-    "model": "workbuddy-ai/balanced-model",
-    "name": "balanced-model",
-    "provider": "workbuddy-ai",
-    "providerName": "WorkBuddy AI",
-    "providerIcon": "workbuddy-color",
-    "providerKind": "subscription",
-    "enabled": true,
-    "isUnpriced": false,
-    "currentPrice": "Custom: $0.325/$1.95 in/out (cache: $0.0325/$0.40625)",
-    "offPeakPreset": {
-      "supported": false
-    },
-    "usage": null,
-    "bareUsage": null,
-    "matched": {
-      "provider": "kilo",
-      "model": "kilo-auto/balanced",
-      "name": "Auto Balanced",
-      "confidence": "medium",
-      "reason": "模糊推荐匹配 (kilo)",
-      "cost": {
-        "input": 0.325,
-        "output": 1.95,
-        "cache_read": 0.0325,
-        "cache_write": 0.40625
-      },
-      "priceString": "0.325,1.95,0.0325,0.40625"
-    }
-  },
-  {
-    "model": "workbuddy/hy4-free",
-    "name": "hy4-free",
-    "provider": "workbuddy",
-    "providerName": "WorkBuddy",
-    "providerIcon": "workbuddy-color",
-    "providerKind": "subscription",
-    "enabled": true,
-    "isUnpriced": false,
-    "currentPrice": "Custom: $0.834/$2.501 in/out (cache: $0.042/$0)",
-    "offPeakPreset": {
-      "supported": false
-    },
-    "usage": null,
-    "bareUsage": null,
-    "matched": {
-      "provider": "tencent-tokenhub",
-      "model": "hy4",
-      "name": "Hy4",
-      "confidence": "exact",
-      "reason": "原厂规约匹配 (tencent-tokenhub)",
-      "cost": {
-        "input": 0.834,
-        "output": 2.501,
-        "cache_read": 0.042,
-        "cache_write": 0
-      },
-      "priceString": "0.834,2.501,0.042,0"
-    }
-  },
-  {
     "model": "workbuddy/hy4",
     "name": "hy4",
     "provider": "workbuddy",
@@ -6949,7 +6623,15 @@
       "supported": false
     },
     "usage": null,
-    "bareUsage": null,
+    "bareUsage": {
+      "requests": 30,
+      "inputTokens": 41833,
+      "outputTokens": 36236,
+      "cacheRead": 37504,
+      "cacheWrite": 0,
+      "totalTokens": 78069,
+      "lastAt": "2026-11-07T07:38:56.971941+08:00"
+    },
     "matched": {
       "provider": "tencent-tokenhub",
       "model": "hy4",
@@ -6964,91 +6646,45 @@
       },
       "priceString": "0.834,2.501,0.042,0"
     }
-  },
-  {
-    "model": "workbuddy/gemini-4",
-    "name": "gemini-4",
-    "provider": "workbuddy",
-    "providerName": "WorkBuddy",
-    "providerIcon": "workbuddy-color",
-    "providerKind": "subscription",
-    "enabled": true,
-    "isUnpriced": false,
-    "currentPrice": "Custom: $2/$10 in/out (cache: $0.1/$0)",
-    "offPeakPreset": {
-      "supported": false
-    },
-    "usage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-04T13:13:20.581728+08:00"
-    },
-    "bareUsage": {
-      "requests": 1,
-      "inputTokens": 0,
-      "outputTokens": 0,
-      "cacheRead": 0,
-      "cacheWrite": 0,
-      "totalTokens": 0,
-      "lastAt": "2026-11-04T13:13:20.581728+08:00"
-    },
-    "matched": {
-      "provider": "google",
-      "model": "gemini-4-carbon",
-      "name": "Gemini 4 Carbon",
-      "confidence": "medium",
-      "reason": "关联厂商模型 (google)",
-      "cost": {
-        "input": 2,
-        "output": 10,
-        "cache_read": 0.1,
-        "cache_write": 0
-      },
-      "priceString": "2,10,0.1,0"
-    }
   }
 ];
   g.__MAGPIE_USAGE_SUMMARY__ = {
-  "requests": 17074,
-  "inputTokens": 168353313,
-  "outputTokens": 9125822,
+  "requests": 16915,
+  "inputTokens": 168176770,
+  "outputTokens": 9124856,
   "cacheRead": 2475766698,
-  "totalTokens": 177479135
+  "totalTokens": 177301626
 };
   g.__MAGPIE_BARE_USAGE__ = {
   "gpt-6-luna": {
-    "requests": 3,
+    "requests": 2,
     "inputTokens": 18645,
     "outputTokens": 19,
     "cacheRead": 3456,
     "cacheWrite": 0,
     "totalTokens": 18664,
-    "lastAt": "2026-11-11T13:56:38.377512+08:00"
+    "lastAt": "2026-10-22T14:24:31.403756+08:00"
   },
   "deepseek-v4.1-flash": {
-    "requests": 3391,
-    "inputTokens": 20791975,
-    "outputTokens": 1976710,
+    "requests": 3326,
+    "inputTokens": 20791779,
+    "outputTokens": 1976667,
     "cacheRead": 749138802,
     "cacheWrite": 0,
-    "totalTokens": 22768685,
+    "totalTokens": 22768446,
     "lastAt": "2026-11-11T15:19:38.649287+08:00"
   },
   "deepseek-v4-flash": {
-    "requests": 4109,
-    "inputTokens": 27615667,
-    "outputTokens": 2532076,
+    "requests": 4043,
+    "inputTokens": 27615471,
+    "outputTokens": 2532033,
     "cacheRead": 926607858,
     "cacheWrite": 0,
-    "totalTokens": 30147743,
+    "totalTokens": 30147504,
     "lastAt": "2026-11-11T15:24:20.155234+08:00"
   },
   "gemini-3.8-flash-tiered": {
-    "requests": 5388,
+    "requests": 5383,
     "inputTokens": 58482165,
     "outputTokens": 2488427,
     "cacheRead": 781618847,
@@ -7057,16 +6693,34 @@
     "lastAt": "2026-11-02T14:27:53.129928+08:00"
   },
   "gemini-3.8-flash": {
-    "requests": 12278,
-    "inputTokens": 135206218,
-    "outputTokens": 6222173,
+    "requests": 12243,
+    "inputTokens": 135030460,
+    "outputTokens": 6221314,
     "cacheRead": 1517619438,
     "cacheWrite": 0,
-    "totalTokens": 141428391,
-    "lastAt": "2026-11-11T13:55:08.81503+08:00"
+    "totalTokens": 141251774,
+    "lastAt": "2026-11-09T14:11:26.885251+08:00"
+  },
+  "gemini-3.8-flash-control": {
+    "requests": 97,
+    "inputTokens": 35439,
+    "outputTokens": 3257,
+    "cacheRead": 0,
+    "cacheWrite": 0,
+    "totalTokens": 38696,
+    "lastAt": "2026-11-05T12:28:13.657263+08:00"
+  },
+  "gemini-3.8-flash-n": {
+    "requests": 6676,
+    "inputTokens": 76251420,
+    "outputTokens": 3689472,
+    "cacheRead": 735964621,
+    "cacheWrite": 0,
+    "totalTokens": 79940892,
+    "lastAt": "2026-11-09T14:11:26.885251+08:00"
   },
   "deepseek-v4.1-flash-sg": {
-    "requests": 352,
+    "requests": 351,
     "inputTokens": 4330409,
     "outputTokens": 134466,
     "cacheRead": 117564288,
@@ -7093,25 +6747,16 @@
     "lastAt": "2026-10-28T16:15:45.870654+08:00"
   },
   "kimi-k3.1-pro": {
-    "requests": 234,
-    "inputTokens": 705148,
-    "outputTokens": 103028,
+    "requests": 214,
+    "inputTokens": 704935,
+    "outputTokens": 103008,
     "cacheRead": 9900544,
     "cacheWrite": 0,
-    "totalTokens": 808176,
+    "totalTokens": 807943,
     "lastAt": "2026-11-07T07:37:20.155916+08:00"
   },
-  "DeepSeek-V4-Flash-max": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-10-30T16:13:19.103035+08:00"
-  },
-  "deepseek-v4-flash-max": {
-    "requests": 3,
+  "deepseek-v4.1-flash-max": {
+    "requests": 2,
     "inputTokens": 17788,
     "outputTokens": 453,
     "cacheRead": 0,
@@ -7119,7 +6764,7 @@
     "totalTokens": 18241,
     "lastAt": "2026-11-02T09:17:29.359465+08:00"
   },
-  "deepseek-v4.1-flash-max": {
+  "deepseek-v4-flash-max": {
     "requests": 2,
     "inputTokens": 17788,
     "outputTokens": 453,
@@ -7137,77 +6782,41 @@
     "totalTokens": 17364,
     "lastAt": "2026-11-02T09:19:32.899515+08:00"
   },
-  "claude-sonnet-4-6": {
-    "requests": 1,
-    "inputTokens": 14,
-    "outputTokens": 4,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 18,
-    "lastAt": "2026-11-02T12:18:35.337624+08:00"
-  },
   "gemini-4-argon": {
-    "requests": 356,
-    "inputTokens": 4537468,
-    "outputTokens": 212418,
+    "requests": 336,
+    "inputTokens": 4537299,
+    "outputTokens": 212413,
     "cacheRead": 20774617,
     "cacheWrite": 0,
-    "totalTokens": 4749886,
+    "totalTokens": 4749712,
     "lastAt": "2026-11-10T11:26:28.583561+08:00"
   },
-  "hy4free": {
-    "requests": 1,
-    "inputTokens": 54,
-    "outputTokens": 10,
+  "glm-5.3-flash": {
+    "requests": 2,
+    "inputTokens": 3195,
+    "outputTokens": 1154,
     "cacheRead": 0,
     "cacheWrite": 0,
-    "totalTokens": 64,
-    "lastAt": "2026-11-04T13:12:54.230795+08:00"
+    "totalTokens": 4349,
+    "lastAt": "2026-11-11T13:57:12.507484+08:00"
   },
-  "hy4std": {
-    "requests": 41,
-    "inputTokens": 41941,
-    "outputTokens": 36251,
+  "hy4": {
+    "requests": 30,
+    "inputTokens": 41833,
+    "outputTokens": 36236,
     "cacheRead": 37504,
     "cacheWrite": 0,
-    "totalTokens": 78192,
+    "totalTokens": 78069,
     "lastAt": "2026-11-07T07:38:56.971941+08:00"
   },
-  "deepseek-v4-pro": {
-    "requests": 1,
-    "inputTokens": 11,
-    "outputTokens": 5,
-    "cacheRead": 0,
+  "hunyuan-2.0-instruct": {
+    "requests": 30,
+    "inputTokens": 41833,
+    "outputTokens": 36236,
+    "cacheRead": 37504,
     "cacheWrite": 0,
-    "totalTokens": 16,
-    "lastAt": "2026-11-04T13:13:08.048878+08:00"
-  },
-  "glm-5.3": {
-    "requests": 1,
-    "inputTokens": 20,
-    "outputTokens": 5,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 25,
-    "lastAt": "2026-11-04T13:13:08.047491+08:00"
-  },
-  "gemini-4": {
-    "requests": 1,
-    "inputTokens": 0,
-    "outputTokens": 0,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 0,
-    "lastAt": "2026-11-04T13:13:20.581728+08:00"
-  },
-  "auto": {
-    "requests": 1,
-    "inputTokens": 20,
-    "outputTokens": 264,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 284,
-    "lastAt": "2026-11-04T13:13:20.842697+08:00"
+    "totalTokens": 78069,
+    "lastAt": "2026-11-07T07:38:56.971941+08:00"
   },
   "deepseek-v4-1-flash-261017": {
     "requests": 366,
@@ -7217,15 +6826,6 @@
     "cacheWrite": 0,
     "totalTokens": 2914183,
     "lastAt": "2026-11-11T15:24:20.155234+08:00"
-  },
-  "glm-5.3-flash": {
-    "requests": 1,
-    "inputTokens": 3175,
-    "outputTokens": 890,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 4065,
-    "lastAt": "2026-11-11T13:57:12.507484+08:00"
   }
 };
   g.__MAGPIE_PROVIDER_ICONS__ = {

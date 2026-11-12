@@ -149,6 +149,42 @@ function getRoutingGroupIds() {
   return groupIds;
 }
 
+/**
+ * Detect whether a request log entry in usage.jsonl is a test probe, health check or internal tool call
+ */
+function isTestOrProbeRequest(r) {
+  if (!r || typeof r !== 'object') return true;
+  if (!r.provider || r.provider === 'unknown') return true;
+  if (r.operation === 'execute_tool') return true;
+  if (r.source === 'probe' || r.source === 'tool') return true;
+  if (
+    r.kind === 'tool' ||
+    r.kind === 'mcp' ||
+    r.kind === 'provider_test' ||
+    r.kind === 'model_list' ||
+    r.kind === 'connection_check' ||
+    r.kind === 'api_detect'
+  ) return true;
+  if (typeof r.kind === 'string' && r.kind.toLowerCase().includes('test')) return true;
+  if (typeof r.operation === 'string' && r.operation.toLowerCase().includes('test')) return true;
+
+  // Test agents: internal Magpie probe daemon, curl manual connectivity checks, or headless probe clients
+  if (r.agent === 'magpie' || r.agent === 'curl') return true;
+
+  // Failed, cancelled, or error requests (e.g. 400, 404, 499, 500)
+  if (r.status && Number(r.status) !== 200) return true;
+
+  // Zero-token exchanges (dummy pings or probes that didn't run inference)
+  const inT = r.in || 0;
+  const outT = r.out || 0;
+  if (inT === 0 && outT === 0) return true;
+
+  // Automated batch connection probes from scripts (e.g. node test ping with trivial token payloads)
+  if (r.agent === 'node' && outT <= 15 && inT <= 60) return true;
+
+  return false;
+}
+
 function getMagpieModels() {
   const models = [];
   const seen = new Set();
@@ -201,7 +237,7 @@ function getMagpieModels() {
         if (!line.trim()) continue;
         try {
           const r = JSON.parse(line);
-          if (!r.provider || r.provider === 'unknown' || r.operation === 'execute_tool') continue;
+          if (isTestOrProbeRequest(r)) continue;
           const prov = r.provider;
           const isGroupReq = r.req && (r.req.startsWith('group/') || r.req.startsWith('group:'));
           const candidates = [
@@ -214,13 +250,15 @@ function getMagpieModels() {
               !mId ||
               mId === 'probe' ||
               mId === 'unknown' ||
+              mId === 'auto' ||
               mId.startsWith('group/') ||
               mId === 'never-stuck' ||
               mId.includes('__') ||
               mId.includes('search') ||
               mId === 'find_tools' ||
               mId === 'Tavily' ||
-              mId === 'web_fetch'
+              mId === 'web_fetch' ||
+              mId.endsWith('-model')
             ) {
               continue;
             }
@@ -306,36 +344,23 @@ function getUsageData() {
       if (!line.trim()) continue;
       try {
         const r = JSON.parse(line);
-        // 排除测试请求与工具调用 (Magpie 自身健康探针、execute_tool、mcp、无有效模型等)
-        const isToolOrTest = (
-          !r.provider ||
-          r.provider === 'unknown' ||
-          r.operation === 'execute_tool' ||
-          r.source === 'probe' ||
-          r.source === 'tool' ||
-          r.kind === 'tool' ||
-          r.agent === 'magpie' ||
-          r.kind === 'provider_test' ||
-          r.kind === 'model_list' ||
-          r.kind === 'connection_check' ||
-          r.kind === 'api_detect' ||
-          (typeof r.kind === 'string' && r.kind.toLowerCase().includes('test')) ||
-          (typeof r.operation === 'string' && r.operation.toLowerCase().includes('test'))
-        );
-        if (isToolOrTest) continue;
+        // 严格排除测试请求与健康探针 (Magpie 自身健康探针、curl 手动测试、0 Token 请求、错误状态等)
+        if (isTestOrProbeRequest(r)) continue;
 
         const isGroupReq = r.req && (r.req.startsWith('group/') || r.req.startsWith('group:'));
-        const actualModel = r.model || r.served;
+        const actualModel = (r.served && r.served !== 'auto') ? r.served : (r.model !== 'auto' ? r.model : null);
         const bare = actualModel || (!isGroupReq && r.req ? (r.req.includes('/') ? r.req.split('/')[1] : r.req) : null);
         if (
           !bare ||
           bare === 'unknown' ||
           bare === 'probe' ||
+          bare === 'auto' ||
           bare === 'find_tools' ||
           bare === 'Tavily' ||
           bare === 'web_fetch' ||
           bare === 'never-stuck' ||
-          bare.startsWith('group/')
+          bare.startsWith('group/') ||
+          bare.endsWith('-model')
         ) {
           continue;
         }

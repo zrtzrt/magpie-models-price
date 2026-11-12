@@ -344,15 +344,19 @@
       const bare = getBareModel(item.model);
       if (
         bare === "never-stuck" ||
+        bare === "auto" ||
         bare.startsWith("group/") ||
+        bare.endsWith("-model") ||
         item.model?.startsWith("group/") ||
         item.model?.includes("/never-stuck") ||
-        item.id === "never-stuck"
+        item.model?.includes("/auto") ||
+        item.id === "never-stuck" ||
+        item.id === "auto"
       ) {
         continue;
       }
       const groupKey = cleanModelName(bare) || bare;
-      if (groupKey === "never-stuck" || groupKey.startsWith("group/")) continue;
+      if (groupKey === "never-stuck" || groupKey === "auto" || groupKey.startsWith("group/") || groupKey.endsWith("-model")) continue;
 
       if (!map.has(groupKey)) {
         const bu = bareUsageMap[groupKey] || bareUsageMap[bare] || {

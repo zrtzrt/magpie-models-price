@@ -6,6 +6,15 @@ const matcher = require('./matcher');
 
 console.log('🧪 开始运行自动化单元测试...');
 
+// envAt is the environment a subprocess reads magpie's folders from when the
+// test means "this temp folder is the user's home": XDG_CONFIG_HOME and
+// XDG_CACHE_HOME have to be cleared, because they take priority over the home
+// folder (as they do in magpie's appdir), and a CI runner or a developer with
+// XDG set would otherwise have the tests read and write their real config.
+function envAt(home) {
+  return { ...process.env, HOME: home, USERPROFILE: home, XDG_CONFIG_HOME: '', XDG_CACHE_HOME: '' };
+}
+
 // 1. 验证 catalog 加载
 console.log('1. 测试 models.dev 缓存加载与回退...');
 const catalog = matcher.loadCatalog();
@@ -88,7 +97,7 @@ execFileSync(process.execPath, ['-e', `
   const m = require(${JSON.stringify(path.join(__dirname, 'matcher.js'))});
   m.applyPrice('c/d', '3,4,0.3,0');
   m.resetPrice('a/b');
-`], { env: { ...process.env, HOME: tmpHome, USERPROFILE: tmpHome }, stdio: 'pipe' });
+`], { env: envAt(tmpHome), stdio: 'pipe' });
 const afterWrite = JSON.parse(fs.readFileSync(tmpSettings, 'utf8'));
 assert.strictEqual(afterWrite.theme, 'dark', '原子写不应改动 theme 等其他设置');
 assert.deepStrictEqual(afterWrite.window, { w: 1 }, '原子写不应改动 window 等其他设置');
@@ -111,7 +120,7 @@ const optsOut = execFileSync(process.execPath, ['-e', `
   const m = require(${JSON.stringify(path.join(__dirname, 'matcher.js'))});
   m.writePluginOptions({ mode: 'all-equivalent' }, 'magpie-models-price@latest');
   console.log(JSON.stringify(m.readPluginOptions('magpie-models-price@latest')));
-`], { env: { ...process.env, HOME: tmpHome2, USERPROFILE: tmpHome2 }, encoding: 'utf8' });
+`], { env: envAt(tmpHome2), encoding: 'utf8' });
 const optsAfter = JSON.parse(optsOut.trim());
 assert.strictEqual(optsAfter.mode, 'all-equivalent', '写入的 mode 应被读回');
 assert.strictEqual(optsAfter.customPrices['*/x'].input, 1, '写入不应丢掉其他选项');
@@ -192,12 +201,12 @@ console.log('7. 测试 settings.json 幂等写入与缺省模式保护...');
       process.exit(0);
     })().catch((e) => { console.error(e); process.exit(1); });
   `;
-  const out = JSON.parse(execFileSync(process.execPath, ['-e', script], { env: { ...process.env, HOME: home } }).toString().trim().split('\n').pop());
+  const out = JSON.parse(execFileSync(process.execPath, ['-e', script], { env: envAt(home) }).toString().trim().split('\n').pop());
   assert(out.wrote, '显式 mode 时应写入 modelPrices');
   assert(out.sameMtime, '配置未变时不应重复改写 settings.json');
   assert(out.untouchedByNoMode, '缺少 mode 时不应回落到默认模式改写 settings.json');
   const mtime = fs.statSync(settingsFile).mtimeMs;
-  execFileSync(process.execPath, ['-e', `require(${JSON.stringify(path.join(__dirname, 'matcher.js'))}).applyGlobalModeIfChanged('api-only', ${JSON.stringify(custom)})`], { env: { ...process.env, HOME: home } });
+  execFileSync(process.execPath, ['-e', `require(${JSON.stringify(path.join(__dirname, 'matcher.js'))}).applyGlobalModeIfChanged('api-only', ${JSON.stringify(custom)})`], { env: envAt(home) });
   assert.strictEqual(fs.statSync(settingsFile).mtimeMs, mtime, '新进程重复应用同一配置时不应写盘');
   fs.rmSync(home, { recursive: true, force: true });
   console.log('   ✓ 相同配置不写盘、缺省模式不覆盖用户价格');
@@ -365,7 +374,7 @@ console.log('10. 测试自定义价全量落盘与保存后自检...');
       badKeys: (badReport.mismatches || []).map((m) => m.key)
     }));
   `;
-  const out = JSON.parse(execFileSync(process.execPath, ['-e', script], { env: { ...process.env, HOME: home } }).toString().trim());
+  const out = JSON.parse(execFileSync(process.execPath, ['-e', script], { env: envAt(home) }).toString().trim());
   assert.deepStrictEqual(out.ghost, { input: 3, output: 4, cache_read: 0, cache_write: 0 }, '扫描不到的精确自定义键也必须落盘');
   assert.deepStrictEqual(out.wildcard, { input: 1, output: 2, cache_read: 0.1, cache_write: 0 }, '通配符自定义键照旧落盘');
   assert.strictEqual(out.reportChecked, 2, '自检应核对全部自定义键');
@@ -550,7 +559,7 @@ function testApiFilterAndPeakDefaults() {
     const second = m.applyDefaultRateWindows();
     const after = m.listRateWindowTargets().providers || [];
     console.log(JSON.stringify({ targets, first, second, after }));
-  `], { env: { ...process.env, HOME: tmpHome3, USERPROFILE: tmpHome3 }, encoding: 'utf8' });
+  `], { env: envAt(tmpHome3), encoding: 'utf8' });
   const probe = JSON.parse(peakProbe.trim());
   const peaks = probe.targets.filter((x) => x.peak).map((x) => x.id).sort();
   assert.deepStrictEqual(peaks, ['opencode-zen-2'], '只有按小时计费的 API 渠道才是峰谷目标，实际 ' + peaks.join(','));

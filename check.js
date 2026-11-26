@@ -671,14 +671,24 @@ console.log('16. 测试本地服务边界（回环绑定 / CORS / 静态目录�
 {
   const os = require('os');
   const http = require('http');
-  const net = require('net');
   const { spawn } = require('child_process');
   const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'magpie-price-srv-'));
   const port = 3400 + Math.floor(Math.random() * 200);
-  const child = spawn(process.execPath, [path.join(__dirname, 'server.js')], {
-    env: { ...process.env, HOME: tmpHome, XDG_CONFIG_HOME: '', XDG_CACHE_HOME: '', PORT: String(port) },
+  // The server is started here rather than by running server.js, so the test can
+  // read the address it actually bound: connecting from the machine's own
+  // non-loopback address proves nothing on Windows, where such a connection
+  // reaches a loopback-only listener anyway.
+  const child = spawn(process.execPath, ['-e', [
+    'const { startServer, server } = require(' + JSON.stringify(path.join(__dirname, 'server.js')) + ');',
+    'startServer(' + port + ').then(() => {',
+    '  const a = server.address();',
+    "  console.log('bound=' + (a && a.address));",
+    '});'
+  ].join('\n')], {
+    env: { ...process.env, HOME: tmpHome, USERPROFILE: tmpHome, XDG_CONFIG_HOME: '', XDG_CACHE_HOME: '', PORT: String(port) },
     stdio: ['ignore', 'pipe', 'pipe']
   });
+  let bound = '';
   const request = (opts, body) => new Promise((resolve, reject) => {
     const req = http.request({ host: '127.0.0.1', port, ...opts }, (res) => {
       let data = '';
@@ -692,23 +702,16 @@ console.log('16. 测试本地服务边界（回环绑定 / CORS / 静态目录�
   const ready = new Promise((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error('server did not start')), 15000);
     child.stdout.on('data', (d) => {
-      if (String(d).includes('running at')) { clearTimeout(timer); resolve(); }
+      const text = String(d);
+      const hit = /bound=(\S+)/.exec(text);
+      if (hit) { bound = hit[1]; clearTimeout(timer); resolve(); }
     });
     child.on('exit', (code) => { clearTimeout(timer); reject(new Error('server exited ' + code)); });
   });
   (async () => {
     await ready;
-    // 回环绑定：用本机非回环地址连它应当失败
-    const nets = os.networkInterfaces();
-    const external = Object.values(nets).flat().find((n) => n && n.family === 'IPv4' && !n.internal);
-    if (external) {
-      const refused = await new Promise((resolve) => {
-        const s = net.connect({ host: external.address, port }, () => { s.destroy(); resolve(false); });
-        s.on('error', () => resolve(true));
-        s.setTimeout(2000, () => { s.destroy(); resolve(false); });
-      });
-      assert.ok(refused, '服务不应在非回环地址上监听（局域网与 DNS rebinding 会借此写配置）');
-    }
+    // 回环绑定：直接看它绑到哪个地址，而不是靠外部地址能否连上来推断
+    assert.strictEqual(bound, '127.0.0.1', '服务应只绑回环地址（局域网与 DNS rebinding 会借此改写价格）');
     const evil = await request({ method: 'OPTIONS', path: '/api/options', headers: { Origin: 'https://evil.example' } });
     assert.strictEqual(evil.headers['access-control-allow-origin'], undefined, '外部来源不应拿到 CORS 放行头');
     const local = await request({ method: 'OPTIONS', path: '/api/options', headers: { Origin: 'http://localhost:5173' } });

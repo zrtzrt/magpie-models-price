@@ -1,4 +1,4 @@
-name: Build, Test & Publish to NPM
+name: Build, Test & Publish (NPM + GitHub Packages)
 
 on:
   release:
@@ -22,13 +22,14 @@ jobs:
       - name: Run Unit Tests
         run: node check.js
 
-  publish:
+  publish-npm:
+    name: Publish to NPM
     needs: [build-and-test]
     if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write # 必填：用于 GitHub Actions OIDC Trusted Publishing (免密钥发包)
+      id-token: write # 用于 GitHub Actions OIDC Trusted Publishing (免密钥发包)
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -53,3 +54,49 @@ jobs:
           fi
         env:
           CUSTOM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-github-packages:
+    name: Publish to GitHub Packages
+    needs: [build-and-test]
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # 用于发布到 GitHub Packages
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@${{ github.repository_owner }}'
+
+      - name: Configure Scoped Package Name for GitHub Packages
+        run: |
+          node -e '
+            const fs = require("fs");
+            const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
+            const owner = process.env.GITHUB_REPOSITORY_OWNER.toLowerCase();
+            if (!pkg.name.startsWith("@")) {
+              pkg.name = `@${owner}/${pkg.name}`;
+            }
+            pkg.publishConfig = {
+              registry: "https://npm.pkg.github.com"
+            };
+            if (!pkg.repository) {
+              pkg.repository = {
+                type: "git",
+                url: `git+https://github.com/${process.env.GITHUB_REPOSITORY}.git`
+              };
+            }
+            fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2) + "\n");
+            console.log("Publishing to GitHub Packages as:", pkg.name);
+          '
+
+      - name: Publish to GitHub Packages
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

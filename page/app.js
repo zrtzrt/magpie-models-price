@@ -23,23 +23,44 @@
   // Load models data and options
   let rawModels = window.__MAGPIE_MODELS_DATA__ || [];
   const liveProviderNames = new Map();
+  let liveProviders = [];
   let isRefreshing = false;
   let pluginOptions = {};
   let customPrices = {};
   let globalMode = "all-equivalent"; // "all-equivalent" or "api-only"
+  // 统计瓦片显示的用量区间：all = usage:day 全量历史；30d = 旧版 Magpie 的 summary 回退
+  let usagePeriod = "all";
+  // 峰谷默认倍率：只作为新模型的缺省值；每个模型都能在定价弹窗里单独设置倍率。
+  // 落盘到 Magpie 的 modelPrices 永远是闲时价，高峰时段由渠道 rateWindows 按倍率计费。
+  const DEFAULT_PEAK_RATE = 2;
+  const peakFactor = DEFAULT_PEAK_RATE;
+  // 每个模型族的峰谷设置：{ enabled, rate, windows:[{days:[0-6],start:"HH:MM",end:"HH:MM"}] }
+  // key 用 cleanModelName 归一后的裸模型名；旧版的 peakTargets 布尔值会在 applyPeakOptions 里迁移。
+  let modelPeaks = {};
+  // 弹窗里当前编辑的模型对应的峰谷目标 key（弹窗内开关用）
+  let editingPeakKey = null;
+  let editingPeakWindows = [];
   try {
     const savedMode = localStorage.getItem("magpie_models_price_mode");
     if (savedMode === "api-only" || savedMode === "all-equivalent") {
       globalMode = savedMode;
     }
+    const savedOpts = JSON.parse(localStorage.getItem("magpie_models_price_options") || "{}");
+    if (savedOpts.modelPeaks && typeof savedOpts.modelPeaks === "object") {
+      modelPeaks = savedOpts.modelPeaks;
+    }
   } catch (e) {}
   let filter = "enabled";
   let selectedKind = "all"; // "all", "api", "subscription"
+  let selectedPrice = "all"; // "all", "free", "paid", "unpriced"
+  let defaultExpanded = false; // default collapsed; global buttons can override
   let search = "";
   let selectedProvider = "all";
   let currentSort = "default";
   let editingModel = null;
   let selectedScope = "specific";
+  // 弹窗里四个价格输入框填的是闲时价（默认）还是高峰价
+  let peakInputMode = "offpeak";
   const userToggledGroups = new Map(); // bareModel -> boolean (user explicit toggle override)
 
   function formatNumber(num) {
@@ -56,6 +77,31 @@
   }
 
   // 1. 初始化 Magpie 宿主通信规范 (Host PostMessage Handshake & Theme/Locale Sync)
+  // 主题应用：initMagpieHostSync 里的 message 回调与外面的 magpie.ready 都要用，
+  // 因此必须定义在模块作用域（原先嵌在 initMagpieHostSync 内部，导致 magpie.ready
+  // 之后调用它直接 ReferenceError，被 catch 吞掉，启动时 options 从未读到）
+  function applyHostTheme(data) {
+    if (!data) return;
+    const root = document.documentElement;
+    if (data.dark !== undefined) {
+      const theme = data.dark ? "dark" : "light";
+      root.dataset.theme = theme;
+      if (document.body) document.body.dataset.theme = theme;
+      root.style.colorScheme = theme;
+      const bg = data.tokens?.bg || (data.dark ? "#121214" : "#f5f5f7");
+      root.style.backgroundColor = bg;
+      if (document.body) document.body.style.backgroundColor = bg;
+    }
+    if (data.tokens) {
+      for (const [k, v] of Object.entries(data.tokens)) {
+        if (v) root.style.setProperty("--" + k, v);
+      }
+    }
+    if (data.lang) {
+      setLocale(data.lang);
+    }
+  }
+
   function initMagpieHostSync() {
     let callId = 1;
     const pendingCalls = new Map();
@@ -91,28 +137,6 @@
       });
     }
 
-    function applyHostTheme(data) {
-      if (!data) return;
-      const root = document.documentElement;
-      if (data.dark !== undefined) {
-        const theme = data.dark ? "dark" : "light";
-        root.dataset.theme = theme;
-        if (document.body) document.body.dataset.theme = theme;
-        root.style.colorScheme = theme;
-        const bg = data.tokens?.bg || (data.dark ? "#121214" : "#f5f5f7");
-        root.style.backgroundColor = bg;
-        if (document.body) document.body.style.backgroundColor = bg;
-      }
-      if (data.tokens) {
-        for (const [k, v] of Object.entries(data.tokens)) {
-          if (v) root.style.setProperty("--" + k, v);
-        }
-      }
-      if (data.lang) {
-        setLocale(data.lang);
-      }
-    }
-
     callHost("hello")
       .then((res) => {
         if (res) applyHostTheme(res);
@@ -137,6 +161,7 @@
         applyHostTheme(tTheme);
       });
       pluginOptions = (await magpie.options.get()) || {};
+      applyPeakOptions(pluginOptions);
       customPrices = pluginOptions.customPrices || {};
       globalMode = pluginOptions.mode || "all-equivalent";
     } catch (e) {
@@ -151,8 +176,297 @@
     return fullName.includes("/") ? fullName.split("/").slice(1).join("/") : fullName;
   }
 
+  // 官方价目表里真正按「峰谷/分时」计价的是 DeepSeek 系模型：
+  // DeepSeek 官方、Command Code、Ollama Cloud、阿里百炼的第三方 DeepSeek、
+  // 火山方舟的 deepseek-v4.1-flash、腾讯 TokenHub 的 DeepSeek。
+  // 高峰窗口统一是北京时间工作日 09:00-12:00 / 14:00-18:00，倍率 ×2
+  // （Ollama Cloud 例外：工作日 12:00-18:00 UTC）。
+  // 关键：判定必须落在「模型族」而不是渠道 id 上。用户机器上可能一个 DeepSeek
+  // 官方渠道都没有（全是中转/订阅），按渠道 id 判定会让峰谷永远不生效。
+  const PEAK_BILLS = [
+    { vendor: "deepseek", name: "DeepSeek 系", rule: "weekdays", match: /^deepseek-/ },
+    { vendor: "ollama-cloud", name: "Ollama Cloud", rule: "ollama", ids: ["ollama-cloud"], match: /^deepseek-/ }
+  ];
+
+  // 缺省时段：官方 DeepSeek 系工作日 09:00-12:00 / 14:00-18:00；Ollama Cloud 为 20:00-24:00 + 00:00-02:00。
+  const DEFAULT_WEEKDAY_WINDOWS = [
+    { days: [1, 2, 3, 4, 5], start: "09:00", end: "12:00" },
+    { days: [1, 2, 3, 4, 5], start: "14:00", end: "18:00" }
+  ];
+  const DEFAULT_OLLAMA_WINDOWS = [
+    { days: [1, 2, 3, 4, 5], start: "20:00", end: "24:00" },
+    { days: [1, 2, 3, 4, 5], start: "00:00", end: "02:00" }
+  ];
+
+  function copyPeakWindows(windows) {
+    return (Array.isArray(windows) ? windows : []).map((w) => ({
+      days: Array.isArray(w.days) ? w.days.slice() : [],
+      start: w.start || "09:00",
+      end: w.end || "18:00"
+    }));
+  }
+
+  function defaultPeakWindowsForFamily(family) {
+    return copyPeakWindows(family && family.bill && family.bill.rule === "ollama" ? DEFAULT_OLLAMA_WINDOWS : DEFAULT_WEEKDAY_WINDOWS);
+  }
+
+  function defaultPeakWindowsForKey() {
+    // 迁移旧配置时不知道渠道，统一按工作日官方时段；新模型从 peakConfigFor 取 family 的精确缺省。
+    return copyPeakWindows(DEFAULT_WEEKDAY_WINDOWS);
+  }
+
+  // 一条模型属于哪个峰谷模型族。所有模型都有族 key（用于逐模型设置），
+  // 但只有 bill 非空的（官方 DeepSeek 系）默认开启峰谷。
+  function peakFamilyOf(item) {
+    if (!item) return null;
+    const bare = String(item.id || item.model || "").split("/").pop().split(":")[0];
+    const key = cleanModelName(bare) || bare.toLowerCase();
+    if (!key) return null;
+    let bill = null;
+    for (const candidate of PEAK_BILLS) {
+      if (!candidate.match.test(key)) continue;
+      if (candidate.ids) {
+        const pid = String(item.provider || "").toLowerCase();
+        if (!candidate.ids.includes(pid)) continue;
+      }
+      bill = candidate;
+      break;
+    }
+    return { key, bill };
+  }
+
+  // 默认开启峰谷的模型族：调研确认有官方分时价的就是 DeepSeek 系。
+  function defaultPeakTarget(key) {
+    return PEAK_BILLS.some((bill) => bill.match.test(String(key || "")));
+  }
+
+  function normalizePeakConfig(value, familyKey) {
+    if (typeof value === "boolean") {
+      return { enabled: value, rate: DEFAULT_PEAK_RATE, windows: value ? defaultPeakWindowsForKey(familyKey) : [] };
+    }
+    if (!value || typeof value !== "object") {
+      const on = defaultPeakTarget(familyKey);
+      return { enabled: on, rate: DEFAULT_PEAK_RATE, windows: on ? defaultPeakWindowsForKey(familyKey) : [] };
+    }
+    const rate = Number(value.rate);
+    const safeRate = Number.isFinite(rate) && rate > 0 && rate <= 1000 ? Math.round(rate * 1000) / 1000 : DEFAULT_PEAK_RATE;
+    const windows = Array.isArray(value.windows) ? copyPeakWindows(value.windows) : [];
+    return { enabled: value.enabled !== false, rate: safeRate, windows };
+  }
+
+  // 读取插件 options 里的峰谷设置；新格式 modelPeaks 优先，旧版 peakTargets 布尔值迁移。
+  function applyPeakOptions(opts) {
+    if (!opts || typeof opts !== "object") return;
+    if (opts.modelPeaks && typeof opts.modelPeaks === "object") {
+      modelPeaks = {};
+      for (const [key, value] of Object.entries(opts.modelPeaks)) {
+        if (key) modelPeaks[key] = normalizePeakConfig(value, key);
+      }
+    } else if (opts.peakTargets && typeof opts.peakTargets === "object") {
+      // 旧版：peakEnabled 总开关 + 布尔值 map。迁移成模型级配置，旧开关为 false 时全部关闭。
+      const globalOn = opts.peakEnabled === undefined ? true : !!opts.peakEnabled;
+      modelPeaks = {};
+      for (const [key, value] of Object.entries(opts.peakTargets)) {
+        if (!key) continue;
+        modelPeaks[key] = normalizePeakConfig(globalOn && !!value, key);
+      }
+    } else if (globalThis.magpie) {
+      modelPeaks = {};
+    }
+  }
+
+  // 该模型族的峰谷配置（未保存过则返回默认值：DeepSeek 默认开，其他默认关）。
+  function peakConfigFor(item) {
+    const family = peakFamilyOf(item);
+    if (!family) return null;
+    const saved = modelPeaks[family.key];
+    if (saved) return { ...normalizePeakConfig(saved, family.key), key: family.key, family };
+    const on = !!family.bill;
+    return {
+      key: family.key,
+      family,
+      enabled: on,
+      rate: DEFAULT_PEAK_RATE,
+      windows: on ? defaultPeakWindowsForFamily(family) : []
+    };
+  }
+
+  // 这个模型族是否参与峰谷：显式保存优先，否则按官方价目表（DeepSeek 系默认开）。
+  function peakFamilyEnabled(familyKey) {
+    if (!familyKey) return false;
+    if (Object.prototype.hasOwnProperty.call(modelPeaks, familyKey)) {
+      return normalizePeakConfig(modelPeaks[familyKey], familyKey).enabled;
+    }
+    return defaultPeakTarget(familyKey);
+  }
+
+  function setPeakFamilyEnabled(familyKey, enabled) {
+    if (!familyKey) return;
+    const current = normalizePeakConfig(
+      Object.prototype.hasOwnProperty.call(modelPeaks, familyKey) ? modelPeaks[familyKey] : defaultPeakTarget(familyKey),
+      familyKey
+    );
+    modelPeaks[familyKey] = {
+      ...current,
+      enabled: !!enabled,
+      windows: Array.isArray(current.windows) && current.windows.length ? current.windows : (enabled ? defaultPeakWindowsForKey(familyKey) : [])
+    };
+  }
+
+  // 一条模型/渠道对应的峰谷目标 key（模型族归一后的裸名）；所有模型都有 key。
+  function peakTargetKeyFor(item) {
+    const family = peakFamilyOf(item);
+    return family ? family.key : null;
+  }
+
+  // 峰谷换算是否生效：该模型启用且至少配置了一个时段。
+  function peakApplies(item) {
+    const config = peakConfigFor(item);
+    return !!(config && config.enabled && config.windows.length);
+  }
+
+  function peakRateFor(item) {
+    const config = peakConfigFor(item);
+    return config && config.rate > 0 ? config.rate : DEFAULT_PEAK_RATE;
+  }
+
+  // 该模型是否按峰谷计费（兼容旧调用）。
+  function isHourlyBilled(item) {
+    return peakApplies(item);
+  }
+
+  // 判断某个时刻是否落在任一时段内（按本机时钟，与 Magpie 的 rateWindows 一致）。
+  function peakRateAt(config, date = new Date()) {
+    if (!config || !config.enabled || !Array.isArray(config.windows) || !config.windows.length) return 1;
+    const day = date.getDay();
+    const minutes = date.getHours() * 60 + date.getMinutes();
+    const toMin = (s) => {
+      const m = /^(\d{1,2}):(\d{2})$/.exec(String(s || ""));
+      if (!m) return null;
+      return Number(m[1]) * 60 + Number(m[2]);
+    };
+    for (const w of config.windows) {
+      const days = Array.isArray(w.days) && w.days.length ? w.days : [0, 1, 2, 3, 4, 5, 6];
+      if (!days.includes(day)) continue;
+      const start = toMin(w.start);
+      const end = toMin(w.end);
+      if (start == null || end == null) continue;
+      const hit = end > start ? (minutes >= start && minutes < end) : (minutes >= start || minutes < end);
+      if (hit) return config.rate;
+    }
+    return 1;
+  }
+
+  // 渠道内的「变体后缀」：trae-cn / workbuddy 这类中转会把同一个模型的加速版、
+  // 官方版、自动路由版各挂一条（-max / -auto / -official / -highspeed ...），
+  // 价格完全一样却各自成卡。这里把它们归到同一族，条件是「同渠道里去掉后缀后的
+  // 基础模型确实存在」——qwen4-max、glm-5.3-max 这种本身就是正式名字的不会被误并。
+  // 纯字符串后缀 + 正则后缀（日期快照、antidowngrade 之类的渠道标记）。
+  // 正则只在其基础名确实存在于同一渠道时才会生效，所以不会误伤正式模型名。
+  const VARIANT_SUFFIXES = ['-max', '-auto', '-official', '-highspeed', '-turbo-x'];
+  const VARIANT_SUFFIX_PATTERNS = [
+    /-\d{4}$/,            // -0731 / -1017 日期快照
+    /-\d{6,8}$/,          // -202605 / -260731
+    /-\d{4}-\d{2}-\d{2}$/,
+    /-antidowngrade$/,
+    /-preview$/,
+    /-latest$/,
+    /-stable$/,
+    /-beta$/,
+    /-v\d+$/
+  ];
+
+  // 该渠道里出现过的基础模型 → 它的价格指纹。归族必须同时满足两件事：
+  // ① 去掉后缀后的名字在该渠道真实存在；② 两者价格完全一致。
+  // 少了②就会把 qwen4（$1/$2）和 qwen4-max（$3/$6）这种同名不同价的两个模型并成一张卡。
+  const providerBaseNames = new Map(); // provider -> Map<cleanModelName, priceKey>
+  function priceKeyOf(item) {
+    const c = (item && item.matched && item.matched.cost) || customPrices[item && item.model] || null;
+    if (!c) return "";
+    return [c.input, c.output, c.cache_read, c.cache_write].map((v) => (v == null ? 0 : Number(v))).join("/");
+  }
+
+  // 两份价是不是「同一个价」：允许 1% 相对误差。
+  // 渠道换汇取整会让同一份公价出现 0.15 / 0.149716 这种差别，
+  // 那是同一个价；而 0.15 与 0.44 是三倍差，属于不同产品，不能并。
+  function samePriceKey(a, b) {
+    if (!a || !b) return true; // 任一侧没价时按名字归族
+    if (a === b) return true;
+    const pa = a.split("/").map(Number);
+    const pb = b.split("/").map(Number);
+    if (pa.length !== pb.length) return false;
+    for (let i = 0; i < pa.length; i++) {
+      const x = pa[i];
+      const y = pb[i];
+      if (x === y) continue;
+      const base = Math.max(Math.abs(x), Math.abs(y));
+      if (base === 0) continue;
+      if (Math.abs(x - y) / base > 0.01) return false;
+    }
+    return true;
+  }
+  function noteProviderBaseName(provider, cleaned, item) {
+    if (!provider || !cleaned) return;
+    let map = providerBaseNames.get(provider);
+    if (!map) {
+      map = new Map();
+      providerBaseNames.set(provider, map);
+    }
+    const key = priceKeyOf(item);
+    const prev = map.get(cleaned);
+    // 同名多条时保留「无价」这一侧，让有价的那条有机会去匹配无价的基准
+    if (prev === undefined || prev === "" || key === "") {
+      if (prev === undefined || prev === "") map.set(cleaned, key);
+    }
+  }
+
+  // 剥掉一层变体后缀；没命中返回 null
+  function stripOneSuffix(cur) {
+    for (const suffix of VARIANT_SUFFIXES) {
+      if (!cur.endsWith(suffix)) continue;
+      const base = cur.slice(0, -suffix.length);
+      if (base) return base;
+    }
+    for (const re of VARIANT_SUFFIX_PATTERNS) {
+      const m = cur.match(re);
+      if (!m || m.index <= 0) continue;
+      return cur.slice(0, m.index);
+    }
+    return null;
+  }
+
+  // 反复剥掉变体后缀，取「在该渠道里真实存在、且价格一致的最短基础名」。
+  // deepseek-v4-flash-261017-antidowngrade → deepseek-v4-flash-261017 → deepseek-v4-flash
+  // 中间名不必真实存在（日期快照本来就只挂在变体上），但最终基础名必须存在且同价。
+  function stripVariantSuffix(provider, cleaned, item) {
+    if (!cleaned) return cleaned;
+    const map = providerBaseNames.get(provider);
+    if (!map) return cleaned;
+    const ownKey = priceKeyOf(item);
+    let cur = cleaned;
+    let best = null;
+    for (let guard = 0; guard < 6; guard++) {
+      const next = stripOneSuffix(cur);
+      if (!next || next === cur) break;
+      cur = next;
+      if (!map.has(cur)) continue;
+      const baseKey = map.get(cur);
+      // 基准没价（或本条没价）时按名字归族；两边都有价则必须完全一致
+      if (samePriceKey(baseKey, ownKey)) best = cur;
+    }
+    return best || cleaned;
+  }
+
   function cleanModelName(str) {
     if (!str) return "";
+    const rawName = str ? str.toLowerCase().replace(/^[a-z0-9_-]+\//, '') : '';
+    if (rawName === 'hy4flash' || rawName === 'hy4-flash') return 'hy4-flash';
+    if (rawName === 'hy4flash-free' || rawName === 'hy4-flash-free') return 'hy4-flash-free';
+    // DeepSeek 各家渠道对同一模型的叫法不同：deepseek-flash / deepseek-v4-flash /
+    // deepseek-v4.1-flash / DeepSeek-V4-Flash 指的是同一份价目表（matched 都指向
+    // deepseek-v4-flash）。不归一就会出现两张同名的卡，用量还被拆成两半。
+    if (rawName === 'deepseek-flash') return 'deepseek-v4-flash';
+
     let s = str.toLowerCase()
       .replace(/^[a-z0-9_-]+\//, '')
       .replace(/^(blian_|huoshan_|vlm_huoshan_)/, '')
@@ -187,14 +501,68 @@
     return s;
   }
 
+  // Provider type: only a pay-as-you-go provider with a real API key is the
+  // "付费 API" kind. A plan/account provider that happens to have a key field
+  // must not leak into the API filter.
+  function providerKindOf(p = {}) {
+    const id = String((p && p.id) || "").toLowerCase();
+    const billing = String((p && (p.billingKind || p.billing_kind)) || "").toLowerCase();
+    if (billing === "payg" || billing === "pay-as-you-go" || billing === "api") return "api";
+    if (billing === "plan" || billing === "subscription" || billing === "free") return "subscription";
+    const keySet = p && p.key && typeof p.key === "object"
+      ? p.key.set === true
+      : typeof (p && p.key) === "string" && p.key.trim().length > 0;
+    if (keySet && !p.account) return "api";
+    if (p && p.account) return "subscription";
+    if (/free|plan/.test(id)) return "subscription";
+    return "subscription";
+  }
+
   // 2.1 动态合并 Magpie 实时供应商列表 (Live Providers & Unpriced Channels Sync)
   function mergeLiveProviders(liveList) {
     if (!Array.isArray(liveList)) return;
+    liveProviders = liveList;
 
     const modelMap = new Map();
     for (const item of rawModels) {
       modelMap.set(item.model, item);
     }
+
+    // 建立“同族付费模型”市场价索引：免费渠道按等值公价展示（all-equivalent 语义）
+    const paidPriceIndex = new Map(); // cleanModelName -> cost
+    const barePriceIndex = new Map(); // bare id -> cost
+    for (const p of liveList) {
+      if (!p || !Array.isArray(p.models)) continue;
+      for (const pm of p.models) {
+        if (!pm || typeof pm !== "object") continue;
+        const id = pm.id || pm.model || pm.name;
+        if (!id || pm.free) continue;
+        const pr = pm.price || pm.list;
+        if (!pr) continue;
+        if ((Number(pr.input) || 0) > 0 || (Number(pr.output) || 0) > 0) {
+          barePriceIndex.set(String(id).toLowerCase(), pr);
+          paidPriceIndex.set(cleanModelName(String(id)), pr);
+        }
+      }
+    }
+    // 同时纳入静态基准数据中已匹配的市场公价（如 hy4 -> tencent-tokenhub/hy4）
+    for (const it of rawModels) {
+      if (!it.matched || !it.matched.cost || it.free) continue;
+      const c = it.matched.cost;
+      if ((Number(c.input) || 0) > 0 || (Number(c.output) || 0) > 0) {
+        const b = getBareModel(it.model);
+        if (b) barePriceIndex.set(String(b).toLowerCase(), c);
+        paidPriceIndex.set(cleanModelName(it.model), c);
+      }
+    }
+    const findEquivalentCost = (bare, cleaned) => {
+      const noFree = String(bare || "").toLowerCase().replace(/-?free$/, "");
+      return barePriceIndex.get(noFree)
+        || barePriceIndex.get(String(bare).toLowerCase())
+        || paidPriceIndex.get(cleaned)
+        || paidPriceIndex.get(noFree)
+        || null;
+    };
 
     for (const p of liveList) {
       if (!p || !p.id) continue;
@@ -203,8 +571,7 @@
       liveProviderNames.set(pId, pName);
 
       const isProviderOn = !p.off;
-      const isSub = !!p.account || pId.includes("free") || pId.includes("plan");
-      const pKind = isSub ? "subscription" : "api";
+      const pKind = providerKindOf(p);
 
       const pModels = Array.isArray(p.models) ? p.models : [];
       for (const m of pModels) {
@@ -230,6 +597,14 @@
           const sibling = rawModels.find(
             (it) => it.matched && (getBareModel(it.model) === bare || cleanModelName(it.model) === cleaned)
           );
+          const isFreeModel = (typeof m === 'object' && m.free) || /(^|-)free($|-)/i.test(bare);
+          let matched = sibling?.matched || null;
+          if (!matched && isFreeModel) {
+            const eqCost = findEquivalentCost(bare, cleaned);
+            matched = eqCost
+              ? { name: "等值公价 (免费)", cost: eqCost, equivalent: true }
+              : { name: "Free model", cost: { input: 0, output: 0 } };
+          }
 
           const newItem = {
             provider: pId,
@@ -240,40 +615,273 @@
             id: mId,
             name: mName,
             enabled: isEnabled,
-            free: typeof m === "object" ? !!m.free : false,
+            free: isFreeModel,
             listPrice: (typeof m === "object" && m.list) || null,
-            currentPrice: sibling?.matched?.cost
-              ? `List: $${sibling.matched.cost.input}/$${sibling.matched.cost.output}`
+            currentPrice: matched
+              ? (matched.cost?.input || matched.cost?.output
+                  ? `List: $${matched.cost.input}/$${matched.cost.output}`
+                  : "Free model ($0.00)")
               : "未定价",
-            matched: sibling?.matched || null,
-            isUnpriced: !sibling?.matched,
-            offPeakPreset: sibling?.offPeakPreset || null
-          };
+            matched: matched,
+            isUnpriced: !matched,
+            };
           rawModels.push(newItem);
           modelMap.set(fullName, newItem);
         }
       }
     }
+
+    // 免费模型统一按同族付费公价计价（覆盖静态基准数据分支）；无同族付费版则保持 $0
+    applyFreeEquivalentPricing(barePriceIndex, paidPriceIndex);
+  }
+
+  // 免费模型（hy4flash-free / hy4-flash-free / *-free）也要按同族付费模型的公价计价，
+  // 而不是显示 $0/$0 —— 账单口径是「所有提供商等值公价」，免费只是不额外收费，
+  // 它消耗的等价市值仍然要算进统计。无同族付费版时才保持 $0。
+  // 这个函数同时覆盖两种情况：实时渠道合并出来的条目、以及静态基准数据里的条目
+  // （没有 Magpie bridge 时只走静态数据，免费模型原本会一直是 $0）。
+  function applyFreeEquivalentPricing(bareIndex, cleanIndex) {
+    const barePriceIndex = bareIndex || new Map();
+    const paidPriceIndex = cleanIndex || new Map();
+    if (!bareIndex) {
+      // 静态数据里自建索引
+      for (const it of rawModels) {
+        const c = it.matched && it.matched.cost;
+        if (!c) continue;
+        if ((Number(c.input) || 0) <= 0 && (Number(c.output) || 0) <= 0) continue;
+        const b = getBareModel(it.model);
+        if (b) barePriceIndex.set(String(b).toLowerCase(), c);
+        paidPriceIndex.set(cleanModelName(it.model), c);
+      }
+    }
+    const lookup = (bare) => {
+      const noFree = String(bare || "").toLowerCase().replace(/-?free$/, "");
+      return barePriceIndex.get(noFree)
+        || barePriceIndex.get(String(bare).toLowerCase())
+        || paidPriceIndex.get(noFree)
+        || null;
+    };
+
+    for (const item of rawModels) {
+      if (!isFreeModelItem(item)) continue;
+      const c = item.matched && item.matched.cost;
+      const alreadyPaid = c && ((Number(c.input) || 0) > 0 || (Number(c.output) || 0) > 0);
+      if (alreadyPaid) continue;
+      const bare = getBareModel(item.model);
+      const eq = lookup(bare);
+      if (!eq || ((Number(eq.input) || 0) <= 0 && (Number(eq.output) || 0) <= 0)) continue;
+      item.matched = {
+        ...(item.matched || {}),
+        name: (item.matched && item.matched.name) || "等值公价 (免费)",
+        cost: eq,
+        equivalent: true
+      };
+      item.currentPrice = `List: $${eq.input}/$${eq.output}`;
+      item.isUnpriced = false;
+    }
   }
 
   // 2.2 动态合并用量数据 (Live Usage Summary Sync)
+  // 三个来源结构并不一样：
+  //  - 插件自建 /api/usage：{ summary:{...}, models:{bare:{...}}, channels }
+  //  - Magpie 宿主 usage:summary：{ period, calls, errors, input, output, cacheRead, cost, models:[...] }
+  //  - Magpie 宿主 usage:day from:"all"：{ calls, ..., agents:[{ models:[...] }] }
+  // 以前只认第一种的 liveUsage.summary，Magpie 窗口里读到的宿主数据全被丢掉，
+  // 「历史调用总数」就永远停在 models-data.js 构建时的静态快照上。
+  function usageEntryFrom(raw, fallbackCache = 0) {
+    const s = raw && typeof raw === "object" ? raw : {};
+    const input = Number(s.inputTokens ?? s.input ?? 0) || 0;
+    const output = Number(s.outputTokens ?? s.output ?? 0) || 0;
+    return {
+      requests: Number(s.requests ?? s.calls ?? 0) || 0,
+      inputTokens: input,
+      outputTokens: output,
+      cacheRead: Number(s.cacheRead ?? s.cache_read ?? fallbackCache ?? 0) || 0,
+      cacheWrite: Number(s.cacheWrite ?? s.cache_write ?? 0) || 0,
+      totalTokens: Number(s.totalTokens ?? s.tokens ?? input + output) || 0,
+      lastAt: s.lastAt || s.last || undefined
+    };
+  }
+
   function mergeLiveUsage(liveUsage) {
     if (!liveUsage || typeof liveUsage !== "object") return;
-    if (liveUsage.summary) {
-      window.__MAGPIE_USAGE_SUMMARY__ = {
-        ...(window.__MAGPIE_USAGE_SUMMARY__ || {}),
-        ...liveUsage.summary
+    let summary = null;
+    const modelMap = {};
+
+    // (a) 插件自建服务 /api/usage
+    if (liveUsage.summary && typeof liveUsage.summary === "object") {
+      const s = liveUsage.summary;
+      summary = {
+        requests: Number(s.requests) || 0,
+        inputTokens: Number(s.inputTokens) || 0,
+        outputTokens: Number(s.outputTokens) || 0,
+        cacheRead: Number(s.cacheRead) || 0,
+        cacheWrite: Number(s.cacheWrite) || 0,
+        totalTokens: Number(s.totalTokens) || 0,
+        cost: Number(s.cost) || 0
       };
+      usagePeriod = "all";
     }
-    if (liveUsage.models && typeof liveUsage.models === "object") {
+
+    // (b) 宿主 usage:summary（只支持 today/7d/30d，旧版本 fallback）
+    if (Array.isArray(liveUsage.models) && typeof liveUsage.calls === "number") {
+      const input = Number(liveUsage.input) || 0;
+      const output = Number(liveUsage.output) || 0;
+      summary = {
+        requests: Number(liveUsage.calls) || 0,
+        inputTokens: input,
+        outputTokens: output,
+        cacheRead: Number(liveUsage.cacheRead) || 0,
+        cacheWrite: Number(liveUsage.cacheWrite) || 0,
+        totalTokens: input + output,
+        cost: Number(liveUsage.cost) || 0,
+        errors: Number(liveUsage.errors) || 0
+      };
+      usagePeriod = String(liveUsage.period || "today");
+    }
+
+    // (c) 宿主 usage:day from:"all"：全量历史，模型明细则在 agents[].models
+    if (Array.isArray(liveUsage.agents) && typeof liveUsage.calls === "number") {
+      const input = Number(liveUsage.input) || 0;
+      const output = Number(liveUsage.output) || 0;
+      summary = {
+        requests: Number(liveUsage.calls) || 0,
+        inputTokens: input,
+        outputTokens: output,
+        cacheRead: Number(liveUsage.cacheRead) || 0,
+        cacheWrite: Number(liveUsage.cacheWrite) || 0,
+        totalTokens: input + output,
+        cost: Number(liveUsage.cost) || 0,
+        errors: Number(liveUsage.errors) || 0
+      };
+      usagePeriod = "all";
+      for (const agent of liveUsage.agents) {
+        for (const m of (agent && Array.isArray(agent.models) ? agent.models : [])) {
+          const key = String(m.model || m.id || "").toLowerCase();
+          if (!key) continue;
+          const entry = modelMap[key] || usageEntryFrom({});
+          const cur = usageEntryFrom(m, entry.cacheRead);
+          entry.requests += cur.requests;
+          entry.inputTokens += cur.inputTokens;
+          entry.outputTokens += cur.outputTokens;
+          entry.cacheRead += cur.cacheRead;
+          entry.cacheWrite += cur.cacheWrite;
+          entry.totalTokens += cur.inputTokens + cur.outputTokens;
+          modelMap[key] = entry;
+        }
+      }
+    }
+
+    // (d) 插件自建服务的 models 是对象；宿主 usage:summary 的 models 是数组，不能混
+    if (liveUsage.models && !Array.isArray(liveUsage.models) && typeof liveUsage.models === "object") {
+      for (const [key, raw] of Object.entries(liveUsage.models)) {
+        modelMap[String(key).toLowerCase()] = usageEntryFrom(raw);
+      }
+    }
+
+    if (summary) {
+      const prev = window.__MAGPIE_USAGE_SUMMARY__ || {};
+      // 30d fallback 不能把静态快照里的全量历史改小；全量 usage:day 才允许覆盖。
+      const olderFallback = usagePeriod !== "all" && Number(summary.requests) < Number(prev.requests || 0);
+      if (!olderFallback) {
+        window.__MAGPIE_USAGE_SUMMARY__ = { ...prev, ...summary };
+      }
+    }
+    if (Object.keys(modelMap).length) {
       window.__MAGPIE_BARE_USAGE__ = {
         ...(window.__MAGPIE_BARE_USAGE__ || {}),
-        ...liveUsage.models
+        ...modelMap
       };
     }
   }
 
   // 2.3 核心数据刷新控制器 (Manual & Auto-Refresh)
+  // 插件自带的 HTTP 服务端口，与 package.json 的 magpie.page.service.port 一致。
+  const SERVICE_PORT = (typeof window !== "undefined" && window.__MAGPIE_SERVICE_PORT__) || 3456;
+
+  // 页面拿到本地服务的地址：bridge 的 magpie.service 只在 magpie web（浏览器打开）时非空，
+  // 桌面 App 窗口里它是 ""，表示服务就在本机 127.0.0.1 的这个端口上。
+  // 之前这里读的是不存在的 globalThis.MAG.service，永远拿到 ""，于是用量只能读到宿主缓存，
+  // 价格同步也只能等 index.js 的 60 秒定时器。
+  // 候选地址：bridge 给的、页面同源（magpie 可能把服务代理到自己名下）、以及
+  // 桌面 App 窗口里直连本机端口（此时 magpie.service 是 ""）。
+  function serviceCandidates() {
+    const list = [];
+    const fromBridge = globalThis.magpie && typeof magpie.service === "string" ? magpie.service : "";
+    if (fromBridge) list.push(fromBridge.replace(/\/$/, ""));
+    const legacy = globalThis.MAG && typeof globalThis.MAG.service === "string" ? globalThis.MAG.service : "";
+    if (legacy) list.push(legacy.replace(/\/$/, ""));
+    list.push("");
+    list.push("http://127.0.0.1:" + SERVICE_PORT);
+    return [...new Set(list)];
+  }
+
+  // 插件页的 CSP 固定是 connect-src 'none'（magpie 的页面沙盒这么写，声明 page.service 也不放宽），
+  // 所以在 magpie 窗口里任何 fetch 都会被拦，只在控制台留下 "Refused to connect" 的噪音。
+  // 判据很直接：有 bridge 的页面就是窗口里这份，一律走 magpie.read；
+  // 只有独立打开的 web UI（public/index.html，没有 bridge）才直连本机服务。
+  function serviceReachable() {
+    return !(globalThis.magpie && typeof globalThis.magpie.read === "function");
+  }
+
+  let resolvedServiceBase = null;
+  let serviceProbeFailedAt = 0;
+  const SERVICE_PROBE_RETRY_MS = 15000;
+
+  // 逐个探测 /api/usage，哪个能通就用哪个；全部失败才退回宿主缓存。
+  // 失败不永久记住：服务可能比页面晚起，过一会儿允许再探一次。
+  async function resolveServiceBase() {
+    if (resolvedServiceBase) return resolvedServiceBase;
+    if (!serviceReachable()) return "";
+    if (serviceProbeFailedAt && Date.now() - serviceProbeFailedAt < SERVICE_PROBE_RETRY_MS) return "";
+    for (const base of serviceCandidates()) {
+      try {
+        const res = await fetch(base + "/api/usage", { cache: "no-store" });
+        if (!res.ok) continue;
+        const data = await res.json();
+        if (data && typeof data === "object" && !data.error) {
+          resolvedServiceBase = base;
+          serviceProbeFailedAt = 0;
+          return base;
+        }
+      } catch (e) {}
+    }
+    serviceProbeFailedAt = Date.now();
+    return "";
+  }
+
+  async function fetchLiveUsage() {
+    // 独立 Web UI：本地 HTTP 服务可用，直接读 /api/usage 全量统计。
+    if (serviceReachable()) {
+      try {
+        const base = await resolveServiceBase();
+        const res = base ? await fetch(base + "/api/usage", { cache: "no-store" }) : null;
+        if (res && res.ok) {
+          const data = await res.json();
+          if (data && typeof data === "object" && !data.error) return data;
+        }
+      } catch (e) {
+        console.warn("Failed to fetch /api/usage:", e);
+      }
+    }
+    // Magpie 窗口：页面沙箱 connect-src 'none'，只能走宿主 bridge。
+    // usage:day from:"all" 给全量历史；旧版 Magpie 没有这个 read 时退回 30 天 summary。
+    if (globalThis.magpie && typeof magpie.read === "function") {
+      try {
+        const all = await magpie.read("usage:day", { from: "all" });
+        if (all && typeof all === "object" && typeof all.calls === "number") return all;
+      } catch (e) {
+        console.warn("Failed to read usage:day:", e);
+      }
+      try {
+        return await magpie.read("usage:summary", { period: "30d" });
+      } catch (e) {
+        console.warn("Failed to read usage:summary:", e);
+      }
+    }
+    return null;
+  }
+
   async function syncLiveMagpieData(isManual = false) {
     if (isRefreshing) return;
     isRefreshing = true;
@@ -290,6 +898,7 @@
         // 读取插件选项与定价
         try {
           pluginOptions = (await magpie.options.get()) || {};
+          applyPeakOptions(pluginOptions);
           customPrices = pluginOptions.customPrices || {};
           globalMode = pluginOptions.mode || "all-equivalent";
         } catch (e) {
@@ -306,17 +915,18 @@
           } catch (e) {
             console.warn("Failed to read providers:list:", e);
           }
-
-          // 读取实时用量统计
-          try {
-            const liveUsage = await magpie.read("usage:summary");
-            if (liveUsage && typeof liveUsage === "object") {
-              mergeLiveUsage(liveUsage);
-            }
-          } catch (e) {
-            console.warn("Failed to read usage:summary:", e);
-          }
         }
+      }
+
+      // 实时用量统计：浏览器走本地服务，Magpie 窗口走 bridge。
+      // 以前只放在 if (globalThis.magpie) 里，独立打开的 Web UI 永远不刷新。
+      try {
+        const liveUsage = await fetchLiveUsage();
+        if (liveUsage && typeof liveUsage === "object") {
+          mergeLiveUsage(liveUsage);
+        }
+      } catch (e) {
+        console.warn("Failed to read live usage:", e);
       }
 
       updatePeakStatusBar();
@@ -346,6 +956,14 @@
     const map = new Map();
     const bareUsageMap = window.__MAGPIE_BARE_USAGE__ || {};
 
+    // 先登记每个渠道里出现过的基础模型名，供 stripVariantSuffix 判断
+    // 「去掉后缀之后是不是真的存在这个模型」，避免误并 qwen4-max 这类正式名。
+    providerBaseNames.clear();
+    for (const it of models) {
+      if (!it || !it.provider) continue;
+      noteProviderBaseName(it.provider, cleanModelName(getBareModel(it.model)), it);
+    }
+
     for (const item of models) {
       if (!item.provider || item.provider === "unknown" || item.provider === "group") continue;
       const bare = getBareModel(item.model);
@@ -362,24 +980,15 @@
       ) {
         continue;
       }
-      const groupKey = cleanModelName(bare) || bare;
+      const groupKey = stripVariantSuffix(item.provider, cleanModelName(bare) || bare, item);
       if (groupKey === "never-stuck" || groupKey === "auto" || groupKey.startsWith("group/") || groupKey.endsWith("-model")) continue;
 
       if (!map.has(groupKey)) {
-        const bu = bareUsageMap[groupKey] || bareUsageMap[bare] || {
-          requests: 0,
-          totalTokens: 0,
-          inputTokens: 0,
-          outputTokens: 0,
-          cacheRead: 0,
-          cacheWrite: 0
-        };
         map.set(groupKey, {
           bare: groupKey,
           name: (item.name && item.name !== item.model && !item.name.includes('-control')) ? item.name : (item.matched?.name || groupKey),
           matched: item.matched,
-          offPeakPreset: item.offPeakPreset,
-          usage: { ...bu },
+          usage: emptyUsage(),
           items: []
         });
       }
@@ -390,26 +999,97 @@
       if (!g.matched && item.matched) {
         g.matched = item.matched;
       }
-      if (!g.offPeakPreset?.supported && item.offPeakPreset?.supported) {
-        g.offPeakPreset = item.offPeakPreset;
-      }
       g.items.push(item);
     }
+
+    // 用量按「所有同族变体」累加：一个组里可能同时有 deepseek-v4-flash、
+    // deepseek-v4-flash-max、deepseek-v4-flash-official 等，它们各自的用量键
+    // 在 /api/usage 里是分开的。原来只查 groupKey 一个键，导致组的调用量与
+    // Token 数严重偏低，默认的「用量降序」排序因此完全失真。
+    for (const g of map.values()) {
+      const keys = new Set([g.bare]);
+      for (const it of g.items) {
+        const bareItem = getBareModel(it.model);
+        keys.add(bareItem);
+        keys.add(String(bareItem).toLowerCase());
+        keys.add(cleanModelName(bareItem) || bareItem);
+        if (it.id) keys.add(String(it.id).toLowerCase());
+      }
+      const merged = emptyUsage();
+      for (const key of keys) {
+        const bu = bareUsageMap[key];
+        if (!bu) continue;
+        merged.requests += bu.requests || 0;
+        merged.totalTokens += bu.totalTokens || 0;
+        merged.inputTokens += bu.inputTokens || 0;
+        merged.outputTokens += bu.outputTokens || 0;
+        merged.cacheRead += bu.cacheRead || 0;
+        merged.cacheWrite += bu.cacheWrite || 0;
+      }
+      g.usage = merged;
+    }
+
     return Array.from(map.values());
   }
 
+  function emptyUsage() {
+    return {
+      requests: 0,
+      totalTokens: 0,
+      inputTokens: 0,
+      outputTokens: 0,
+      cacheRead: 0,
+      cacheWrite: 0
+    };
+  }
+
+  // 组的代表单价：一律用「闲时基础价」，不用高峰时段换算后的显示价，
+  // 否则同一份价目表在不同时刻排序会跳来跳去。
   function getGroupRepresentativeInputPrice(g) {
     for (const it of g.items) {
       const p = getModelPrice(it);
-      if (p && typeof p.input === "number") return p.input;
+      if (!p) continue;
+      if (typeof p.baseInput === "number") return p.baseInput;
+      if (typeof p.input === "number") return p.input;
+      if (p.type === "current") {
+        const m = String(p.text || "").match(/\$([\d.]+)\s*\/\s*\$([\d.]+)/);
+        if (m) return Number(m[1]);
+      }
     }
     return null;
   }
 
   function sortGroups(list, sortType) {
     const sorted = [...list];
-    if (sortType === "default" || sortType === "usage-desc" || sortType === "tokens-desc") {
-      // 默认用量降序：优先按总 Token 消耗降序，相同时按调用次数降序，最后按名称
+    if (sortType === "default") {
+      // 默认「智能排序」：把正在用、能用的排前面。
+      // 分档：① 已启用且有调用 → ② 有调用（渠道已停用）→ ③ 已启用但还没调用
+      //       → ④ 有价格但未启用 → ⑤ 其他（未定价/未启用）。
+      // 档内按调用次数降序，再按 Token，最后按名称。
+      // 原来 default 与 tokens-desc 走同一分支，两个选项点了没区别，这是真 bug。
+      const rank = (g) => {
+        const used = (g.usage?.requests || 0) > 0;
+        const enabled = g.items.some((it) => it.enabled);
+        if (used && enabled) return 0;
+        if (used) return 1;
+        if (enabled) return 2;
+        if (g.items.some((it) => !!getModelPrice(it))) return 3;
+        return 4;
+      };
+      sorted.sort((a, b) => {
+        const ra = rank(a);
+        const rb = rank(b);
+        if (ra !== rb) return ra - rb;
+        const cb = b.usage?.requests || 0;
+        const ca = a.usage?.requests || 0;
+        if (cb !== ca) return cb - ca;
+        const tb = b.usage?.totalTokens || 0;
+        const ta = a.usage?.totalTokens || 0;
+        if (tb !== ta) return tb - ta;
+        return (a.name || a.bare).localeCompare(b.name || b.bare);
+      });
+    } else if (sortType === "tokens-desc") {
+      // Token 消耗降序，相同再按次数
       sorted.sort((a, b) => {
         const tb = b.usage?.totalTokens || 0;
         const ta = a.usage?.totalTokens || 0;
@@ -473,68 +1153,163 @@
     </svg>`;
   }
 
-  // 5. 峰谷分时时段计算 (Time-of-Use & DeepSeek Official Schedule)
-  function getBeijingTime(date = new Date()) {
-    const utc = date.getTime() + date.getTimezoneOffset() * 60000;
-    return new Date(utc + 3600000 * 8);
+  // 5. 峰谷分时计算：每个模型按自己的时段与倍率判断，时段用本机时钟（与 Magpie 一致）。
+  function localTimeString(date = new Date()) {
+    return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
   }
 
-  function checkOffPeakStatus(date = new Date()) {
-    const bj = getBeijingTime(date);
-    const day = bj.getDay(); // 0 是周日, 6 是周六
-    const hour = bj.getHours();
-    const min = bj.getMinutes();
-    const t = hour + min / 60;
-    const timeStr = `${String(hour).padStart(2, "0")}:${String(min).padStart(2, "0")}`;
-
-    // 周末全天均为低谷闲时 (立享 5 折)
-    if (day === 0 || day === 6) {
-      return {
-        isOffPeak: true,
-        discount: 0.5,
-        hour,
-        min,
-        day,
-        timeStr,
-        reason: "weekend"
-      };
-    }
-
-    // 工作日：高峰为 09:00-12:00 与 14:00-18:00；其余时段为低谷闲时
-    const isPeak = (t >= 9 && t < 12) || (t >= 14 && t < 18);
+  // 保留给 CLI / 旧调用：默认按 DeepSeek 工作日时段判断；页面价签用 peakRateAt(config)。
+  function checkOffPeakStatus(date = new Date(), config = null) {
+    const cfg = config || { enabled: true, rate: DEFAULT_PEAK_RATE, windows: DEFAULT_WEEKDAY_WINDOWS };
+    const rate = peakRateAt(cfg, date);
     return {
-      isOffPeak: !isPeak,
-      discount: !isPeak ? 0.5 : 1.0,
-      hour,
-      min,
-      day,
-      timeStr,
-      reason: isPeak ? "workday_peak" : t >= 12 && t < 14 ? "lunch" : "night"
+      isOffPeak: rate <= 1,
+      peakFactor: rate,
+      hour: date.getHours(),
+      min: date.getMinutes(),
+      day: date.getDay(),
+      timeStr: localTimeString(date),
+      reason: rate > 1 ? "peak_window" : "offpeak"
     };
   }
 
+  function activePeakModels(date = new Date()) {
+    const seen = new Set();
+    const active = [];
+    for (const item of rawModels) {
+      const config = peakConfigFor(item);
+      if (!config || !config.enabled) continue;
+      if (seen.has(config.key)) continue;
+      const rate = peakRateAt(config, date);
+      if (rate > 1) {
+        seen.add(config.key);
+        active.push({ key: config.key, rate });
+      }
+    }
+    return active;
+  }
+
   function updatePeakStatusBar() {
-    const status = checkOffPeakStatus();
     const bar = $("peak-status-bar");
     const text = $("peak-text");
     const time = $("peak-time");
     if (!bar || !text) return;
-
-    if (status.isOffPeak) {
+    const now = new Date();
+    const active = activePeakModels(now);
+    const anyEnabled = rawModels.some((item) => {
+      const config = peakConfigFor(item);
+      return !!(config && config.enabled && config.windows.length);
+    });
+    if (!anyEnabled) {
+      bar.className = "peak-status-bar is-offpeak";
+      text.textContent = t("peak_badge_off");
+    } else if (active.length) {
+      bar.className = "peak-status-bar is-peak";
+      text.textContent = active.length === 1
+        ? t("peak_badge_live_model", { model: active[0].key, rate: active[0].rate })
+        : t("peak_badge_live_multi", { count: active.length });
+    } else {
       bar.className = "peak-status-bar is-offpeak";
       text.textContent = t("offpeak_badge_live");
-    } else {
-      bar.className = "peak-status-bar is-peak";
-      text.textContent = t("peak_badge_live");
     }
-    if (time) {
-      time.textContent = `UTC+8 ${status.timeStr}`;
+    if (time) time.textContent = "本地 " + localTimeString(now);
+  }
+
+  function editingPeakRate() {
+    const input = $("peak-rate");
+    const value = input ? Number(input.value) : NaN;
+    if (Number.isFinite(value) && value > 0 && value <= 1000) return Math.round(value * 1000) / 1000;
+    return editingModel ? peakRateFor(editingModel) : DEFAULT_PEAK_RATE;
+  }
+
+  // 弹窗当前状态是否按峰谷算（用于价签换算与提示，不等保存）。
+  function editingPeakApplies() {
+    const toggle = $("peak-model-toggle");
+    return !!(editingPeakKey && toggle && toggle.checked && editingPeakWindows.length);
+  }
+
+  // 峰谷预览：Magpie 存的是闲时价，高峰时段按其渠道 rateWindows 的倍率计费。
+  // 弹窗里可以选「上面填的是闲时价还是高峰价」：填高峰价时保存前 ÷ 倍率换成闲时价。
+  function renderPriceModeBanner() {
+    const banner = $("price-mode-banner");
+    const isPeakInput = peakInputMode === "peak";
+    const hourly = editingModel ? editingPeakApplies() : false;
+    const tagKey = isPeakInput ? "price_mode_tag_peak" : "price_mode_tag_offpeak";
+    const tagText = hourly ? t(tagKey) : t("price_mode_tag_flat");
+    for (const id of ["input-cost-mode", "output-cost-mode", "cache-read-cost-mode", "cache-write-cost-mode"]) {
+      const el = $(id);
+      if (!el) continue;
+      el.textContent = tagText;
+      el.dataset.mode = hourly ? (isPeakInput ? "peak" : "offpeak") : "flat";
     }
+    if (!banner) return;
+    if (!hourly) {
+      banner.hidden = false;
+      banner.dataset.mode = "flat";
+      banner.textContent = t("price_mode_banner_flat");
+      return;
+    }
+    banner.hidden = false;
+    banner.dataset.mode = isPeakInput ? "peak" : "offpeak";
+    banner.textContent = t(isPeakInput ? "price_mode_banner_peak" : "price_mode_banner_offpeak", {
+      factor: editingPeakRate()
+    });
+  }
+
+  function updatePeakPreview() {
+    renderPriceModeBanner();
+    const hint = $("peak-hint");
+    if (hint && hint.hidden) return;
+    const inVal = parseFloat($("input-cost")?.value) || 0;
+    const outVal = parseFloat($("output-cost")?.value) || 0;
+    const rate = editingPeakRate();
+    const preview = $("peak-price-preview");
+    if (preview) {
+      if (peakInputMode === "peak") {
+        preview.textContent = `$${+(inVal / rate).toFixed(5)} / $${+(outVal / rate).toFixed(5)}`;
+      } else {
+        preview.textContent = `$${+(inVal * rate).toFixed(5)} / $${+(outVal * rate).toFixed(5)}`;
+      }
+    }
+    const label = $("peak-price-label");
+    if (label) label.textContent = t(peakInputMode === "peak" ? "peak_price_label_to_offpeak" : "peak_price_label", { factor: rate });
+  }
+
+  // 只同步状态与高亮，不动输入框里的数值
+  function applyPeakInputModeUI(mode) {
+    peakInputMode = mode === "peak" ? "peak" : "offpeak";
+    const seg = $("peak-input-mode");
+    if (seg) {
+      for (const btn of seg.querySelectorAll("button[data-mode]")) {
+        if (btn.dataset.mode === peakInputMode) btn.setAttribute("aria-selected", "true");
+        else btn.removeAttribute("aria-selected");
+      }
+    }
+    updatePeakPreview();
+  }
+
+  // 切换「填的是闲时价 / 高峰价」：已填数值按倍率一起换算，语义不变
+  function setPeakInputMode(mode) {
+    if (mode !== "peak" && mode !== "offpeak") return;
+    if (mode === peakInputMode) return;
+    const rate = editingPeakRate();
+    const scale = mode === "peak" ? 1 / rate : rate;
+    for (const id of ["input-cost", "output-cost", "cache-read-cost", "cache-write-cost"]) {
+      const el = $(id);
+      if (!el) continue;
+      const v = parseFloat(el.value);
+      if (!Number.isFinite(v)) continue;
+      el.value = String(+(v * scale).toFixed(6));
+    }
+    applyPeakInputModeUI(mode);
   }
 
   // 6. 定价计算 (含实时峰谷切换)
   function getModelPrice(item) {
-    const currentStatus = checkOffPeakStatus();
+    const config = peakConfigFor(item);
+    const hourly = peakApplies(item);
+    const peakRate = config ? config.rate : DEFAULT_PEAK_RATE;
+    const isPeakNow = hourly && peakRateAt(config, new Date()) > 1;
     const isSub = item.providerKind === "subscription";
 
     const specificCustom = customPrices[item.model];
@@ -551,65 +1326,59 @@
         output: 0,
         cache_read: 0,
         cache_write: 0,
-        hasOffPeak: false,
-        isOffPeakActive: false,
+        hasPeak: false,
+        isPeakActive: false,
         isSubFree: true,
         originalCost: origCost,
         text: "$0.00"
       };
     }
 
-    // 自定义定价
+    // 自定义定价：存的是「闲时价」，高峰时段由 Magpie 的渠道 rateWindows 按倍率计费
     if (custom) {
-      const hasOffPeak = !!(custom.offpeak?.enabled || item.offPeakPreset?.supported);
-      const peakIn = custom.input;
-      const peakOut = custom.output;
-      const offIn = custom.offpeak?.input ?? +(peakIn * 0.5).toFixed(5);
-      const offOut = custom.offpeak?.output ?? +(peakOut * 0.5).toFixed(5);
-
-      const effectiveIn = hasOffPeak && currentStatus.isOffPeak ? offIn : peakIn;
-      const effectiveOut = hasOffPeak && currentStatus.isOffPeak ? offOut : peakOut;
+      const baseIn = custom.input;
+      const baseOut = custom.output;
+      const peakIn = hourly ? +(baseIn * peakRate).toFixed(5) : baseIn;
+      const peakOut = hourly ? +(baseOut * peakRate).toFixed(5) : baseOut;
 
       return {
         type: "custom",
         scope,
-        input: effectiveIn,
-        output: effectiveOut,
+        input: isPeakNow ? peakIn : baseIn,
+        output: isPeakNow ? peakOut : baseOut,
         cache_read: custom.cache_read,
         cache_write: custom.cache_write,
-        hasOffPeak,
-        isOffPeakActive: currentStatus.isOffPeak,
+        hasPeak: hourly,
+        isPeakActive: isPeakNow,
+        peakRate,
         peakInput: peakIn,
         peakOutput: peakOut,
-        offPeakInput: offIn,
-        offPeakOutput: offOut
+        baseInput: baseIn,
+        baseOutput: baseOut
       };
     }
 
-    // 官方匹配公价 (若为 DeepSeek 等模型，自动计算峰谷)
+    // 官方匹配公价：models.dev 列的就是闲时价，高峰由 Magpie 的渠道 rateWindows 按倍率计费
     if (item.matched && item.matched.cost) {
       const c = item.matched.cost;
-      const hasOffPeak = !!item.offPeakPreset?.supported;
-      const peakIn = c.input;
-      const peakOut = c.output;
-      const offIn = +(peakIn * 0.5).toFixed(5);
-      const offOut = +(peakOut * 0.5).toFixed(5);
-
-      const effectiveIn = hasOffPeak && currentStatus.isOffPeak ? offIn : peakIn;
-      const effectiveOut = hasOffPeak && currentStatus.isOffPeak ? offOut : peakOut;
+      const baseIn = c.input;
+      const baseOut = c.output;
+      const peakIn = hourly ? +(baseIn * peakRate).toFixed(5) : baseIn;
+      const peakOut = hourly ? +(baseOut * peakRate).toFixed(5) : baseOut;
 
       return {
         type: "matched",
-        input: effectiveIn,
-        output: effectiveOut,
+        input: isPeakNow ? peakIn : baseIn,
+        output: isPeakNow ? peakOut : baseOut,
         cache_read: c.cache_read,
         cache_write: c.cache_write,
-        hasOffPeak,
-        isOffPeakActive: currentStatus.isOffPeak,
+        hasPeak: hourly,
+        isPeakActive: isPeakNow,
+        peakRate,
         peakInput: peakIn,
         peakOutput: peakOut,
-        offPeakInput: offIn,
-        offPeakOutput: offOut
+        baseInput: baseIn,
+        baseOutput: baseOut
       };
     }
 
@@ -664,9 +1433,12 @@
     const optAll = document.createElement("option");
     optAll.value = "all";
     const isZh = getLocale().startsWith("zh");
+    // 这里显示的是「去重后的模型数」，和「活跃模型」统计同一个口径。
+    // 之前用 rawModels.length 是渠道条目数，和上面的卡片数对不上，看着像数据丢了。
+    const groupCount = buildModelGroups(rawModels).length;
     const allLabel = isZh
-      ? `🏢 ${t("provider_filter_all")} (${provMap.size} 厂商 / ${rawModels.length} 模型)`
-      : `🏢 ${t("provider_filter_all")} (${provMap.size} providers / ${rawModels.length} models)`;
+      ? `🏢 ${t("provider_filter_all")} (${provMap.size} 厂商 / ${groupCount} 模型)`
+      : `🏢 ${t("provider_filter_all")} (${provMap.size} providers / ${groupCount} models)`;
     optAll.textContent = allLabel;
     select.appendChild(optAll);
 
@@ -685,6 +1457,21 @@
     };
   }
 
+  // 「已生效计费」的口径：api-only 下只算真正走付费 API Key 的渠道；
+  // 订阅渠道的 $0.00 只是免记账，不是一笔生效价格。all-equivalent 下免费模型
+  // 的等值公价仍然算「有价」，与原有统计保持一致。
+  function isBillingEffective(item) {
+    const price = getModelPrice(item);
+    if (!price) return false;
+    if (globalMode === "api-only") {
+      // 只记录真实 API 花费：订阅/账号渠道在 Magpie 侧已被写成 $0，
+      // 页面里的自定义价也不能算成一笔生效计费，否则统计口径和账单对不上。
+      if (item.providerKind !== "api") return false;
+      if (price.type === "subscription-free") return false;
+    }
+    return true;
+  }
+
   // 8. 统计数据刷新 (按模型分组聚合后的统计)
   function renderStats() {
     const allGroups = buildModelGroups(rawModels);
@@ -692,6 +1479,7 @@
     let customCount = 0;
     let pricedCount = 0;
     let unpricedCount = 0;
+    let freeCount = 0;
     let enabledGroupsCount = 0;
     let enabledChannelsCount = 0;
 
@@ -703,12 +1491,18 @@
       const hasWildcard = !!customPrices["*/" + g.bare];
       const hasAnyCustom = hasWildcard || g.items.some((it) => !!customPrices[it.model]);
 
-      // If any item in the group is priced
-      const isAnyPriced = g.items.some((it) => !!getModelPrice(it));
+      // 免费模型（含 -free 后缀、渠道标记 free、或公价全 0）也要计入「已生效计费」：
+      // 它们的成本确实是 0，但调用量与 Token 是真实的，账单统计口径不能把它们当空气。
+      // 但 api-only 下订阅渠道返回的 subscription-free 是「免记账」，不能算「已生效计费」。
+      const isAnyPriced = g.items.some(isBillingEffective);
       if (isAnyPriced) {
         pricedCount++;
       } else {
         unpricedCount++;
+      }
+
+      if (g.items.some(isFreeModelItem)) {
+        freeCount++;
       }
 
       if (hasAnyCustom) {
@@ -726,15 +1520,44 @@
     if ($("stat-enabled")) $("stat-enabled").textContent = enabledGroupsCount;
     if ($("stat-enabled-sub")) $("stat-enabled-sub").textContent = `${enabledChannelsCount} 个渠道启用`;
     if ($("stat-priced")) $("stat-priced").textContent = pricedCount;
+    if ($("stat-priced-sub")) {
+      const pricedLabel = globalMode === "api-only" ? "tile_priced_s_api" : "tile_priced_s";
+      $("stat-priced-sub").textContent = freeCount > 0
+        ? `${t(pricedLabel)} · ${t("stat_free_note")} ${freeCount}`
+        : t(pricedLabel);
+    }
     if ($("stat-custom")) $("stat-custom").textContent = customCount;
     if ($("stat-unpriced")) $("stat-unpriced").textContent = unpricedCount;
     if ($("stat-usage")) $("stat-usage").textContent = formatNumber(usageSummary.requests);
     if ($("stat-usage-sub")) $("stat-usage-sub").textContent = `${formatTokens(usageSummary.totalTokens)} Tokens`;
+    if ($("stat-usage-k")) {
+      $("stat-usage-k").textContent = usagePeriod === "all" ? t("tile_usage_k") : t("tile_usage_k_30d");
+    }
+  }
+
+  // 免费模型判定：渠道标记 free、名字带 -free、或公价四项全 0
+  function isFreeModelItem(item) {
+    if (!item) return false;
+    if (item.free) return true;
+    const bare = getBareModel(item.model || "");
+    if (/(^|-)free($|-)/i.test(bare)) return true;
+    const c = item.matched && item.matched.cost;
+    if (!c) return false;
+    return (Number(c.input) || 0) === 0 && (Number(c.output) || 0) === 0;
   }
 
   // 9. 核心列表渲染 (按模型分组 + 供应商图标 + 展开/折叠渠道价格)
   function renderList() {
-    const allGroups = buildModelGroups(rawModels);
+    // Filter the model entries before grouping. Filtering groups after grouping
+    // keeps every channel of a group, so a group with one OpenCode API model
+    // would also show Trae/WorkBuddy subscription rows under the API tab.
+    let kindFilter = selectedKind && selectedKind !== "all" ? selectedKind : "";
+    if (filter === "api") kindFilter = "api";
+    else if (filter === "login" || filter === "subscription") kindFilter = "subscription";
+    const sourceModels = kindFilter
+      ? rawModels.filter((it) => it.providerKind === kindFilter)
+      : rawModels;
+    const allGroups = buildModelGroups(sourceModels);
     let list = allGroups;
 
     // Filter by tab
@@ -753,20 +1576,43 @@
         return !!customPrices["*/" + g.bare] || g.items.some((it) => !!customPrices[it.model]);
       });
     } else if (filter === "unpriced") {
-      list = list.filter((g) => g.items.every((it) => !it.matched && !customPrices[it.model] && !customPrices["*/" + g.bare]));
+      // 与「已生效计费」统计同一口径：拿不到任何价格才算未定价，
+      // 免费模型的等值公价也算「有价」，否则标签数和统计数对不上。
+      list = list.filter((g) => !g.items.some((it) => !!getModelPrice(it)));
     } else if (filter === "matched") {
       list = list.filter((g) => !!g.matched || g.items.some((it) => !!it.matched));
     } else if (filter === "offpeak") {
       list = list.filter((g) => {
-        const hasCustomOffPeak = !!customPrices["*/" + g.bare]?.offpeak?.enabled;
         return (
-          hasCustomOffPeak ||
-          !!g.offPeakPreset?.supported ||
+          g.items.some(isHourlyBilled) ||
           g.items.some((it) => {
             const p = getModelPrice(it);
-            return (p && p.hasOffPeak) || (it.offPeakPreset && it.offPeakPreset.supported);
+            return !!(p && p.hasPeak) || isHourlyBilled(it);
           })
         );
+      });
+    }
+
+    // Filter by price category (free / paid / unpriced)
+    if (selectedPrice && selectedPrice !== "all") {
+      list = list.filter((g) => {
+        const hasPrice = g.items.some((it) => !!getModelPrice(it));
+        if (selectedPrice === "unpriced") return !hasPrice;
+        if (!hasPrice) return false;
+        const isFreeGroup = g.items.some((it) => {
+          const p = getModelPrice(it);
+          if (!p) return false;
+          if (p.type === "current") return /0\.0*0|free/i.test(p.text || "");
+          return (Number(p.input) || 0) === 0 && (Number(p.output) || 0) === 0;
+        });
+        if (selectedPrice === "free") return isFreeGroup;
+        if (selectedPrice === "paid") return g.items.some((it) => {
+          const p = getModelPrice(it);
+          if (!p) return false;
+          if (p.type === "current") return !/0\.0*0|free/i.test(p.text || "");
+          return (Number(p.input) || 0) > 0 || (Number(p.output) || 0) > 0;
+        });
+        return true;
       });
     }
 
@@ -824,7 +1670,7 @@
       // "默认不展开因为价格都一样除非自定义了"
       const isExpanded = userToggledGroups.has(group.bare)
         ? userToggledGroups.get(group.bare)
-        : hasCustom;
+        : defaultExpanded;
 
       // Card Header
       const header = document.createElement("div");
@@ -875,10 +1721,27 @@
 
       nameRow.append(titleSpan, codeSpan);
 
-      if (group.offPeakPreset?.supported) {
-        const offPeakTag = document.createElement("span");
-        offPeakTag.style.cssText = "font-size: 10px; color: var(--green); border: 1px solid rgba(48, 209, 88, 0.3); border-radius: 3px; padding: 0 4px;";
-        offPeakTag.textContent = t("badge_offpeak_supported");
+      // 峰谷角标：官方价目表里分时定价的模型族才显示，点一下就能给整个模型族开关，
+      // 不用每次都进弹窗。默认按官方清单（DeepSeek 系）开启。
+      const groupFamily = group.items.map(peakFamilyOf).find(Boolean);
+      const groupPeakItem = groupFamily ? (group.items.find((it) => peakFamilyOf(it)?.key === groupFamily.key) || group.items[0]) : null;
+      if (groupFamily && groupPeakItem && peakFamilyEnabled(groupFamily.key)) {
+        const on = true;
+        const groupRate = peakRateFor(groupPeakItem);
+        const offPeakTag = document.createElement("button");
+        offPeakTag.type = "button";
+        offPeakTag.className = "badge-peak-toggle" + (on ? " is-on" : " is-off");
+        offPeakTag.textContent = t("peak_family_badge", { factor: groupRate });
+        offPeakTag.title = t(on ? "toast_peak_on" : "toast_peak_off", { model: groupFamily.key, factor: groupRate });
+        offPeakTag.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const next = !peakFamilyEnabled(groupFamily.key);
+          setPeakFamilyEnabled(groupFamily.key, next);
+          showToast(t(next ? "toast_peak_on" : "toast_peak_off", { model: groupFamily.key, factor: groupRate }));
+          renderList();
+          renderStats();
+          persistOptions().catch(() => {});
+        });
         nameRow.append(offPeakTag);
       }
 
@@ -977,7 +1840,7 @@
             // 混合启用或启用了 API 渠道
             const mainRate = document.createElement("span");
             mainRate.className = "main-rate";
-            if (apiPrice && apiPrice.hasOffPeak) {
+            if (apiPrice && apiPrice.hasPeak) {
               mainRate.textContent = `${t("peak_tag")} $${apiPrice.peakInput}/$${apiPrice.peakOutput} (API)`;
             } else if (apiPrice && typeof apiPrice.input === "number") {
               mainRate.textContent = `$${apiPrice.input} / $${apiPrice.output} (API)`;
@@ -997,10 +1860,9 @@
             mainRate.className = "main-rate";
             const subCache = document.createElement("span");
             subCache.className = "sub-cache";
-            if (repPrice.hasOffPeak) {
-              mainRate.textContent = `${t("peak_tag")} $${repPrice.peakInput}/$${repPrice.peakOutput}`;
-              subCache.className = "sub-cache rate-offpeak";
-              subCache.textContent = `${t("offpeak_tag")} $${repPrice.offPeakInput}/$${repPrice.offPeakOutput} (50% OFF)`;
+            if (repPrice.hasPeak) {
+              mainRate.textContent = `$${repPrice.input} / $${repPrice.output}`;
+              subCache.textContent = `${t("peak_tag")} $${repPrice.peakInput}/$${repPrice.peakOutput} (×${repPrice.peakRate || DEFAULT_PEAK_RATE})`;
             } else {
               mainRate.textContent = `$${repPrice.input} / $${repPrice.output}`;
               subCache.textContent = `${t("cache_label")} $${repPrice.cache_read}/$${repPrice.cache_write} · ${t("paid_api_badge", "按量 API")}`;
@@ -1023,10 +1885,9 @@
           mainRate.className = "main-rate";
           const subCache = document.createElement("span");
           subCache.className = "sub-cache";
-          if (repPrice.hasOffPeak) {
-            mainRate.textContent = `${t("peak_tag")} $${repPrice.peakInput}/$${repPrice.peakOutput}`;
-            subCache.className = "sub-cache rate-offpeak";
-            subCache.textContent = `${t("offpeak_tag")} $${repPrice.offPeakInput}/$${repPrice.offPeakOutput} (50% OFF)`;
+          if (repPrice.hasPeak) {
+            mainRate.textContent = `$${repPrice.input} / $${repPrice.output}`;
+            subCache.textContent = `${t("peak_tag")} $${repPrice.peakInput}/$${repPrice.peakOutput} (×${repPrice.peakRate || DEFAULT_PEAK_RATE})`;
           } else {
             mainRate.textContent = `$${repPrice.input} / $${repPrice.output}`;
             subCache.textContent = `${t("cache_label")} $${repPrice.cache_read}/$${repPrice.cache_write}`;
@@ -1223,6 +2084,91 @@
   }
 
   // 10. 编辑定价弹窗交互
+  // 弹窗里的峰谷区：该模型的启用开关、倍率、时段列表；打开时从 modelPeaks 取。
+  function refreshModalPeakUI(item) {
+    if (!item) return;
+    const family = peakFamilyOf(item);
+    const config = peakConfigFor(item);
+    editingPeakKey = family ? family.key : null;
+    editingPeakWindows = config ? copyPeakWindows(config.windows) : [];
+    if ($("peak-hint")) $("peak-hint").hidden = !family;
+    if ($("peak-editor-model")) $("peak-editor-model").textContent = family ? "· " + family.key : "";
+    const toggle = $("peak-model-toggle");
+    if (toggle) toggle.checked = !!(config && config.enabled);
+    const rate = $("peak-rate");
+    if (rate) rate.value = String((config && config.rate) || DEFAULT_PEAK_RATE);
+    if ($("peak-model-toggle-label")) $("peak-model-toggle-label").textContent = t("peak_model_toggle");
+    renderEditingPeakWindows();
+    const hintText = $("peak-hint-text");
+    if (hintText) {
+      const on = !!(config && config.enabled);
+      const hintKey = !family ? "peak_hint_flat" : on ? "peak_hint_model_on" : "peak_hint_model_off";
+      hintText.innerHTML = t(hintKey, { factor: (config && config.rate) || DEFAULT_PEAK_RATE });
+    }
+    renderPriceModeBanner();
+  }
+
+  function renderEditingPeakWindows() {
+    const box = $("model-peak-windows");
+    if (!box) return;
+    box.innerHTML = "";
+    if (!editingPeakWindows.length) {
+      const p = document.createElement("p");
+      p.className = "rate-empty";
+      p.textContent = t("rate_empty");
+      box.appendChild(p);
+      return;
+    }
+    editingPeakWindows.forEach((w, i) => box.appendChild(modelPeakWindowRow(w, i)));
+  }
+
+  function modelPeakWindowRow(w, index) {
+    const row = document.createElement("div");
+    row.className = "rate-window";
+    const days = document.createElement("div");
+    days.className = "rate-days";
+    for (let d = 0; d < 7; d++) {
+      const label = document.createElement("label");
+      label.className = "rate-day";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = w.days.length ? w.days.includes(d) : true;
+      cb.addEventListener("change", () => {
+        const set = new Set(w.days.length ? w.days : [0, 1, 2, 3, 4, 5, 6]);
+        if (cb.checked) set.add(d); else set.delete(d);
+        w.days = Array.from(set).sort((a, b) => a - b);
+      });
+      const span = document.createElement("span");
+      span.textContent = RATE_WEEK[d];
+      label.append(cb, span);
+      days.appendChild(label);
+    }
+    const start = document.createElement("input");
+    start.type = "text";
+    start.value = w.start;
+    start.placeholder = "09:00";
+    start.addEventListener("input", () => { w.start = start.value.trim(); });
+    const sep = document.createElement("span");
+    sep.className = "rate-sep";
+    sep.textContent = "—";
+    const end = document.createElement("input");
+    end.type = "text";
+    end.value = w.end;
+    end.placeholder = "18:00";
+    end.addEventListener("input", () => { w.end = end.value.trim(); });
+    const del = document.createElement("button");
+    del.type = "button";
+    del.className = "btn rate-del";
+    del.textContent = "×";
+    del.title = t("peak_window_delete");
+    del.addEventListener("click", () => {
+      editingPeakWindows.splice(index, 1);
+      renderEditingPeakWindows();
+    });
+    row.append(days, start, sep, end, del);
+    return row;
+  }
+
   function openEditModal(item, forceScope) {
     editingModel = item;
     const bare = getBareModel(item.model);
@@ -1246,40 +2192,28 @@
     const wildcardCustom = customPrices["*/" + bare];
     const custom = specificCustom || wildcardCustom;
 
+    refreshModalPeakUI(item);
+    applyPeakInputModeUI("offpeak");
+
     if (custom) {
       $("input-cost").value = custom.input;
       $("output-cost").value = custom.output;
       $("cache-read-cost").value = custom.cache_read;
       $("cache-write-cost").value = custom.cache_write;
-
-      const hasOffPeak = !!(custom.offpeak?.enabled || item.offPeakPreset?.supported);
-      $("offpeak-enabled").checked = hasOffPeak;
-      $("offpeak-details").hidden = !hasOffPeak;
-      $("offpeak-input-cost").value = custom.offpeak?.input ?? +(custom.input * 0.5).toFixed(5);
-      $("offpeak-output-cost").value = custom.offpeak?.output ?? +(custom.output * 0.5).toFixed(5);
     } else if (item.matched) {
       const c = item.matched.cost;
       $("input-cost").value = c.input;
       $("output-cost").value = c.output;
       $("cache-read-cost").value = c.cache_read;
       $("cache-write-cost").value = c.cache_write;
-
-      const hasOffPeak = !!item.offPeakPreset?.supported;
-      $("offpeak-enabled").checked = hasOffPeak;
-      $("offpeak-details").hidden = !hasOffPeak;
-      $("offpeak-input-cost").value = +(c.input * 0.5).toFixed(5);
-      $("offpeak-output-cost").value = +(c.output * 0.5).toFixed(5);
     } else {
       $("input-cost").value = "0";
       $("output-cost").value = "0";
       $("cache-read-cost").value = "0";
       $("cache-write-cost").value = "0";
-      $("offpeak-enabled").checked = false;
-      $("offpeak-details").hidden = true;
-      $("offpeak-input-cost").value = "0";
-      $("offpeak-output-cost").value = "0";
     }
 
+    updatePeakPreview();
     $("edit-modal").hidden = false;
     $("input-cost").focus();
   }
@@ -1311,24 +2245,35 @@
     const bare = getBareModel(editingModel.model);
     const targetKey = selectedScope === "wildcard" ? "*/" + bare : editingModel.model;
 
-    const inVal = parseFloat($("input-cost").value) || 0;
-    const outVal = parseFloat($("output-cost").value) || 0;
+    // 弹窗里可能刚改过该模型的峰谷开关/倍率/时段：保存价格时一起落盘。
+    const modalPeakEnabled = $("peak-model-toggle") ? $("peak-model-toggle").checked : false;
+    const modalPeakRate = editingPeakRate();
+    const hourly = !!(editingPeakKey && modalPeakEnabled && editingPeakWindows.length);
+    // 只有用户改过峰谷、或该模型原本就有配置时才写 modelPeaks；
+    // 普通非 DeepSeek 模型保存价格时不产生一堆 enabled:false 的空配置。
+    const hadPeakConfig = !!(editingPeakKey && Object.prototype.hasOwnProperty.call(modelPeaks, editingPeakKey));
+    const peakTouched = hadPeakConfig || modalPeakEnabled || editingPeakWindows.length > 0 || modalPeakRate !== DEFAULT_PEAK_RATE;
+    if (editingPeakKey && peakTouched) {
+      modelPeaks[editingPeakKey] = {
+        enabled: modalPeakEnabled,
+        rate: modalPeakRate,
+        windows: copyPeakWindows(editingPeakWindows)
+      };
+    }
+
+    // 填的是高峰价时先换成闲时价再落盘：Magpie 的 modelPrices 存的始终是闲时价，
+    // 高峰时段由渠道 rateWindows 按本模型倍率计费。
+    const toStored = (v) => (hourly && peakInputMode === "peak" ? +(v / modalPeakRate).toFixed(6) : v);
+
+    const inVal = toStored(parseFloat($("input-cost").value) || 0);
+    const outVal = toStored(parseFloat($("output-cost").value) || 0);
 
     const priceObj = {
       input: inVal,
       output: outVal,
-      cache_read: parseFloat($("cache-read-cost").value) || 0,
-      cache_write: parseFloat($("cache-write-cost").value) || 0
+      cache_read: toStored(parseFloat($("cache-read-cost").value) || 0),
+      cache_write: toStored(parseFloat($("cache-write-cost").value) || 0)
     };
-
-    if ($("offpeak-enabled").checked) {
-      priceObj.offpeak = {
-        enabled: true,
-        rule: "deepseek",
-        input: parseFloat($("offpeak-input-cost").value) || +(inVal * 0.5).toFixed(5),
-        output: parseFloat($("offpeak-output-cost").value) || +(outVal * 0.5).toFixed(5)
-      };
-    }
 
     customPrices[targetKey] = priceObj;
 
@@ -1336,11 +2281,18 @@
       delete customPrices[editingModel.model];
     }
 
-    await persistOptions();
+    const synced = await persistOptions();
     closeEditModal();
     renderStats();
     renderList();
-    showToast(t("toast_rate_saved", { key: targetKey }));
+    updatePeakStatusBar();
+    // 保存后回读自检：告诉用户这份价到底进没进 Magpie 的计费表
+    const report = synced ? await verifyPrices() : null;
+    const verified = describeVerify(report, targetKey);
+    const prefix = hourly && peakInputMode === "peak"
+      ? t("toast_rate_saved_peak", { key: targetKey, stored: `$${priceObj.input}/$${priceObj.output}`, factor: modalPeakRate })
+      : t("toast_rate_saved", { key: targetKey });
+    showToast(verified ? prefix + " · " + verified : prefix);
   }
 
   async function resetModelPrice(model) {
@@ -1370,6 +2322,8 @@
   async function persistOptions() {
     const payload = {
       mode: globalMode,
+      // 每个模型的峰谷配置：{ enabled, rate, windows:[{days,start,end}] }
+      modelPeaks,
       customPrices
     };
     try {
@@ -1396,32 +2350,67 @@
       }
     } catch (e) {}
 
-    // 3. Web UI 后端服务同步 (如果处于 HTTP 独立运行状态)
+    // 3. 立刻把价格写进 Magpie settings.json：走本地服务的 /api/mode，
+    //    由后端 matcher.applyGlobalMode 落盘。相对路径在插件页里会打到宿主，
+    //    所以优先用桥上注入的 service 地址。
+    //    峰谷开关同时写回插件自己的 options：localStorage 在 magpie 窗口里是
+    //    随时可能重建的沙箱，只有 plugins.json 能跨重启留住这两个开关。
+    let synced = false;
     try {
-      fetch("/api/mode", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      }).catch(() => {});
+      const base = await resolveServiceBase();
+      if (base) {
+        await fetch(base + "/api/mode", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mode: globalMode, customPrices }),
+          cache: "no-store"
+        }).then((res) => { synced = !!(res && res.ok); }).catch(() => {});
+        await fetch(base + "/api/options", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ modelPeaks }),
+          cache: "no-store"
+        }).catch(() => {});
+      }
     } catch (e) {}
+    return synced;
+  }
+
+  // 保存后回读 settings.json 自检：页面说「已保存」不算数，Magpie 真正拿来计费的
+  // 那份价格里有没有这个键、四个单价对不对，才是价格生效的判据。
+  async function verifyPrices() {
+    try {
+      const base = await resolveServiceBase();
+      if (!base) return null;
+      const res = await fetch(base + "/api/verify", { cache: "no-store" });
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data && typeof data === "object" && !data.error ? data : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // 把自检结果翻译成一句人话：生效 / 部分没生效（列出第一个不一致的键）
+  function describeVerify(report, targetKey) {
+    if (!report || !report.checked) return null;
+    const bad = (report.mismatches || []).find((m) => m.key === targetKey) || (report.mismatches || [])[0];
+    if (!bad) return t("toast_price_verified", { count: report.matched });
+    const actual = bad.actual
+      ? `$${bad.actual.input}/$${bad.actual.output}`
+      : t("price_verify_missing");
+    return t("toast_price_unverified", { key: bad.key, actual });
   }
 
   async function syncAllMatched() {
     let count = 0;
     for (const m of rawModels) {
       if (m.matched) {
-        const hasOffPeak = !!m.offPeakPreset?.supported;
-        const peakIn = m.matched.cost.input;
-        const peakOut = m.matched.cost.output;
-        const offIn = +(peakIn * 0.5).toFixed(5);
-        const offOut = +(peakOut * 0.5).toFixed(5);
-
         customPrices[m.model] = {
-          input: peakIn,
-          output: peakOut,
+          input: m.matched.cost.input,
+          output: m.matched.cost.output,
           cache_read: m.matched.cost.cache_read,
-          cache_write: m.matched.cost.cache_write,
-          ...(hasOffPeak ? { offpeak: { enabled: true, rule: "deepseek", input: offIn, output: offOut } } : {})
+          cache_write: m.matched.cost.cache_write
         };
         count++;
       }
@@ -1442,14 +2431,18 @@
     btn.setAttribute("aria-selected", "true");
     filter = btn.dataset.filter;
 
+    // 标签和「渠道类型」下拉是两套独立条件，混在一起会出现筛不出东西：
+    // 原来只在点 api/login 时改 selectedKind，切回「全部」时它仍停在 api，
+    // 于是「全部」标签看不到订阅渠道的模型。
     const kindSelect = $("kind-filter");
-    if (filter === "api" && kindSelect) {
-      kindSelect.value = "api";
+    if (filter === "api") {
       selectedKind = "api";
-    } else if (filter === "login" && kindSelect) {
-      kindSelect.value = "subscription";
+    } else if (filter === "login" || filter === "subscription") {
       selectedKind = "subscription";
+    } else {
+      selectedKind = "all";
     }
+    if (kindSelect) kindSelect.value = selectedKind;
     renderList();
   });
 
@@ -1457,6 +2450,32 @@
   if (kindSelect) {
     kindSelect.addEventListener("change", (e) => {
       selectedKind = e.target.value;
+      renderList();
+    });
+  }
+
+  const priceSelect = $("price-filter");
+  if (priceSelect) {
+    priceSelect.addEventListener("change", (e) => {
+      selectedPrice = e.target.value;
+      renderList();
+    });
+  }
+
+  const expandAllBtn = $("btn-expand-all");
+  if (expandAllBtn) {
+    expandAllBtn.addEventListener("click", () => {
+      defaultExpanded = true;
+      userToggledGroups.clear();
+      renderList();
+    });
+  }
+
+  const collapseAllBtn = $("btn-collapse-all");
+  if (collapseAllBtn) {
+    collapseAllBtn.addEventListener("click", () => {
+      defaultExpanded = false;
+      userToggledGroups.clear();
       renderList();
     });
   }
@@ -1498,6 +2517,54 @@
   });
 
   $("modal-btn-save").addEventListener("click", saveModelPrice);
+
+  if ($("peak-input-mode")) {
+    $("peak-input-mode").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-mode]");
+      if (btn) setPeakInputMode(btn.dataset.mode);
+    });
+  }
+
+  // 弹窗里的「该模型参与峰谷」开关：只改弹窗状态，点“保存生效”时随价格一起落盘。
+  if ($("peak-model-toggle")) {
+    $("peak-model-toggle").addEventListener("change", (e) => {
+      const family = editingModel ? peakFamilyOf(editingModel) : null;
+      if (!family) return;
+      if (e.target.checked && !editingPeakWindows.length) {
+        editingPeakWindows = defaultPeakWindowsForFamily(family);
+        renderEditingPeakWindows();
+      }
+      updatePeakPreview();
+    });
+  }
+
+  if ($("peak-rate")) {
+    $("peak-rate").addEventListener("input", updatePeakPreview);
+  }
+
+  if ($("peak-add-window")) {
+    $("peak-add-window").addEventListener("click", () => {
+      if (editingPeakWindows.length >= 8) {
+        showToast(t("rate_max", { max: 8 }));
+        return;
+      }
+      editingPeakWindows.push({ days: [1, 2, 3, 4, 5], start: "09:00", end: "18:00" });
+      renderEditingPeakWindows();
+      updatePeakPreview();
+    });
+  }
+
+  if ($("peak-recommend")) {
+    $("peak-recommend").addEventListener("click", () => {
+      if (!editingModel) return;
+      const family = peakFamilyOf(editingModel);
+      if (!family) return;
+      editingPeakWindows = defaultPeakWindowsForFamily(family);
+      renderEditingPeakWindows();
+      updatePeakPreview();
+    });
+  }
+
   $("btn-sync-all").addEventListener("click", syncAllMatched);
 
   // 自动刷新机制 (Tab 切回、窗口聚焦、30秒定时器)
@@ -1518,45 +2585,19 @@
 
   $("modal-btn-match").addEventListener("click", () => {
     if (editingModel && editingModel.matched) {
+      // 公价就是闲时价，先切回闲时价模式再填，否则保存时会被再除一次倍率
+      applyPeakInputModeUI("offpeak");
       const c = editingModel.matched.cost;
       $("input-cost").value = c.input;
       $("output-cost").value = c.output;
       $("cache-read-cost").value = c.cache_read;
       $("cache-write-cost").value = c.cache_write;
-      if ($("offpeak-enabled").checked) {
-        $("offpeak-input-cost").value = +(c.input * 0.5).toFixed(5);
-        $("offpeak-output-cost").value = +(c.output * 0.5).toFixed(5);
-      }
+      updatePeakPreview();
     }
   });
 
-  $("offpeak-enabled").addEventListener("change", (e) => {
-    $("offpeak-details").hidden = !e.target.checked;
-    if (e.target.checked) {
-      const inVal = parseFloat($("input-cost").value) || 0;
-      const outVal = parseFloat($("output-cost").value) || 0;
-      if (!parseFloat($("offpeak-input-cost").value)) {
-        $("offpeak-input-cost").value = +(inVal * 0.5).toFixed(5);
-      }
-      if (!parseFloat($("offpeak-output-cost").value)) {
-        $("offpeak-output-cost").value = +(outVal * 0.5).toFixed(5);
-      }
-    }
-  });
-
-  $("input-cost").addEventListener("input", () => {
-    if ($("offpeak-enabled").checked) {
-      const inVal = parseFloat($("input-cost").value) || 0;
-      $("offpeak-input-cost").value = +(inVal * 0.5).toFixed(5);
-    }
-  });
-
-  $("output-cost").addEventListener("input", () => {
-    if ($("offpeak-enabled").checked) {
-      const outVal = parseFloat($("output-cost").value) || 0;
-      $("offpeak-output-cost").value = +(outVal * 0.5).toFixed(5);
-    }
-  });
+  $("input-cost").addEventListener("input", updatePeakPreview);
+  $("output-cost").addEventListener("input", updatePeakPreview);
 
   // 当语言切换时，触发全量 UI 重新渲染
   onLocaleChange(() => {
@@ -1594,10 +2635,19 @@
         else b.removeAttribute("aria-selected");
       });
     }
+    if (params.has("price")) {
+      const pv = params.get("price");
+      if (["all", "free", "paid", "unpriced"].includes(pv)) {
+        selectedPrice = pv;
+        const ps = $("price-filter");
+        if (ps) ps.value = pv;
+      }
+    }
     if (params.has("expand")) {
       const exp = params.get("expand");
       if (exp === "all") {
-        for (const g of buildModelGroups(rawModels)) userToggledGroups.set(g.bare, true);
+        defaultExpanded = true;
+        userToggledGroups.clear();
       } else if (exp) {
         userToggledGroups.set(exp, true);
       }
@@ -1608,6 +2658,18 @@
     handleUrlHash();
     renderList();
   });
+
+  // 时段编辑器里的星期缩写（弹窗与旧版共用）
+  const RATE_WEEK = ["日", "一", "二", "三", "四", "五", "六"];
+
+  // 静态基准数据里的免费模型也要按同族付费公价计价。
+  // 没有 Magpie bridge（独立 Web / 冷启动）时只有静态数据，不跑这一步的话
+  // hy4flash-free 这类模型会一直显示 $0/$0。
+  try {
+    applyFreeEquivalentPricing();
+  } catch (e) {
+    console.warn("applyFreeEquivalentPricing failed:", e);
+  }
 
   // 初始渲染
   updatePeakStatusBar();

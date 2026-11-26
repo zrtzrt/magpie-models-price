@@ -5,38 +5,127 @@ const matcher = require('./matcher');
 
 const SETTINGS_PATH = path.join(process.env.HOME || '', '.config/magpie/settings.json');
 
-function syncModeAndPrices(options) {
-  if (!options || typeof options !== 'object') return;
+const MODES = new Set(['api-only', 'all-equivalent']);
+// Inputs the sync result depends on; when none changed, skip the ~3s scan.
+const SYNC_INPUTS = [
+  path.join(process.env.HOME || '', '.cache/magpie/models.json'),
+  path.join(process.env.HOME || '', '.cache/magpie/providers-state.json')
+];
+let lastSignature = '';
+
+function inputsSignature(mode, customPrices) {
+  const files = SYNC_INPUTS.map((file) => {
+    try {
+      const st = fs.statSync(file);
+      return st.mtimeMs + ':' + st.size;
+    } catch {
+      return 'missing';
+    }
+  });
+  let prices = 'unreadable';
   try {
-    const mode = options.mode || 'all-equivalent';
+    prices = matcher.stableStringify(matcher.readSettings().modelPrices || {});
+  } catch {}
+  return matcher.stableStringify({ mode, customPrices, files, prices });
+}
+
+// Sync only what the user actually saved. A missing or unknown mode must not
+// fall back to a default: the host can call us before options are available,
+// and a silent 'all-equivalent' would overwrite an 'api-only' user's prices.
+async function syncModeAndPrices(resolveOptions) {
+  try {
+    const options = await (typeof resolveOptions === 'function' ? resolveOptions() : resolveOptions);
+    if (!options || typeof options !== 'object' || !MODES.has(options.mode)) return;
     const customPrices = options.customPrices || {};
-    matcher.applyGlobalMode(mode, customPrices);
-    console.log(`Synchronized mode [${mode}] and custom prices to Magpie settings.json`);
+    const signature = inputsSignature(options.mode, customPrices);
+    if (signature === lastSignature) return;
+    const { changed } = matcher.applyGlobalModeIfChanged(options.mode, customPrices);
+    lastSignature = inputsSignature(options.mode, customPrices);
+    if (changed) {
+      console.log(`Synchronized mode [${options.mode}] and custom prices to Magpie settings.json`);
+    }
   } catch (err) {
     console.error('Failed to sync mode and prices:', err.message);
   }
 }
 
+// Apply the page's rateWindows map (and the one-time DeepSeek default) to
+// providers.json. The page cannot call the local HTTP service in the Magpie
+// desktop window, so it saves the windows in this plugin's options and this
+// loop is the writer.
+async function syncRateWindows(resolveOptions) {
+  try {
+    const options = await (typeof resolveOptions === 'function' ? resolveOptions() : resolveOptions);
+    if (!options || typeof options !== 'object') return;
+    // 新格式：按模型保存的峰谷设置。Magpie 只有渠道级 rateWindows，由 matcher 汇总。
+    if (options.modelPeaks && typeof options.modelPeaks === 'object') {
+      const result = matcher.syncModelPeakWindows(options.modelPeaks);
+      if (!result.ok) {
+        console.error('Failed to sync model peak windows:', result.error);
+        return;
+      }
+      const written = result.results.filter((x) => x.status === 'written');
+      const conflicts = result.results.filter((x) => x.status === 'conflict');
+      if (written.length) console.log('Synchronized model peak windows for ' + written.length + ' provider(s) to Magpie providers.json');
+      if (conflicts.length) console.warn('Model peak conflicts (provider left unchanged): ' + conflicts.map((x) => x.provider).join(', '));
+      return;
+    }
+    // 旧格式兼容：options.rateWindows 直接按渠道写。
+    const map = options.rateWindows && typeof options.rateWindows === 'object' ? options.rateWindows : {};
+    let written = 0;
+    for (const [id, windows] of Object.entries(map)) {
+      const result = matcher.setRateWindows(id, windows);
+      if (result.ok && result.written) written += 1;
+    }
+    if (!options.rateDefaultsVersion && Object.keys(map).length === 0) {
+      const result = matcher.applyDefaultRateWindows();
+      if (result.ok && result.applied.length > 0) {
+        const nextMap = { ...map };
+        for (const item of result.applied) nextMap[item.id] = item.windows;
+        matcher.writePluginOptions({ rateDefaultsVersion: 1, rateWindows: nextMap }, __dirname);
+        written += result.applied.length;
+      } else if (result.ok) {
+        matcher.writePluginOptions({ rateDefaultsVersion: 1 }, __dirname);
+      }
+    }
+    if (written) console.log('Synchronized rateWindows for ' + written + ' provider(s) to Magpie providers.json');
+  } catch (err) {
+    console.error('Failed to sync rate windows:', err.message);
+  }
+}
+
 // OpenCode / Magpie Plugin export
+let serviceStarted = false;
 async function MagpieModelPricesPlugin(input, options) {
-  const getOpts = () => (typeof input?.magpie?.options === 'function' ? input.magpie.options() : null) || options || {};
-  syncModeAndPrices(getOpts());
+  if (!serviceStarted) {
+    serviceStarted = true;
+    require('./server').startServer();
+  }
+  // input.magpie.options() is a provider auth plugin's options, keyed by
+  // provider, not a page plugin's: the page's own options (mode, custom
+  // prices) are the ones magpie keeps in plugins.json, read here each time
+  // they are wanted so a change in the page reaches this running server.
+  const getOpts = async () => {
+    let host = null;
+    try {
+      const raw = typeof input?.magpie?.options === 'function' ? await input.magpie.options() : null;
+      if (raw && typeof raw === 'object' && !Array.isArray(raw)) host = raw;
+    } catch {}
+    const saved = matcher.readPluginOptions(__dirname) || null;
+    return { ...(options || {}), ...(host || {}), ...(saved || {}) };
+  };
+  // Keep the scan off the plugin's load path so the host finishes starting.
+  setTimeout(() => { syncModeAndPrices(getOpts); syncRateWindows(getOpts); }, 0);
 
   // Periodically check and synchronize new models from providers-state.json to settings.json
   if (typeof setInterval === 'function') {
-    setInterval(() => {
-      try {
-        syncModeAndPrices(getOpts());
-      } catch {}
-    }, 60000);
+    const timer = setInterval(() => { syncModeAndPrices(getOpts); syncRateWindows(getOpts); }, 60000);
+    timer.unref?.();
   }
 
   return {
     async config(cfg) {
-      const opts = getOpts();
-      if (opts) {
-        syncModeAndPrices(opts);
-      }
+      await syncModeAndPrices(getOpts);
     }
   };
 }
@@ -60,7 +149,7 @@ if (require.main === module) {
       const offPeak = matcher.checkOffPeakStatus();
 
       console.log(`📊 统计概览: 总模型 ${report.length} 个 | 已定价 ${priced.length} 个 | 未定价 ${unpriced.length} 个`);
-      console.log(`⏰ 当前分时状态: ${offPeak.label} (${offPeak.isOffPeak ? '🌙 闲时低谷 5折生效中' : '⚡ 正常高峰时段'})\n`);
+      console.log(`⏰ 当前分时状态: ${offPeak.label} (${offPeak.isOffPeak ? '🌙 按闲时价计费' : '⚡ 高峰 ×2 计费'})\n`);
 
       if (unpriced.length === 0) {
         console.log('🎉 太棒了！当前所有模型均已有定价。');
@@ -93,10 +182,14 @@ if (require.main === module) {
     if (command === 'mode') {
       const targetMode = args[1];
       if (targetMode === 'api-only' || targetMode === 'api') {
+        // keep the page's own switch in step, or the next tick would put the
+        // other mode back
+        matcher.writePluginOptions({ mode: 'api-only' }, __dirname);
         const n = matcher.applyGlobalMode('api-only');
         console.log(`✓ 已切换为【仅计费真实付费 API】：包月/免费渠道已全部免计费，已配置 ${n} 个条目。`);
         return;
       } else if (targetMode === 'all' || targetMode === 'all-equivalent') {
+        matcher.writePluginOptions({ mode: 'all-equivalent' }, __dirname);
         const n = matcher.applyGlobalMode('all-equivalent');
         console.log(`✓ 已切换为【显示所有渠道等值公价】：所有模型按市场参考价估算，已配置 ${n} 个条目。`);
         return;

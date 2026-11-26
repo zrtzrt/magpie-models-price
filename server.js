@@ -42,6 +42,15 @@ const server = http.createServer((req, res) => {
   const pathname = parsedUrl.pathname;
 
   // API Routes
+  if (pathname === '/api/usage' && req.method === 'GET') {
+    try {
+      const { channelUsage, bareUsage, totalSummary } = matcher.getUsageData();
+      sendJson(res, { summary: totalSummary, models: bareUsage, channels: channelUsage });
+    } catch (e) {
+      sendJson(res, { error: String((e && e.message) || e) }, 500);
+    }
+    return;
+  }
   if (pathname === '/api/status' && req.method === 'GET') {
     try {
       const report = matcher.scanAll();
@@ -85,6 +94,90 @@ const server = http.createServer((req, res) => {
         sendJson(res, { success: true, results });
       } catch (e) {
         sendJson(res, { error: e.message }, 500);
+      }
+    });
+    return;
+  }
+
+  // 峰谷开关（总开关 + 按模型的开关）落在插件自己的 options 里：
+  // 页面在 magpie 窗口内的 localStorage 是每次打开都可能重建的沙箱，
+  // 只有 plugins.json 才是插件重启后还在的地方。
+  if (pathname === '/api/options' && req.method === 'POST') {
+    let body = '';
+    req.on('data', (chunk) => body += chunk);
+    req.on('end', () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        const patch = {};
+        if (payload.peakEnabled !== undefined) patch.peakEnabled = !!payload.peakEnabled;
+        if (payload.peakTargets && typeof payload.peakTargets === 'object') {
+          patch.peakTargets = payload.peakTargets;
+        }
+        let peakSync = null;
+        if (payload.modelPeaks && typeof payload.modelPeaks === 'object') {
+          const checked = matcher.normalizeModelPeaks(payload.modelPeaks);
+          if (!checked.ok) {
+            return sendJson(res, { success: false, error: checked.error }, 400);
+          }
+          patch.modelPeaks = checked.modelPeaks;
+          peakSync = matcher.syncModelPeakWindows(checked.modelPeaks);
+        }
+        const ok = matcher.writePluginOptions(patch, __dirname);
+        sendJson(res, { success: ok, saved: patch, peakSync });
+      } catch (e) {
+        sendJson(res, { error: String((e && e.message) || e) }, 500);
+      }
+    });
+    return;
+  }
+
+  // 模型级峰谷设置：读插件 options + 各渠道当前 rateWindows，便于页面/测试核对。
+  if (pathname === '/api/model-peaks' && req.method === 'GET') {
+    try {
+      const opts = matcher.readPluginOptions(__dirname) || {};
+      sendJson(res, {
+        modelPeaks: opts.modelPeaks || {},
+        providers: matcher.listRateWindowTargets().providers || []
+      });
+    } catch (e) {
+      sendJson(res, { error: String((e && e.message) || e) }, 500);
+    }
+    return;
+  }
+
+  // 保存后自检：插件页把价格交给这里落盘，再由这里回读 settings.json，
+  // 页面据此告诉用户「价格到底生效没有」，而不是只弹一句已保存。
+  if (pathname === '/api/verify' && req.method === 'GET') {
+    try {
+      const customPrices = matcher.readPluginOptions(__dirname)?.customPrices || {};
+      sendJson(res, matcher.verifyCustomPrices(customPrices));
+    } catch (e) {
+      sendJson(res, { error: String((e && e.message) || e) }, 500);
+    }
+    return;
+  }
+
+  // 高峰时段与倍率：直接读写 Magpie providers.json 的 rateWindows。
+  // Magpie 自己按这些窗口计价（叠加 PriceRate），插件只负责编辑与校验。
+  if (pathname === '/api/rate-windows' && req.method === 'GET') {
+    try {
+      sendJson(res, matcher.listRateWindowTargets());
+    } catch (e) {
+      sendJson(res, { error: String((e && e.message) || e) }, 500);
+    }
+    return;
+  }
+
+  if (pathname === '/api/rate-windows' && req.method === 'POST') {
+    let body = '';
+    req.on('data', (chunk) => body += chunk);
+    req.on('end', () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        const result = matcher.setRateWindows(payload.id, payload.windows);
+        sendJson(res, result, result.ok ? 200 : 400);
+      } catch (e) {
+        sendJson(res, { error: String((e && e.message) || e) }, 500);
       }
     });
     return;
@@ -154,6 +247,14 @@ const server = http.createServer((req, res) => {
 
 function startServer(port = PORT) {
   return new Promise((resolve) => {
+    server.once('error', (err) => {
+      if (err && err.code === 'EADDRINUSE') {
+        console.log(`Magpie Price Matcher Web UI already served on port ${port}; reusing the existing instance`);
+      } else {
+        console.warn(`Magpie Price Matcher Web UI unavailable on port ${port}: ${err && (err.code || err.message)}`);
+      }
+      resolve(null);
+    });
     server.listen(port, () => {
       console.log(`Magpie Price Matcher Web UI running at http://localhost:${port}`);
       resolve(server);

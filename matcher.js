@@ -8,6 +8,140 @@ const PROVIDERS_STATE_PATH = path.join(HOME, '.cache/magpie/providers-state.json
 const PROVIDERS_CONFIG_PATH = path.join(HOME, '.config/magpie/providers.json');
 const SETTINGS_PATH = path.join(HOME, '.config/magpie/settings.json');
 const USAGE_PATH = path.join(HOME, '.config/magpie/usage.jsonl');
+const PLUGINS_PATH = path.join(HOME, '.config/magpie/plugins.json');
+
+function readSettings() {
+  if (!fs.existsSync(SETTINGS_PATH)) return {};
+  return JSON.parse(fs.readFileSync(SETTINGS_PATH, 'utf8'));
+}
+
+/**
+ * Write a JSON file through a temp file in the same directory, fsynced and
+ * renamed over it: a reader (magpie itself, reading settings on every request)
+ * never sees a half-written file, which its Load discards whole, taking the
+ * user's settings back to the defaults.
+ */
+function writeJsonAtomic(filePath, value, defaultMode = 0o600) {
+  const dir = path.dirname(filePath);
+  const tmp = path.join(dir, '.' + path.basename(filePath) + '.' + process.pid + '.' + Date.now() + '.tmp');
+  let mode = defaultMode;
+  try { mode = fs.statSync(filePath).mode & 0o777; } catch {}
+  const data = JSON.stringify(value, null, 2);
+  let fd;
+  try {
+    fd = fs.openSync(tmp, 'w', mode);
+    fs.writeFileSync(fd, data, 'utf8');
+    fs.fsyncSync(fd);
+    fs.closeSync(fd);
+    fd = undefined;
+    fs.renameSync(tmp, filePath);
+  } catch (err) {
+    if (fd !== undefined) { try { fs.closeSync(fd); } catch {} }
+    try { fs.unlinkSync(tmp); } catch {}
+    throw err;
+  }
+}
+
+function writeSettingsAtomic(settings) {
+  writeJsonAtomic(SETTINGS_PATH, settings);
+}
+
+// The plugin's own options, as the page saves them: magpie keeps them in
+// plugins.json. A plugin server is not handed them (input.magpie.options is a
+// provider auth plugin's options, keyed by provider), so they are read from the
+// file the page writes, each time they are wanted: a mode or a price set in
+// the page then reaches the running server without a restart.
+function findPluginEntry(data, packageDir = '') {
+  const list = Array.isArray(data && data.plugins) ? data.plugins : [];
+  const mine = list.filter((p) => p && typeof p.spec === 'string' && p.spec.includes('magpie-models-price'));
+  if (mine.length === 0) return null;
+  if (packageDir) {
+    const exact = mine.find((p) => p.spec === packageDir);
+    if (exact) return exact;
+  }
+  return mine.find((p) => !p.off) || mine[0];
+}
+
+function readPluginOptions(packageDir = '') {
+  try {
+    if (!fs.existsSync(PLUGINS_PATH)) return null;
+    const data = JSON.parse(fs.readFileSync(PLUGINS_PATH, 'utf8'));
+    const entry = findPluginEntry(data, packageDir);
+    return entry ? (entry.options || {}) : null;
+  } catch {
+    return null;
+  }
+}
+
+// Write only when something actually differs: plugins.json is watched by Magpie,
+// and every write makes it reload the plugin host (the page reloads with it).
+// Toggling a switch a second time, or saving an unchanged price, must not.
+function writePluginOptions(patch, packageDir = '') {
+  if (!fs.existsSync(PLUGINS_PATH)) return false;
+  const data = JSON.parse(fs.readFileSync(PLUGINS_PATH, 'utf8'));
+  const entry = findPluginEntry(data, packageDir);
+  if (!entry) return false;
+  const current = entry.options || {};
+  const changed = Object.keys(patch || {}).some(
+    (k) => stableStringify(current[k]) !== stableStringify(patch[k])
+  );
+  if (!changed) return true;
+  entry.options = { ...current, ...patch };
+  writeJsonAtomic(PLUGINS_PATH, data);
+  return true;
+}
+
+// Order-independent serialisation: two modelPrices maps with the same entries
+// compare equal even when their keys were inserted in a different order.
+function stableStringify(value) {
+  if (Array.isArray(value)) return '[' + value.map(stableStringify).join(',') + ']';
+  if (value && typeof value === 'object') {
+    return '{' + Object.keys(value).sort()
+      .filter((k) => value[k] !== undefined)
+      .map((k) => JSON.stringify(k) + ':' + stableStringify(value[k]))
+      .join(',') + '}';
+  }
+  return JSON.stringify(value);
+}
+
+/**
+ * Change modelPrices only: the file is read again right before the write, so a
+ * setting magpie saved meanwhile (theme, window, a provider's editor) is kept
+ * rather than rolled back to the snapshot this process read a minute ago.
+ * Nothing is written when the prices are the ones already on disk: settings.json
+ * is magpie's own file, it is watched, and rewriting it every 60 s costs a full
+ * re-serialisation and races with magpie's own writes.
+ */
+function updateModelPrices(mutate) {
+  const settings = readSettings();
+  const before = settings.modelPrices && Object.keys(settings.modelPrices).length
+    ? settings.modelPrices
+    : undefined;
+  const next = mutate({ ...(settings.modelPrices || {}) }) || {};
+  const after = Object.keys(next).length > 0 ? next : undefined;
+  if (stableStringify(before) === stableStringify(after)) return before || {};
+  if (after) settings.modelPrices = after;
+  else delete settings.modelPrices;
+  writeSettingsAtomic(settings);
+  return settings.modelPrices || {};
+}
+
+/**
+ * What settings.ModelPrice can hold: input, output, cache_read, cache_write
+ * and optional tiers. Anything else (an "offpeak" object) magpie's JSON decode
+ * drops, and its next save writes away; peak hours are magpie's own
+ * (catalog.Peak), applied to the price as stored.
+ */
+function sanitizePrice(price) {
+  const out = {
+    input: Number(price.input) || 0,
+    output: Number(price.output) || 0,
+    cache_read: Number(price.cache_read) || 0,
+    cache_write: Number(price.cache_write) || 0
+  };
+  if (Array.isArray(price.tiers) && price.tiers.length > 0) out.tiers = price.tiers;
+  return out;
+}
 
 // Preferred official makers in models.dev
 const OFFICIAL_MAKERS = [
@@ -73,6 +207,11 @@ function loadCatalog() {
 }
 
 function cleanModelName(str) {
+  const rawName = str ? str.toLowerCase().replace(/^[a-z0-9_-]+\//, '') : '';
+  if (rawName === 'hy4flash' || rawName === 'hy4-flash') return 'hy4-flash';
+  if (rawName === 'hy4flash-free' || rawName === 'hy4-flash-free') return 'hy4-flash-free';
+  if (rawName === 'deepseek-flash') return 'deepseek-v4-flash';
+
   let s = str.toLowerCase()
     .replace(/^[a-z0-9_-]+\//, '')
     .replace(/^(blian_|huoshan_|vlm_huoshan_)/, '')
@@ -107,6 +246,24 @@ function cleanModelName(str) {
   return s;
 }
 
+// Classify provider kind from runtime state (providers-state.json) or config
+// entries (providers.json). The key flag matters: a provider can be 'plan'
+// with an optional API key, while only pay-as-you-go providers with a real
+// key are the "paid API" channels users mean by the API filter.
+function providerKindOf(p = {}) {
+  const id = String((p && p.id) || '').toLowerCase();
+  const billing = String((p && (p.billingKind || p.billing_kind)) || '').toLowerCase();
+  if (billing === 'payg' || billing === 'pay-as-you-go' || billing === 'api') return 'api';
+  if (billing === 'plan' || billing === 'subscription' || billing === 'free') return 'subscription';
+  const keySet = p && p.key && typeof p.key === 'object'
+    ? p.key.set === true
+    : typeof (p && p.key) === 'string' && p.key.trim().length > 0;
+  if (keySet && !p.account) return 'api';
+  if (p && p.account) return 'subscription';
+  if (/free|plan/.test(id)) return 'subscription';
+  return 'subscription';
+}
+
 /**
  * Classify provider kind: 'subscription' (OAuth, Plan, Credits, Free) vs 'api' (Paid Key / Pay-as-you-go)
  */
@@ -117,12 +274,13 @@ function getProviderClassifications() {
     const list = data.providers?.providers || [];
     const kinds = {};
     for (const p of list) {
-      const isSub = !!p.account || p.id.includes('free') || p.id.includes('plan');
+      const kind = providerKindOf(p);
+      const isSub = kind !== 'api';
       kinds[p.id] = {
         name: p.name || p.id,
         icon: p.icon || null,
         isSubscription: isSub,
-        kind: isSub ? 'subscription' : 'api',
+        kind,
         planName: p.account?.plan || (p.key?.set ? 'API Key' : 'Account')
       };
     }
@@ -563,7 +721,7 @@ function scanAll() {
   const report = [];
   for (const s of statuses) {
     const matchResult = matchModel(s.model, catalog);
-    const preset = hasOffPeakPreset(s.model, s.modelObj.provider);
+    const peak = peakRuleFor(s.modelObj.provider, s.modelObj.id || s.modelObj.fullName || s.model);
     const bare = s.modelObj.id || (s.model.includes('/') ? s.model.split('/')[1] : s.model);
     const chUsage = channelUsage[s.model] || null;
     const bUsage = bareUsage[bare] || null;
@@ -578,7 +736,9 @@ function scanAll() {
       enabled: s.modelObj.enabled !== false,
       isUnpriced: s.isUnpriced,
       currentPrice: s.priceInfo,
-      offPeakPreset: preset,
+      peakRule: peak,
+      // the shape the page's bundled data still carries
+      offPeakPreset: { supported: peak.supported, factor: peak.factor, vendor: peak.vendor, name: peak.name },
       usage: chUsage,
       bareUsage: bUsage,
       matched: matchResult ? {
@@ -609,43 +769,42 @@ function applyPrice(model, priceString) {
     cache_write: parts[3] ?? 0
   };
 
-  const s = JSON.parse(fs.readFileSync(SETTINGS_PATH, 'utf8'));
-  s.modelPrices = s.modelPrices || {};
-  s.modelPrices[model] = priceObj;
-  fs.writeFileSync(SETTINGS_PATH, JSON.stringify(s, null, 2), 'utf8');
+  updateModelPrices((prices) => {
+    prices[model] = priceObj;
+    return prices;
+  });
 
   return `Applied ${model} -> $${priceObj.input}/$${priceObj.output}`;
 }
 
 function resetPrice(model) {
-  const s = JSON.parse(fs.readFileSync(SETTINGS_PATH, 'utf8'));
-  if (s.modelPrices && s.modelPrices[model]) {
-    delete s.modelPrices[model];
-    if (Object.keys(s.modelPrices).length === 0) {
-      delete s.modelPrices;
-    }
-    fs.writeFileSync(SETTINGS_PATH, JSON.stringify(s, null, 2), 'utf8');
-    return `Reset price for ${model}`;
+  const settings = readSettings();
+  if (!settings.modelPrices || !settings.modelPrices[model]) {
+    return `No custom price found for ${model}`;
   }
-  return `No custom price found for ${model}`;
+  updateModelPrices((prices) => {
+    delete prices[model];
+    return prices;
+  });
+  return `Reset price for ${model}`;
 }
 
 /**
  * Apply Global Pricing Mode:
  * - 'api-only': only write real prices for 'api' providers; subscription providers have prices set to 0 or removed
  * - 'all-equivalent': write market prices for all models
+ * Returns { count, changed }; settings.json is left untouched when nothing changed.
  */
-function applyGlobalMode(mode, customOverrides = {}) {
+function applyGlobalModeIfChanged(mode, customOverrides = {}) {
   const report = scanAll();
-  const s = JSON.parse(fs.readFileSync(SETTINGS_PATH, 'utf8'));
-  const newPrices = { ...(s.modelPrices || {}) };
+  const newPrices = { ...(readSettings().modelPrices || {}) };
 
   if (mode === 'api-only') {
     // Only apply prices for paid API providers or explicit custom overrides
     for (const item of report) {
       if (item.providerKind === 'api') {
         if (customOverrides[item.model]) {
-          newPrices[item.model] = customOverrides[item.model];
+          newPrices[item.model] = sanitizePrice(customOverrides[item.model]);
         } else if (item.matched) {
           newPrices[item.model] = {
             input: item.matched.cost.input,
@@ -663,7 +822,7 @@ function applyGlobalMode(mode, customOverrides = {}) {
     // all-equivalent: all providers get their market value
     for (const item of report) {
       if (customOverrides[item.model]) {
-        newPrices[item.model] = customOverrides[item.model];
+        newPrices[item.model] = sanitizePrice(customOverrides[item.model]);
       } else if (item.matched) {
         newPrices[item.model] = {
           input: item.matched.cost.input,
@@ -675,10 +834,44 @@ function applyGlobalMode(mode, customOverrides = {}) {
     }
   }
 
-  // Include any wildcard overrides
+  // Apply every explicit custom override, wildcard or provider/model key alike.
+  // A custom key whose model is missing from the current scan (channel disabled,
+  // model renamed, or only present in usage history) used to be skipped, so the
+  // price the user typed never reached Magpie and the row kept the old value.
+  // The price the user typed always wins.
   for (const [k, v] of Object.entries(customOverrides)) {
-    if (k.startsWith('*/') && v) {
-      newPrices[k] = v;
+    if (v) newPrices[k] = sanitizePrice(v);
+  }
+
+  // api-only: a model no paid API provider serves has no channel left to bill,
+  // so its wildcard goes to 0 too. An exact provider/model key still wins for
+  // the API channels that do serve it, and a subscription model whose wildcard
+  // was left at the market value is what still showed a cost (#api-only).
+  if (mode === 'api-only') {
+    // Every key of a subscription provider goes to 0, including one left from a
+    // model it no longer lists: otherwise a stale provider/model key still
+    // answers before the wildcard and the row keeps a cost.
+    const kinds = getProviderClassifications();
+    for (const key of Object.keys(newPrices)) {
+      if (key.startsWith('*/')) continue;
+      const pid = key.split('/')[0];
+      if (kinds[pid] && kinds[pid].kind === 'subscription') {
+        newPrices[key] = { input: 0, output: 0, cache_read: 0, cache_write: 0 };
+      }
+    }
+    // A wildcard prices every provider with no key of its own: in this mode it
+    // must not keep the market value of a model only subscription channels
+    // serve, or a row without an exact key still shows a cost. A wildcard with
+    // any paid provider/model key under it keeps its value.
+    for (const key of Object.keys(newPrices)) {
+      if (!key.startsWith('*/')) continue;
+      const bare = key.slice(2);
+      const paid = Object.keys(newPrices).some((k) => {
+        if (k.startsWith('*/') || !k.endsWith('/' + bare)) return false;
+        const v = newPrices[k];
+        return v && (v.input > 0 || v.output > 0);
+      });
+      if (!paid) newPrices[key] = { input: 0, output: 0, cache_read: 0, cache_write: 0 };
     }
   }
 
@@ -740,9 +933,14 @@ function applyGlobalMode(mode, customOverrides = {}) {
     }
   }
 
-  s.modelPrices = newPrices;
-  fs.writeFileSync(SETTINGS_PATH, JSON.stringify(s, null, 2), 'utf8');
-  return Object.keys(newPrices).length;
+  const before = readSettings().modelPrices || {};
+  const written = updateModelPrices(() => newPrices);
+  const changed = stableStringify(before) !== stableStringify(written);
+  return { count: Object.keys(written).length, changed };
+}
+
+function applyGlobalMode(mode, customOverrides = {}) {
+  return applyGlobalModeIfChanged(mode, customOverrides).count;
 }
 
 /**
@@ -753,6 +951,126 @@ function getBeijingTime(date = new Date()) {
   return new Date(utc + 3600000 * 8);
 }
 
+// Peak hours are magpie's own (internal/catalog/peak.go): a stored price is
+// the off-peak one, and a call in a vendor's peak hours costs PeakFactor (2)
+// times it. Only a vendor that bills by the hour has them, as
+// internal/provider/peak.go decides it by the provider's base URL. A relay or
+// a subscription that resells the same model keeps one price all day.
+const PEAK_FACTOR = 2;
+
+// The peak windows belong to the model, not to the channel: the machine here
+// only has relays and subscriptions, so a channel id never names a vendor.
+// A model id that starts with deepseek- is billed by the hour wherever it is
+// resold; everything else is flat. Ollama Cloud keeps its own UTC window.
+const DEEPSEEK_MODEL_RE = /^deepseek-/;
+const PEAK_BILLS = [
+  { vendor: 'deepseek', match: DEEPSEEK_MODEL_RE, rule: 'deepseek', name: 'DeepSeek 系峰谷：闲时价 ×2' },
+  {
+    vendor: 'ollama-cloud',
+    ids: ['ollama-cloud'],
+    match: DEEPSEEK_MODEL_RE,
+    rule: 'ollama',
+    name: 'Ollama Cloud 峰谷：闲时价 ×2'
+  }
+];
+
+// The bare model id a channel lists, lowercased, without a tag or a routing
+// prefix: "opencode-zen/deepseek-v4-flash:free" -> "deepseek-v4-flash".
+function peakModelKey(modelId = '') {
+  const raw = String(modelId || '').toLowerCase().trim();
+  if (!raw) return '';
+  const last = raw.split('/').pop();
+  return last.split(':')[0]
+    // 渠道给模型加的前缀（blian_ / huoshan_ / vlm_huoshan_）不属于模型名，
+    // 不剥离的话 mclaw/huoshan_deepseek_v4_1_flash 会被判成「非 DeepSeek」。
+    .replace(/^(blian_|huoshan_|vlm_huoshan_)/, '')
+    .replace(/_/g, '-');
+}
+
+// The peak bill a bare model id falls under, or null when it is flat priced.
+function peakBillForModel(modelId = '') {
+  const key = peakModelKey(modelId);
+  if (!key) return null;
+  for (const bill of PEAK_BILLS) {
+    if (bill.match && bill.match.test(key)) return bill;
+  }
+  return null;
+}
+
+// The bill that applies to this channel's model: a vendor that names its own
+// channel (Ollama Cloud's UTC window) wins over the model family's window,
+// and without a model id there is nothing to bill by the hour.
+function peakBillFor(providerId = '', modelId = '') {
+  const p = String(providerId || '').toLowerCase();
+  const key = peakModelKey(modelId);
+  if (!key) return null;
+  for (const bill of PEAK_BILLS) {
+    if (!Array.isArray(bill.ids) || !bill.ids.includes(p)) continue;
+    if (bill.match && bill.match.test(key)) return bill;
+  }
+  return peakBillForModel(key);
+}
+
+/**
+ * Whether magpie bills this provider's model by the hour, and by which hours.
+ * Magpie tells a vendor by the provider's base URLs; the plugin only has ids,
+ * so a preset/id names it, and every other channel is flat (a subscription, a
+ * relay) exactly as magpie prices it.
+ */
+function peakRuleFor(providerId = '', modelId = '') {
+  const bill = peakBillFor(providerId, modelId);
+  if (bill) {
+    return { supported: true, hourly: true, factor: PEAK_FACTOR, vendor: bill.vendor, rule: bill.rule, name: bill.name };
+  }
+  return { supported: false, hourly: false, factor: 1, vendor: '', rule: '', name: '' };
+}
+
+// Without a model id, a channel that names a vendor still answers with that
+// vendor's windows; the model gate only applies once a model is given.
+function vendorBillById(providerId = '') {
+  const p = String(providerId || '').toLowerCase();
+  if (!p) return null;
+  for (const bill of PEAK_BILLS) {
+    if (Array.isArray(bill.ids) && bill.ids.includes(p)) return bill;
+  }
+  for (const bill of PEAK_BILLS) {
+    if (bill.vendor === p) return bill;
+  }
+  return null;
+}
+
+// Whether a channel resells any deepseek model at all, and under which bill:
+// a provider's peak flag is about its models, not about its own id.
+function channelPeakBill(providerId = '') {
+  const p = String(providerId || '').toLowerCase();
+  if (!p) return null;
+  try {
+    if (!fs.existsSync(PROVIDERS_STATE_PATH)) return null;
+    const data = JSON.parse(fs.readFileSync(PROVIDERS_STATE_PATH, 'utf8'));
+    const list = data && data.providers && Array.isArray(data.providers.providers) ? data.providers.providers : [];
+    const hit = list.find((x) => String((x && x.id) || '').toLowerCase() === p);
+    if (!hit || hit.off) return null;
+    // Only pay-as-you-go / API-key channels actually get Magpie's hourly peak
+    // billing. A plan provider that resells a DeepSeek model is still a flat
+    // subscription even though the model page shows its equivalent peak price.
+    if (providerKindOf(hit) !== 'api') return null;
+    for (const m of Array.isArray(hit.models) ? hit.models : []) {
+      const bill = peakBillFor(p, (m && m.id) || '');
+      if (bill) return bill;
+    }
+  } catch {}
+  return null;
+}
+
+// The old name, for callers that still ask it with (modelName, provider).
+function hasOffPeakPreset(modelName = '', provider = '') {
+  return peakRuleFor(provider, modelName);
+}
+
+// Which window a call made at date falls in, as the vendor bills it. The
+// holiday table DeepSeek's own rule needs is magpie's (catalog.cnHoliday); the
+// page tells the weekday and weekend windows apart and leaves a holiday as a
+// peak weekday.
 function checkOffPeakStatus(date = new Date(), rule = 'deepseek') {
   const bj = getBeijingTime(date);
   const day = bj.getDay(); // 0 is Sun, 6 is Sat
@@ -762,72 +1080,309 @@ function checkOffPeakStatus(date = new Date(), rule = 'deepseek') {
 
   if (rule === 'night_22_08') {
     const isOff = t >= 22 || t < 8;
-    return {
-      isOffPeak: isOff,
-      rule,
-      discount: isOff ? 0.5 : 1.0,
-      hour,
-      min,
-      day,
-      label: isOff ? '夜间闲时 (22:00-08:00)' : '白天正常'
-    };
+    return { isOffPeak: isOff, rule, peakFactor: isOff ? 1 : PEAK_FACTOR, hour, min, day, label: isOff ? '夜间闲时 (22:00-08:00)' : '白天正常' };
   }
 
-  // DeepSeek official rule:
-  // Weekend: all day off-peak (50% discount)
+  if (rule === 'ollama') {
+    // Ollama Cloud: 12:00 to 18:00 UTC on weekdays, all weekend off-peak
+    const utcHour = date.getUTCHours();
+    const utcDay = date.getUTCDay();
+    const isPeak = utcDay !== 0 && utcDay !== 6 && utcHour >= 12 && utcHour < 18;
+    return { isOffPeak: !isPeak, rule, peakFactor: isPeak ? PEAK_FACTOR : 1, hour, min, day, label: isPeak ? 'Ollama 高峰 (UTC 12:00-18:00)' : 'Ollama 闲时 (按闲时价)' };
+  }
+
+  // Weekends are off-peak all day
   if (day === 0 || day === 6) {
-    return {
-      isOffPeak: true,
-      rule: 'deepseek',
-      reason: 'weekend',
-      discount: 0.5,
-      hour,
-      min,
-      day,
-      label: '周末全天闲时 (5折)'
-    };
+    return { isOffPeak: true, rule, reason: 'weekend', peakFactor: 1, hour, min, day, label: '周末全天闲时（按闲时价）' };
   }
 
-  // Workdays:
-  // Peak: 09:00 - 12:00, 14:00 - 18:00
-  // Off-peak: 00:00 - 09:00, 12:00 - 14:00, 18:00 - 24:00
+  // Workdays: peak 09:00-12:00 and 14:00-18:00; the rest off-peak
   const isPeak = (t >= 9 && t < 12) || (t >= 14 && t < 18);
   return {
     isOffPeak: !isPeak,
-    rule: 'deepseek',
+    rule,
     reason: isPeak ? 'workday_peak' : (t >= 12 && t < 14 ? 'lunch_offpeak' : 'night_offpeak'),
-    discount: !isPeak ? 0.5 : 1.0,
+    peakFactor: isPeak ? PEAK_FACTOR : 1,
     hour,
     min,
     day,
-    label: isPeak ? '工作日高峰时段' : '闲时低谷时段 (5折)'
+    label: isPeak ? '工作日高峰（×2 计费）' : '闲时低谷（按闲时价）'
   };
 }
 
-function hasOffPeakPreset(modelName = '', provider = '') {
-  const m = (modelName || '').toLowerCase();
-  const p = (provider || '').toLowerCase();
-  if (m.includes('deepseek') || p.includes('deepseek')) {
-    return {
-      supported: true,
-      provider: 'deepseek',
-      rule: 'deepseek',
-      discount: 0.5,
-      name: 'DeepSeek 官方峰谷 (闲时5折)'
-    };
+/**
+ * Compare the prices the page saved with the ones Magpie actually bills from.
+ * Every custom key must land in settings.json modelPrices with the same four
+ * unit prices; anything else means the price never took effect (the model was
+ * missing from the scan, or another writer overwrote it).
+ */
+function verifyCustomPrices(customOverrides = {}) {
+  const prices = readSettings().modelPrices || {};
+  const fields = ['input', 'output', 'cache_read', 'cache_write'];
+  let matched = 0;
+  const mismatches = [];
+  for (const [key, value] of Object.entries(customOverrides || {})) {
+    if (!value) continue;
+    const want = sanitizePrice(value);
+    const got = prices[key];
+    if (!got) {
+      mismatches.push({ key, expected: want, actual: null, reason: 'missing' });
+      continue;
+    }
+    const same = fields.every((f) => Math.abs((Number(got[f]) || 0) - (Number(want[f]) || 0)) < 1e-9);
+    if (same) {
+      matched += 1;
+    } else {
+      const actual = {};
+      for (const f of fields) actual[f] = Number(got[f]) || 0;
+      mismatches.push({ key, expected: want, actual, reason: 'differs' });
+    }
   }
-  if (m.includes('qwen') || p.includes('alibaba') || p.includes('bailian')) {
-    return {
-      supported: true,
-      provider: 'alibaba',
-      rule: 'deepseek',
-      discount: 0.5,
-      name: '百炼/千问 闲时策略'
-    };
+  return { checked: matched + mismatches.length, matched, mismatches };
+}
+
+// ---- 高峰时段与倍率（Magpie providers.json 的 rateWindows） ----
+// Magpie 的 RateWindow：{ days:[0-6, 周日=0], start:"HH:MM", end:"HH:MM"（可 24:00），
+// rate: 0 < r <= 1000 }；一个渠道最多 8 个，Start 晚于 End 表示跨零点。
+// 这里只负责校验与读写，时段怎么计价仍由 Magpie 自己算（internal/provider/ratewindow.go）。
+const RATE_WINDOWS_MAX = 8;
+const HHMM_RE = /^([01]\d|2[0-3]):[0-5]\d$|^24:00$/;
+
+// 每个按小时计费渠道的官方时段（北京时间），倍率沿用 Magpie 的 PeakFactor。
+function recommendedRateWindows(providerId, modelId = '') {
+  const p = String(providerId || '').toLowerCase();
+  const bill = peakBillFor(p, modelId) || (peakModelKey(modelId) ? null : (vendorBillById(p) || channelPeakBill(p)));
+  if (!bill) return [];
+  const weekdays = [1, 2, 3, 4, 5];
+  if (bill.rule === 'ollama') {
+    return [
+      { days: weekdays, start: '20:00', end: '24:00', rate: PEAK_FACTOR },
+      { days: weekdays, start: '00:00', end: '02:00', rate: PEAK_FACTOR }
+    ];
   }
+  return [
+    { days: weekdays, start: '09:00', end: '12:00', rate: PEAK_FACTOR },
+    { days: weekdays, start: '14:00', end: '18:00', rate: PEAK_FACTOR }
+  ];
+}
+
+function normalizeRateWindows(windows) {
+  const list = Array.isArray(windows) ? windows : [];
+  if (list.length > RATE_WINDOWS_MAX) return { ok: false, error: 'at most ' + RATE_WINDOWS_MAX + ' windows' };
+  const out = [];
+  for (const w of list) {
+    if (!w || typeof w !== 'object') return { ok: false, error: 'window must be an object' };
+    const start = String(w.start || '');
+    const end = String(w.end || '');
+    if (!HHMM_RE.test(start) || !HHMM_RE.test(end)) return { ok: false, error: 'bad time: ' + start + '-' + end };
+    const rate = Number(w.rate);
+    if (!isFinite(rate) || rate <= 0 || rate > 1000) return { ok: false, error: 'rate out of range: ' + w.rate };
+    if (Math.abs(rate * 1000 - Math.round(rate * 1000)) > 1e-9) return { ok: false, error: 'rate has more than 3 decimals' };
+    let days = Array.isArray(w.days) ? w.days.map((x) => Number(x)) : [];
+    days = days.filter((x) => Number.isInteger(x) && x >= 0 && x <= 6);
+    days = Array.from(new Set(days)).sort((a, b) => a - b);
+    const item = { start: start, end: end, rate: Math.round(rate * 1000) / 1000 };
+    if (days.length) item.days = days;
+    out.push(item);
+  }
+  return { ok: true, windows: out };
+}
+
+function readProvidersConfig() {
+  if (!fs.existsSync(PROVIDERS_CONFIG_PATH)) return null;
+  return JSON.parse(fs.readFileSync(PROVIDERS_CONFIG_PATH, 'utf8'));
+}
+
+// 列出可以设置时段倍率的渠道：已配置的 provider 全都在，按小时计费的带上官方时段建议。
+function listRateWindowTargets() {
+  const cfg = readProvidersConfig();
+  const list = cfg && Array.isArray(cfg.providers) ? cfg.providers : [];
   return {
-    supported: false
+    providers: list.map((p) => {
+      const bill = channelPeakBill(p.id || '');
+      return {
+        id: p.id || '',
+        name: p.name || p.id || '',
+        rateWindows: Array.isArray(p.rateWindows) ? p.rateWindows : [],
+        recommended: recommendedRateWindows(p.id || ''),
+        peak: !!bill,
+        peakName: bill ? bill.name : ''
+      };
+    })
   };
+}
+
+// First-run default: give every active pay-as-you-go channel that resells a
+// DeepSeek model the vendor's recommended windows. The marker is stored in
+// the plugin options so clearing all windows later is not undone on restart.
+function applyDefaultRateWindows() {
+  const opts = readPluginOptions() || {};
+  if (Number(opts.rateDefaultsVersion || 0) >= 1) return { ok: true, skipped: true, applied: [] };
+  const targets = listRateWindowTargets().providers || [];
+  const applied = [];
+  for (const target of targets) {
+    if (!target || !target.peak) continue;
+    if (Array.isArray(target.rateWindows) && target.rateWindows.length > 0) continue;
+    const windows = Array.isArray(target.recommended) ? target.recommended : [];
+    if (!windows.length) continue;
+    const result = setRateWindows(target.id, windows);
+    if (result.ok) applied.push({ id: target.id, windows: result.windows });
+  }
+  return { ok: true, skipped: false, applied };
+}
+
+// ---- 模型级峰谷设置（插件 options.modelPeaks） ----
+// 页面按模型族保存 { enabled, rate, windows }；Magpie 只有渠道级 rateWindows，
+// 因此这里把渠道内显式配置的模型汇总：配置一致才写渠道，冲突时报告并保持原样。
+function normalizeModelPeakConfig(value) {
+  if (typeof value === 'boolean') {
+    return { enabled: value, rate: PEAK_FACTOR, windows: [] };
+  }
+  if (!value || typeof value !== 'object') return null;
+  const rate = Number(value.rate);
+  if (!isFinite(rate) || rate <= 0 || rate > 1000) return { error: 'rate out of range: ' + value.rate };
+  if (Math.abs(rate * 1000 - Math.round(rate * 1000)) > 1e-9) return { error: 'rate has more than 3 decimals' };
+  // 页面保存的 window 不带 rate（倍率是模型级），校验时补上再剥离。
+  const checked = normalizeRateWindows((value.windows || []).map((w) => ({ ...w, rate })));
+  if (!checked.ok) return checked;
+  return {
+    enabled: value.enabled !== false,
+    rate: Math.round(rate * 1000) / 1000,
+    windows: checked.windows.map((w) => ({ days: w.days || [], start: w.start, end: w.end }))
+  };
+}
+
+function normalizeModelPeaks(map) {
+  const out = {};
+  if (!map || typeof map !== 'object' || Array.isArray(map)) return { ok: true, modelPeaks: out };
+  for (const [key, value] of Object.entries(map)) {
+    if (!key) continue;
+    const cfg = normalizeModelPeakConfig(value);
+    if (cfg && cfg.error) return { ok: false, error: key + ': ' + cfg.error };
+    if (cfg) out[key] = cfg;
+  }
+  return { ok: true, modelPeaks: out };
+}
+
+function modelPeakKeyFor(modelId = '') {
+  return cleanModelName(String(modelId || '').split('/').pop().split(':')[0]);
+}
+
+function modelPeakConfigFor(modelPeaks, providerId, modelId) {
+  const key = modelPeakKeyFor(modelId);
+  if (modelPeaks && Object.prototype.hasOwnProperty.call(modelPeaks, key)) {
+    return normalizeModelPeakConfig(modelPeaks[key]);
+  }
+  const bill = peakBillFor(providerId, modelId);
+  if (!bill) return { enabled: false, rate: PEAK_FACTOR, windows: [] };
+  return { enabled: true, rate: PEAK_FACTOR, windows: recommendedRateWindows(providerId, modelId) };
+}
+
+function modelPeakConfigSignature(cfg) {
+  return JSON.stringify({
+    enabled: !!cfg.enabled,
+    rate: Number(cfg.rate) || PEAK_FACTOR,
+    windows: (cfg.windows || []).map((w) => ({
+      days: Array.isArray(w.days) ? w.days.slice().sort((a, b) => a - b) : [],
+      start: w.start,
+      end: w.end
+    }))
+  });
+}
+
+function modelPeakWindowsToRateWindows(cfg) {
+  if (!cfg || !cfg.enabled) return [];
+  return (cfg.windows || []).map((w) => ({
+    days: Array.isArray(w.days) ? w.days.slice() : [],
+    start: w.start,
+    end: w.end,
+    rate: Number(cfg.rate) || PEAK_FACTOR
+  }));
+}
+
+// providers-state.json 里各渠道实际挂载的模型；providers.json 的 models 常为空。
+function readStateModelIds() {
+  const out = {};
+  try {
+    if (!fs.existsSync(PROVIDERS_STATE_PATH)) return out;
+    const data = JSON.parse(fs.readFileSync(PROVIDERS_STATE_PATH, 'utf8'));
+    const list = data && data.providers && Array.isArray(data.providers.providers) ? data.providers.providers : [];
+    for (const p of list) {
+      const id = String((p && p.id) || '');
+      if (!id) continue;
+      out[id] = (Array.isArray(p.models) ? p.models : [])
+        .map((m) => (typeof m === 'object' ? (m.id || m.model || '') : String(m || '')))
+        .filter(Boolean);
+    }
+  } catch {}
+  return out;
+}
+
+// 把 modelPeaks 汇总到 providers.json 的渠道 rateWindows。返回每个渠道的处理结果。
+function syncModelPeakWindows(modelPeaks) {
+  const checked = normalizeModelPeaks(modelPeaks);
+  if (!checked.ok) return { ok: false, error: checked.error, results: [] };
+  const cfg = readProvidersConfig();
+  const list = cfg && Array.isArray(cfg.providers) ? cfg.providers : null;
+  if (!list) return { ok: false, error: 'providers.json not found', results: [] };
+  const stateModelIds = readStateModelIds();
+  const results = [];
+  for (const p of list) {
+    const providerId = p.id || '';
+    const declared = Array.isArray(p.models) ? p.models : [];
+    const stateModels = stateModelIds[providerId] || [];
+    const models = declared.length ? declared : stateModels.map((id) => ({ id }));
+    if (!providerId || !models.length) continue;
+    const configured = [];
+    for (const m of models) {
+      const modelId = typeof m === 'object' ? (m.id || m.model || '') : String(m || '');
+      const key = modelPeakKeyFor(modelId);
+      if (!key || !Object.prototype.hasOwnProperty.call(checked.modelPeaks, key)) continue;
+      configured.push({ modelId, key, config: checked.modelPeaks[key] });
+    }
+    if (!configured.length) continue;
+    const signature = modelPeakConfigSignature(configured[0].config);
+    const conflict = configured.find((x) => modelPeakConfigSignature(x.config) !== signature);
+    if (conflict) {
+      results.push({
+        provider: providerId,
+        status: 'conflict',
+        models: configured.map((x) => x.key),
+        message: 'same provider has different model peak settings: ' + configured.map((x) => x.key).join(', ')
+      });
+      continue;
+    }
+    const windows = modelPeakWindowsToRateWindows(configured[0].config);
+    const written = setRateWindows(providerId, windows);
+    results.push({
+      provider: providerId,
+      status: written.ok ? (written.written ? 'written' : 'unchanged') : 'error',
+      windows,
+      affectedModels: models.length,
+      error: written.ok ? undefined : written.error
+    });
+  }
+  return { ok: true, results };
+}
+
+// 写一个渠道的 rateWindows：原子写 providers.json，内容相同不落盘。
+function setRateWindows(id, windows) {
+  const target = String(id || '');
+  if (!target) return { ok: false, error: 'missing provider id' };
+  const checked = normalizeRateWindows(windows);
+  if (!checked.ok) return checked;
+  const cfg = readProvidersConfig();
+  const list = cfg && Array.isArray(cfg.providers) ? cfg.providers : null;
+  if (!list) return { ok: false, error: 'providers.json not found' };
+  const p = list.find((x) => (x.id || '') === target);
+  if (!p) return { ok: false, error: 'unknown provider: ' + target };
+  const before = JSON.stringify(p.rateWindows || []);
+  const after = JSON.stringify(checked.windows);
+  if (before === after) return { ok: true, written: false, windows: checked.windows };
+  if (checked.windows.length) p.rateWindows = checked.windows;
+  else delete p.rateWindows;
+  writeJsonAtomic(PROVIDERS_CONFIG_PATH, cfg);
+  return { ok: true, written: true, windows: checked.windows };
 }
 
 module.exports = {
@@ -842,7 +1397,28 @@ module.exports = {
   applyPrice,
   resetPrice,
   applyGlobalMode,
+  applyGlobalModeIfChanged,
+  verifyCustomPrices,
+  stableStringify,
+  sanitizePrice,
+  readSettings,
+  updateModelPrices,
+  readPluginOptions,
+  writePluginOptions,
   getBeijingTime,
   checkOffPeakStatus,
-  hasOffPeakPreset
+  providerKindOf,
+  listRateWindowTargets,
+  setRateWindows,
+  normalizeRateWindows,
+  recommendedRateWindows,
+  applyDefaultRateWindows,
+  normalizeModelPeaks,
+  syncModelPeakWindows,
+  modelPeakKeyFor,
+  peakRuleFor,
+  channelPeakBill,
+  vendorBillById,
+  hasOffPeakPreset,
+  PEAK_FACTOR
 };

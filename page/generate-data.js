@@ -73,10 +73,14 @@ if (fs.existsSync(PROVIDERS_STATE_PATH)) {
 const report = matcher.scanAll();
 const { totalSummary, bareUsage } = matcher.getUsageData();
 
-// Automatically synchronize matched prices into Magpie settings.json
+// Automatically synchronize matched prices into Magpie settings.json.
+// 保留用户在页面里选的口径：以前这里固定 all-equivalent，重新生成数据会把
+// 「只记录真实 API 花费」悄悄改回去，账单统计自然对不上。
 try {
-  const syncedCount = matcher.applyGlobalMode('all-equivalent');
-  console.log('Synchronized', syncedCount, 'prices to Magpie settings.json');
+  const savedOptions = matcher.readPluginOptions(path.join(__dirname, '..')) || {};
+  const savedMode = savedOptions.mode === 'api-only' ? 'api-only' : 'all-equivalent';
+  const syncedCount = matcher.applyGlobalMode(savedMode, savedOptions.customPrices || {});
+  console.log('Synchronized', syncedCount, 'prices to Magpie settings.json as', savedMode);
 } catch (e) {
   console.warn('Failed to sync prices to settings.json:', e.message);
 }
@@ -88,6 +92,7 @@ const jsContent =
   '  g.__MAGPIE_BARE_USAGE__ = ' + JSON.stringify(bareUsage, null, 2) + ';\n' +
   '  g.__MAGPIE_PROVIDER_ICONS__ = ' + JSON.stringify(providerIcons, null, 2) + ';\n' +
   '  g.__MAGPIE_PROVIDER_DATA_URLS__ = ' + JSON.stringify(providerDataUrls, null, 2) + ';\n' +
+  '  g.__MAGPIE_PEAK_FACTOR__ = ' + JSON.stringify(matcher.PEAK_FACTOR) + ';\n' +
   '})(typeof window !== "undefined" ? window : globalThis);\n';
 
 fs.writeFileSync(path.join(__dirname, 'models-data.js'), jsContent, 'utf8');

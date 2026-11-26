@@ -527,10 +527,41 @@ function testApiFilterAndPeakDefaults() {
   assert.deepStrictEqual(apiProviders, ['opencode-zen', 'opencode-zen-2'], '静态数据只能把 OpenCode 标为 API，实际 ' + apiProviders.join(','));
   assert.ok(data.some((x) => x.providerKind === 'subscription'), '静态数据必须保留订阅渠道');
 
-  const targets = matcher.listRateWindowTargets().providers || [];
-  const peaks = targets.filter((x) => x.peak).map((x) => x.id);
-  assert.ok(peaks.includes('opencode-zen-2'), 'OpenCode Zen 2 应作为 DeepSeek 默认峰谷渠道');
+  // 峰谷目标读的是用户机器上的 Magpie 配置（providers.json / providers-state.json），
+  // 直接断言会把「本机有配置」当成通过条件，CI 上必然失败。这里造一份临时配置，
+  // 断言规则本身：按小时计费的 API 渠道算峰谷，订阅/免费渠道不算。
+  const tmpHome3 = fs.mkdtempSync(path.join(os.tmpdir(), 'magpie-peak-'));
+  fs.mkdirSync(path.join(tmpHome3, '.config/magpie'), { recursive: true });
+  fs.mkdirSync(path.join(tmpHome3, '.cache/magpie'), { recursive: true });
+  fs.writeFileSync(path.join(tmpHome3, '.config/magpie/providers.json'), JSON.stringify({ providers: [
+    { id: 'opencode-zen-2', name: 'OpenCode Zen 2', key: 'sk-test' },
+    { id: 'opencode-zen-free', name: 'OpenCode Zen Free' },
+    { id: 'trae-cn', name: 'Trae CN' }
+  ] }, null, 2));
+  fs.writeFileSync(path.join(tmpHome3, '.cache/magpie/providers-state.json'), JSON.stringify({ version: 1, providers: { providers: [
+    { id: 'opencode-zen-2', name: 'OpenCode Zen 2', billingKind: 'payg', key: { set: true }, models: [{ id: 'deepseek-v4.1-flash' }] },
+    { id: 'opencode-zen-free', name: 'OpenCode Zen Free', billingKind: 'free', models: [{ id: 'deepseek-v4.1-flash' }] },
+    { id: 'trae-cn', name: 'Trae CN', billingKind: 'plan', account: { plan: 'Pro' }, models: [{ id: 'deepseek-v4.1-flash' }] }
+  ] } }, null, 2));
+  const peakProbe = execFileSync(process.execPath, ['-e', `
+    const m = require(${JSON.stringify(path.join(__dirname, 'matcher.js'))});
+    const targets = m.listRateWindowTargets().providers || [];
+    const first = m.applyDefaultRateWindows();
+    const second = m.applyDefaultRateWindows();
+    const after = m.listRateWindowTargets().providers || [];
+    console.log(JSON.stringify({ targets, first, second, after }));
+  `], { env: { ...process.env, HOME: tmpHome3, USERPROFILE: tmpHome3 }, encoding: 'utf8' });
+  const probe = JSON.parse(peakProbe.trim());
+  const peaks = probe.targets.filter((x) => x.peak).map((x) => x.id).sort();
+  assert.deepStrictEqual(peaks, ['opencode-zen-2'], '只有按小时计费的 API 渠道才是峰谷目标，实际 ' + peaks.join(','));
   assert.ok(!peaks.includes('opencode-zen-free'), '免费订阅渠道不能误标为峰谷 API 渠道');
+  assert.ok(!peaks.includes('trae-cn'), '包月订阅渠道不能误标为峰谷 API 渠道');
+  const zenWindows = probe.first.applied.find((x) => x.id === 'opencode-zen-2');
+  assert.ok(zenWindows && zenWindows.windows.length === 2, '首次运行应为峰谷渠道写入两条默认时段');
+  assert.strictEqual(zenWindows.windows[0].rate, matcher.PEAK_FACTOR, '默认时段倍率应为 PeakFactor');
+  const written = probe.after.find((x) => x.id === 'opencode-zen-2').rateWindows;
+  assert.strictEqual(written.length, 2, '默认时段应真的写进 providers.json 的 rateWindows');
+  assert.strictEqual(probe.first.applied.length, 1, '只有峰谷渠道会被写入默认时段');
   console.log('   ✓ API 筛选仅命中 OpenCode，DeepSeek 默认峰谷目标正确');
 }
 testApiFilterAndPeakDefaults();

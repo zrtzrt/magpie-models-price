@@ -1,14 +1,44 @@
 // matcher.js - Core logic for matching Magpie models with models.dev data & pricing modes
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 
-const HOME = process.env.HOME || process.env.USERPROFILE || '';
-const CACHE_MODELS_PATH = path.join(HOME, '.cache/magpie/models.json');
-const PROVIDERS_STATE_PATH = path.join(HOME, '.cache/magpie/providers-state.json');
-const PROVIDERS_CONFIG_PATH = path.join(HOME, '.config/magpie/providers.json');
-const SETTINGS_PATH = path.join(HOME, '.config/magpie/settings.json');
-const USAGE_PATH = path.join(HOME, '.config/magpie/usage.jsonl');
-const PLUGINS_PATH = path.join(HOME, '.config/magpie/plugins.json');
+// Magpie resolves its own folders in internal/appdir: $XDG_CONFIG_HOME/magpie and
+// $XDG_CACHE_HOME/magpie when those are set and absolute, else ~/.config/magpie
+// and ~/.cache/magpie, with USERPROFILE as Windows' home (homeVar()). Reading the
+// same folders is what makes the prices written here the ones magpie loads: a
+// plugin that always used ~/.config ignored an XDG_CONFIG_HOME user entirely and
+// wrote into a folder magpie never reads.
+function resolveHomeDir() {
+  for (const candidate of [process.env.HOME, process.env.USERPROFILE]) {
+    if (candidate && path.isAbsolute(candidate)) return candidate;
+  }
+  try {
+    const fallback = os.homedir();
+    if (fallback && path.isAbsolute(fallback)) return fallback;
+  } catch {}
+  return '';
+}
+
+// xdgDir is magpie's folder for one of its two trees, "" when there is no home
+// folder to put it under: an empty home must fail a write loudly rather than
+// scatter relative .config folders into whatever the working folder happens to be.
+function xdgDir(envName, fallbackName) {
+  const named = process.env[envName];
+  if (named && path.isAbsolute(named)) return path.join(named, 'magpie');
+  const home = resolveHomeDir();
+  return home ? path.join(home, fallbackName, 'magpie') : '';
+}
+
+const HOME = resolveHomeDir();
+const CONFIG_DIR = xdgDir('XDG_CONFIG_HOME', '.config');
+const CACHE_DIR = xdgDir('XDG_CACHE_HOME', '.cache');
+const CACHE_MODELS_PATH = path.join(CACHE_DIR, 'models.json');
+const PROVIDERS_STATE_PATH = path.join(CACHE_DIR, 'providers-state.json');
+const PROVIDERS_CONFIG_PATH = path.join(CONFIG_DIR, 'providers.json');
+const SETTINGS_PATH = path.join(CONFIG_DIR, 'settings.json');
+const USAGE_PATH = path.join(CONFIG_DIR, 'usage.jsonl');
+const PLUGINS_PATH = path.join(CONFIG_DIR, 'plugins.json');
 
 function readSettings() {
   if (!fs.existsSync(SETTINGS_PATH)) return {};
@@ -22,7 +52,16 @@ function readSettings() {
  * user's settings back to the defaults.
  */
 function writeJsonAtomic(filePath, value, defaultMode = 0o600) {
+  if (!path.isAbsolute(filePath)) {
+    // Reached only when no home folder could be resolved: writing here would put
+    // magpie's settings under the working folder, where nothing reads them.
+    throw new Error('cannot write ' + path.basename(filePath) + ': no home folder (HOME / USERPROFILE / os.homedir())');
+  }
   const dir = path.dirname(filePath);
+  // A first run has no ~/.config/magpie yet, and an XDG folder magpie itself
+  // creates lazily may be missing too: openSync of the temp file would throw
+  // ENOENT and the price would silently never be saved.
+  fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
   const tmp = path.join(dir, '.' + path.basename(filePath) + '.' + process.pid + '.' + Date.now() + '.tmp');
   let mode = defaultMode;
   try { mode = fs.statSync(filePath).mode & 0o777; } catch {}
@@ -1420,5 +1459,13 @@ module.exports = {
   channelPeakBill,
   vendorBillById,
   hasOffPeakPreset,
-  PEAK_FACTOR
+  PEAK_FACTOR,
+  paths: {
+    home: HOME,
+    configDir: CONFIG_DIR,
+    cacheDir: CACHE_DIR,
+    settings: SETTINGS_PATH,
+    cacheModels: CACHE_MODELS_PATH,
+    providersState: PROVIDERS_STATE_PATH
+  }
 };

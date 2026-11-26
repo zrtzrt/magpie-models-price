@@ -611,4 +611,114 @@ console.log('14. 测试实时用量合并与 api-only 统计口径...');
   console.log('   ✓ 宿主全量用量覆盖静态快照、30d 不回退、api-only 统计口径正确');
 }
 
-console.log('\n🎉 所有测试用例 100% 通过！兼容本地与 CI 环境。');
+// 15. 目录口径：与 magpie 的 appdir 一致（XDG_* 优先，其次主目录），且写盘自建目录
+console.log('15. 测试配置目录解析与首次运行写入...');
+{
+  const os = require('os');
+  const { execFileSync } = require('child_process');
+  const probe = (env) => JSON.parse(execFileSync(process.execPath, ['-e',
+    'const m = require(' + JSON.stringify(path.join(__dirname, 'matcher.js')) + ');' +
+    'process.stdout.write(JSON.stringify(m.paths || null));'
+  ], { env: { ...process.env, ...env }, encoding: 'utf8' }).trim());
+
+  // XDG 优先：magpie 的 appdir.Config()/Cache() 认这两个变量，插件必须认同一份
+  const xdgRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'magpie-price-xdg-'));
+  const xdgCfg = path.join(xdgRoot, 'cfg');
+  const xdgCache = path.join(xdgRoot, 'cache');
+  const xdgHome = path.join(xdgRoot, 'home');
+  fs.mkdirSync(xdgHome, { recursive: true });
+  const withXdg = probe({ HOME: xdgHome, XDG_CONFIG_HOME: xdgCfg, XDG_CACHE_HOME: xdgCache });
+  assert.ok(withXdg, 'matcher 应导出 paths，供调用方按宿主同一口径定位目录');
+  assert.strictEqual(withXdg.configDir, path.join(xdgCfg, 'magpie'), 'XDG_CONFIG_HOME 应决定配置目录');
+  assert.strictEqual(withXdg.cacheDir, path.join(xdgCache, 'magpie'), 'XDG_CACHE_HOME 应决定缓存目录');
+  assert.strictEqual(withXdg.settings, path.join(xdgCfg, 'magpie', 'settings.json'), 'settings.json 应落在 XDG 配置目录');
+
+  // 相对路径的 XDG 变量被忽略（magpie 的 rooted() 也如此），回落到主目录
+  const rel = probe({ HOME: xdgHome, XDG_CONFIG_HOME: 'relative/cfg', XDG_CACHE_HOME: 'relative/cache' });
+  assert.strictEqual(rel.configDir, path.join(xdgHome, '.config', 'magpie'), '相对 XDG_CONFIG_HOME 应被忽略');
+
+  // USERPROFILE 兜底：Windows 上 HOME 通常不存在
+  const win = probe({ HOME: '', USERPROFILE: xdgHome, XDG_CONFIG_HOME: '', XDG_CACHE_HOME: '' });
+  assert.strictEqual(win.configDir, path.join(xdgHome, '.config', 'magpie'), 'HOME 缺失时应由 USERPROFILE 兜底');
+
+  // 首次运行：~/.config/magpie 尚不存在时也必须写得进去（原来 openSync 直接 ENOENT）
+  const freshHome = fs.mkdtempSync(path.join(os.tmpdir(), 'magpie-price-fresh-'));
+  const freshOut = execFileSync(process.execPath, ['-e',
+    'const m = require(' + JSON.stringify(path.join(__dirname, 'matcher.js')) + ');' +
+    'try { m.applyGlobalMode("api-only", { "a/b": { input: 1, output: 2, cache_read: 0, cache_write: 0 } });' +
+    '  process.stdout.write("written"); } catch (e) { process.stdout.write("threw:" + e.code); }'
+  ], { env: { ...process.env, HOME: freshHome, XDG_CONFIG_HOME: '', XDG_CACHE_HOME: '' }, encoding: 'utf8' }).trim();
+  assert.strictEqual(freshOut, 'written', '全新主目录下应自动创建配置目录并写入，而不是抛 ENOENT');
+  const freshSettings = path.join(freshHome, '.config', 'magpie', 'settings.json');
+  assert.ok(fs.existsSync(freshSettings), '全新主目录下 settings.json 应被创建');
+  assert.ok(JSON.parse(fs.readFileSync(freshSettings, 'utf8')).modelPrices['a/b'], '写入的价格应可读回');
+  fs.rmSync(xdgRoot, { recursive: true, force: true });
+  fs.rmSync(freshHome, { recursive: true, force: true });
+  console.log('   ✓ XDG 优先、USERPROFILE 兜底、首次运行自建目录均正确');
+}
+
+// 16. 服务只绑回环、CORS 只回显本地来源、静态文件不越出 public/
+console.log('16. 测试本地服务边界（回环绑定 / CORS / 静态目录）...');
+{
+  const os = require('os');
+  const http = require('http');
+  const net = require('net');
+  const { spawn } = require('child_process');
+  const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'magpie-price-srv-'));
+  const port = 3400 + Math.floor(Math.random() * 200);
+  const child = spawn(process.execPath, [path.join(__dirname, 'server.js')], {
+    env: { ...process.env, HOME: tmpHome, XDG_CONFIG_HOME: '', XDG_CACHE_HOME: '', PORT: String(port) },
+    stdio: ['ignore', 'pipe', 'pipe']
+  });
+  const request = (opts, body) => new Promise((resolve, reject) => {
+    const req = http.request({ host: '127.0.0.1', port, ...opts }, (res) => {
+      let data = '';
+      res.on('data', (c) => { data += c; });
+      res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body: data }));
+    });
+    req.on('error', reject);
+    if (body) req.write(body);
+    req.end();
+  });
+  const ready = new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('server did not start')), 15000);
+    child.stdout.on('data', (d) => {
+      if (String(d).includes('running at')) { clearTimeout(timer); resolve(); }
+    });
+    child.on('exit', (code) => { clearTimeout(timer); reject(new Error('server exited ' + code)); });
+  });
+  (async () => {
+    await ready;
+    // 回环绑定：用本机非回环地址连它应当失败
+    const nets = os.networkInterfaces();
+    const external = Object.values(nets).flat().find((n) => n && n.family === 'IPv4' && !n.internal);
+    if (external) {
+      const refused = await new Promise((resolve) => {
+        const s = net.connect({ host: external.address, port }, () => { s.destroy(); resolve(false); });
+        s.on('error', () => resolve(true));
+        s.setTimeout(2000, () => { s.destroy(); resolve(false); });
+      });
+      assert.ok(refused, '服务不应在非回环地址上监听（局域网与 DNS rebinding 会借此写配置）');
+    }
+    const evil = await request({ method: 'OPTIONS', path: '/api/options', headers: { Origin: 'https://evil.example' } });
+    assert.strictEqual(evil.headers['access-control-allow-origin'], undefined, '外部来源不应拿到 CORS 放行头');
+    const local = await request({ method: 'OPTIONS', path: '/api/options', headers: { Origin: 'http://localhost:5173' } });
+    assert.strictEqual(local.headers['access-control-allow-origin'], 'http://localhost:5173', '本地来源应被放行');
+    assert.ok(String(local.headers.vary || '').toLowerCase().includes('origin'), 'CORS 响应应带 Vary: Origin');
+    const evilPost = await request({ method: 'POST', path: '/api/options', headers: { Origin: 'https://evil.example', 'Content-Type': 'application/json' } }, '{}');
+    assert.strictEqual(evilPost.headers['access-control-allow-origin'], undefined, '外部来源的写请求不应带放行头');
+    const traversal = await request({ path: '/..%2f..%2fmatcher.js' });
+    assert.notStrictEqual(traversal.status, 200, '编码的 ../ 不应读到 public/ 之外的文件');
+    const ok = await request({ path: '/index.html' });
+    assert.strictEqual(ok.status, 200, 'public/ 内的静态文件应正常返回');
+    child.kill();
+    fs.rmSync(tmpHome, { recursive: true, force: true });
+    console.log('   ✓ 仅回环监听、CORS 白名单、静态目录不可穿越');
+    console.log('\n🎉 所有测试用例 100% 通过！兼容本地与 CI 环境。');
+  })().catch((e) => {
+    child.kill();
+    fs.rmSync(tmpHome, { recursive: true, force: true });
+    console.error(e);
+    process.exit(1);
+  });
+}

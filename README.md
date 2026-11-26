@@ -28,6 +28,27 @@
 - **幂等同步**：只有价格真的变化时才写 `settings.json`（键序无关比较），未变化时既不重写也不重扫全量 catalog；插件加载、每次 `config()` 与 60 秒定时器都不再让宿主阻塞或反复改写 Magpie 自己的文件；宿主没给出有效 `mode` 时按「什么都不改」处理，绝不回落到某个默认模式覆盖用户已选口径。
 - **流式响应式布局**：完美适配窄屏与侧边栏极窄窗口，控件与内容流式自适应排版。
 
+## 配置目录与本地服务
+
+插件读写的就是 Magpie 自己那份配置，口径与宿主 `internal/appdir` 一致：
+
+| 用途 | 位置 |
+| --- | --- |
+| 价格、插件 options | `$XDG_CONFIG_HOME/magpie/`，未设置时 `~/.config/magpie/` |
+| models.dev 缓存 | `$XDG_CACHE_HOME/magpie/`，未设置时 `~/.cache/magpie/` |
+| 主目录 | `HOME`；Windows 上为 `USERPROFILE` |
+
+`XDG_*` 只有写成绝对路径才生效（与宿主的 `rooted()` 判断一致），相对值会被忽略并回落到主目录。首次运行时 `~/.config/magpie` 尚不存在也会自动创建。
+
+独立 Web UI（`node index.js ui`）默认只监听 `127.0.0.1:3456`，可用 `PORT` / `HOST` 覆盖。服务会改写 `settings.json` 与 `providers.json`，因此不绑局域网地址，CORS 也只回显 `localhost` / `127.0.0.1` 来源——外部网页无法通过跨域请求改写你的价格。
+
+## 开发与测试
+
+```bash
+node check.js      # 16 组自测，覆盖目录解析、首次写入、服务边界与页面 CSP 规范
+```
+
+CI 在 ubuntu / macOS / Windows 三平台 × Node 20/22/24 上跑同一套测试，并检查打包产物不含任何本地配置。
 ## 命令行工具（可选）
 
 页面主要通过图形界面直接操作，同时也支持在终端作为轻量 CLI 脚本运行：

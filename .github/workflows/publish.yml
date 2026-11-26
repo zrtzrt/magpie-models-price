@@ -5,11 +5,20 @@ on:
     types: [published]
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
+    # The plugin resolves magpie's folders (XDG_*, the home folder) and its own
+    # service on every platform, so the tests run on all three: a Windows or
+    # macOS regression in path handling never showed up on ubuntu alone.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: ['20', '22', '24']
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -17,10 +26,21 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: ${{ matrix.node }}
 
       - name: Run Unit Tests
         run: node check.js
+
+      - name: Verify the packed tarball ships no local data
+        if: matrix.os == 'ubuntu-latest' && matrix.node == '22'
+        run: |
+          npm pack --silent >/dev/null
+          tar -tzf magpie-models-price-*.tgz > /tmp/pack-list.txt
+          if grep -E 'settings\.json|plugins\.json|providers\.json|usage\.jsonl|\.env$' /tmp/pack-list.txt; then
+            echo 'tarball must not carry user configuration'; exit 1
+          fi
+          grep -q 'package/page/index.html' /tmp/pack-list.txt
+          grep -q 'package/matcher.js' /tmp/pack-list.txt
 
   publish-npm:
     name: Publish to NPM
@@ -29,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write # 用于 GitHub Actions OIDC Trusted Publishing (免密钥发包)
+      id-token: write # GitHub Actions OIDC Trusted Publishing (免密钥发包)
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -42,6 +62,20 @@ jobs:
 
       - name: Ensure latest npm with OIDC Trusted Publishing support
         run: npm install -g npm@latest
+
+      - name: Check the tag matches package.json
+        if: github.event_name == 'release'
+        run: |
+          node -e '
+            const pkg = require("./package.json");
+            const tag = process.env.GITHUB_REF_NAME.replace(/^v/, "");
+            if (pkg.version !== tag) {
+              console.error(`tag ${tag} != package.json ${pkg.version}: npm never reuses a version, so a mismatch cannot be undone`);
+              process.exit(1);
+            }
+          '
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
 
       - name: Publish to NPM via Trusted Publishing (OIDC)
         run: |
@@ -62,7 +96,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write # 用于发布到 GitHub Packages
+      packages: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

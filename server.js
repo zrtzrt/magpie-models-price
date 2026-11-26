@@ -5,13 +5,34 @@ const path = require('path');
 const matcher = require('./matcher');
 
 const PORT = process.env.PORT || 3456;
+// Loopback only: the service writes settings.json and providers.json, and
+// listening on every interface put those writes on the LAN (and on whatever a
+// DNS rebinding page resolves to 127.0.0.1). The plugin page in magpie's window
+// reaches the service through the host bridge, and the standalone web UI is
+// served by this same server, so neither needs a reachable address.
+const HOST = process.env.HOST || '127.0.0.1';
 const PUBLIC_DIR = path.join(__dirname, 'public');
 
+// corsOrigin answers the origins a browser page here can legitimately have: the
+// service's own origin and magpie's local ones. A wildcard let any website the
+// user had open POST /api/mode and rewrite their prices.
+function corsOrigin(req) {
+  const origin = req.headers.origin;
+  if (!origin) return null;
+  let host;
+  try {
+    host = new URL(origin).hostname;
+  } catch {
+    return null;
+  }
+  return host === 'localhost' || host === '127.0.0.1' || host === '[::1]' || host === '::1' ? origin : null;
+}
+
 function sendJson(res, data, status = 200) {
-  res.writeHead(status, {
-    'Content-Type': 'application/json; charset=utf-8',
-    'Access-Control-Allow-Origin': '*'
-  });
+  const headers = { 'Content-Type': 'application/json; charset=utf-8' };
+  const origin = corsOrigin(res.req);
+  if (origin) headers['Access-Control-Allow-Origin'] = origin;
+  res.writeHead(status, headers);
   res.end(JSON.stringify(data));
 }
 
@@ -28,13 +49,19 @@ function sendFile(res, filePath, contentType) {
 }
 
 const server = http.createServer((req, res) => {
-  // Enable CORS for preflight
+  // CORS preflight, for the local origins corsOrigin names only: a foreign
+  // origin gets no allow headers, so its JSON POST is never sent.
   if (req.method === 'OPTIONS') {
-    res.writeHead(204, {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type'
-    });
+    const origin = corsOrigin(req);
+    const headers = origin
+      ? {
+          'Access-Control-Allow-Origin': origin,
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+          Vary: 'Origin'
+        }
+      : { Vary: 'Origin' };
+    res.writeHead(204, headers);
     return res.end();
   }
 
@@ -233,12 +260,15 @@ const server = http.createServer((req, res) => {
     return sendFile(res, path.join(PUBLIC_DIR, 'index.html'), 'text/html; charset=utf-8');
   }
 
-  if (pathname.endsWith('.css')) {
-    return sendFile(res, path.join(PUBLIC_DIR, pathname), 'text/css');
-  }
-
-  if (pathname.endsWith('.js')) {
-    return sendFile(res, path.join(PUBLIC_DIR, pathname), 'application/javascript');
+  // Only files inside public/: pathname is URL-decoded by the time it reaches
+  // here, so an encoded ../ could otherwise name anything on disk.
+  if (pathname.endsWith('.css') || pathname.endsWith('.js')) {
+    const file = path.resolve(PUBLIC_DIR, '.' + pathname);
+    if (file !== PUBLIC_DIR && !file.startsWith(PUBLIC_DIR + path.sep)) {
+      res.writeHead(403, { 'Content-Type': 'text/plain' });
+      return res.end('Forbidden');
+    }
+    return sendFile(res, file, pathname.endsWith('.css') ? 'text/css' : 'application/javascript');
   }
 
   res.writeHead(404, { 'Content-Type': 'text/plain' });
@@ -255,8 +285,8 @@ function startServer(port = PORT) {
       }
       resolve(null);
     });
-    server.listen(port, () => {
-      console.log(`Magpie Price Matcher Web UI running at http://localhost:${port}`);
+    server.listen(port, HOST, () => {
+      console.log(`Magpie Price Matcher Web UI running at http://${HOST}:${port}`);
       resolve(server);
     });
   });

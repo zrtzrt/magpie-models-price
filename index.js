@@ -3,14 +3,14 @@ const fs = require('fs');
 const path = require('path');
 const matcher = require('./matcher');
 
-const SETTINGS_PATH = path.join(process.env.HOME || '', '.config/magpie/settings.json');
-
 const MODES = new Set(['api-only', 'all-equivalent']);
 // Inputs the sync result depends on; when none changed, skip the ~3s scan.
-const SYNC_INPUTS = [
-  path.join(process.env.HOME || '', '.cache/magpie/models.json'),
-  path.join(process.env.HOME || '', '.cache/magpie/providers-state.json')
-];
+// The folders come from matcher, which resolves them the way magpie's own
+// appdir does (XDG_CONFIG_HOME / XDG_CACHE_HOME, then the home folder): building
+// them here from process.env.HOME alone pointed the signature at a different
+// folder than the one matcher writes, so on Windows and for an XDG user the
+// scan was re-run on every tick and the prices it wrote were never read back.
+const SYNC_INPUTS = [matcher.paths.cacheModels, matcher.paths.providersState];
 let lastSignature = '';
 
 function inputsSignature(mode, customPrices) {

@@ -60,9 +60,14 @@ function applySavedOptions(options) {
     // Only the keys this save changed are written. A page save used to call
     // applyGlobalModeIfChanged, whose scan rewrote the whole price table and
     // replaced prices the user had set in magpie's own editor (PR #1576 review).
+    // Only priceChanges is a page save. The fallback to customPrices read the
+    // plugin's whole stored price map as if the save had changed all of it: a
+    // token left over from a 1.4.x page then wrote every price back over what
+    // magpie's editor had set (gpt-5 went from 0.5/4 to 1.25/10). A save with
+    // no priceChanges changed no price.
     const priceChanges = opts.priceChanges && typeof opts.priceChanges === 'object'
       ? opts.priceChanges
-      : (opts.customPrices || {});
+      : {};
     const removedPrices = Array.isArray(opts.removedPrices) ? opts.removedPrices : [];
     const result = matcher.applyPriceChanges(priceChanges, removedPrices);
     out.prices = result.count;

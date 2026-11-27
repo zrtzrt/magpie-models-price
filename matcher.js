@@ -513,12 +513,34 @@ function emptyUsageEntry(lastAt) {
   };
 }
 
-function getUsageData() {
-  const channelUsage = {};
-  const bareUsage = {};
+// ---- 调用日志：一处实现，两种读法 ----
+//
+// The per-call accounting lives here once: getUsageData() folds the whole file,
+// and page-data.js folds only the lines appended since its last look (a host
+// that reparsed a 72 MB log on every tick blocked every plugin's requests for
+// 0.3-0.8 s each time, PR #1576 third review). Two implementations would drift,
+// and the page's total would stop matching magpie's own usage page again.
 
-  const addBare = (key, r, inT, outT, cRead, cWrite) => {
-    if (!bareUsage[key]) bareUsage[key] = emptyUsageEntry(r.t);
+// newUsageAcc is the accumulator both readers fill.
+function newUsageAcc() {
+  return {
+    channelUsage: {},
+    bareUsage: {},
+    totalSummary: { requests: 0, inputTokens: 0, outputTokens: 0, cacheRead: 0, totalTokens: 0 }
+  };
+}
+
+// foldUsageRecord counts one line of usage.jsonl, the way magpie counts it
+// (internal/usage/usage.go, Totals.count): a failed call counts (Errors too), a
+// cancelled one counts (Canceled too), only a call handed on to a retry does not.
+function foldUsageRecord(acc, r) {
+  if (!r || typeof r !== 'object') return;
+  if (r.handedOn === true) return;
+
+  const bareUsage = acc.bareUsage;
+  const totalSummary = acc.totalSummary;
+  const addBare = (key, rec, inT, outT, cRead, cWrite) => {
+    if (!bareUsage[key]) bareUsage[key] = emptyUsageEntry(rec.t);
     const e = bareUsage[key];
     e.requests++;
     e.inputTokens += inT;
@@ -526,106 +548,162 @@ function getUsageData() {
     e.cacheRead += cRead;
     e.cacheWrite += cWrite;
     e.totalTokens += inT + outT;
-    if (r.t && (!e.lastAt || r.t > e.lastAt)) e.lastAt = r.t;
+    if (rec.t && (!e.lastAt || rec.t > e.lastAt)) e.lastAt = rec.t;
   };
 
-  const totalSummary = {
-    requests: 0,
-    inputTokens: 0,
-    outputTokens: 0,
-    cacheRead: 0,
-    totalTokens: 0
-  };
+  const isGroupReq = r.req && (r.req.startsWith('group/') || r.req.startsWith('group:'));
+  const actualModel = (r.served && r.served !== 'auto') ? r.served : (r.model !== 'auto' ? r.model : null);
+  const bare = actualModel || (!isGroupReq && r.req ? (r.req.includes('/') ? r.req.split('/')[1] : r.req) : null);
+  const inT = r.in || 0;
+  const outT = r.out || 0;
+  const cRead = r.cache_read || 0;
+  const cWrite = r.cache_write || 0;
+  const sumT = inT + outT;
 
-  if (!fs.existsSync(USAGE_PATH)) {
-    return { channelUsage, bareUsage, totalSummary };
+  // The totals count every call, before any question of what to call it:
+  // a page whose headline said 42,600 while its cards added up to 41,500
+  // was reading two different sums (the cards lost every call whose model
+  // name is unusable, and usage:day lists only twelve models per agent).
+  totalSummary.requests++;
+  totalSummary.inputTokens += inT;
+  totalSummary.outputTokens += outT;
+  totalSummary.cacheRead += cRead;
+  totalSummary.totalTokens += sumT;
+
+  // A call with no usable model name still counts, in a bucket the page
+  // can name: dropping it is what made the two sums differ.
+  const unusable = !bare ||
+    bare === 'unknown' ||
+    bare === 'probe' ||
+    bare === 'auto' ||
+    bare === 'find_tools' ||
+    bare === 'Tavily' ||
+    bare === 'web_fetch' ||
+    bare === 'never-stuck' ||
+    bare.startsWith('group/') ||
+    bare.endsWith('-model');
+  if (unusable) {
+    addBare(UNATTRIBUTED, r, inT, outT, cRead, cWrite);
+    return;
+  }
+  const req = (!isGroupReq && r.req && r.req.includes('/') && !r.req.startsWith('group/'))
+    ? r.req
+    : (r.provider + '/' + bare);
+
+  const channelUsage = acc.channelUsage;
+  if (!channelUsage[req]) {
+    channelUsage[req] = {
+      requests: 0,
+      inputTokens: 0,
+      outputTokens: 0,
+      cacheRead: 0,
+      cacheWrite: 0,
+      totalTokens: 0,
+      lastAt: r.t
+    };
+  }
+  channelUsage[req].requests++;
+  channelUsage[req].inputTokens += inT;
+  channelUsage[req].outputTokens += outT;
+  channelUsage[req].cacheRead += cRead;
+  channelUsage[req].cacheWrite += cWrite;
+  channelUsage[req].totalTokens += sumT;
+  if (r.t && (!channelUsage[req].lastAt || r.t > channelUsage[req].lastAt)) {
+    channelUsage[req].lastAt = r.t;
   }
 
-  try {
-    const content = fs.readFileSync(USAGE_PATH, 'utf8');
-    const lines = content.split('\n');
-    for (const line of lines) {
-      if (!line.trim()) continue;
-      try {
-        const r = JSON.parse(line);
-        // 与 Magpie 自己的账本同口径（internal/usage/usage.go 的 Totals.count）：
-        // 一个请求算一次，失败的算（Errors 另计）、agent 取消的算（Canceled 另计），
-        // 只有失败后被转交重试的那一次（HandedOn）不算。
-        // 以前这里用 isTestOrProbeRequest 剔掉非 200、0 Token、探针请求，于是本插件
-        // 的「历史调用」永远比 Magpie 用量页少一截，同一个词两个数字。
-        if (r.handedOn === true) continue;
+  addBare(bare, r, inT, outT, cRead, cWrite);
+  // 不再把 cleanModelName 的别名也累加一遍：别名和原始名指向同一批调用，
+  // 页面按组求和时会把同族 Token 重复计算（836M 实际只有约 553M）。
+  // 需要按归一化名查找的地方，用 getUsageData 的消费方自行 cleanModelName。
+}
 
-        const isGroupReq = r.req && (r.req.startsWith('group/') || r.req.startsWith('group:'));
-        const actualModel = (r.served && r.served !== 'auto') ? r.served : (r.model !== 'auto' ? r.model : null);
-        const bare = actualModel || (!isGroupReq && r.req ? (r.req.includes('/') ? r.req.split('/')[1] : r.req) : null);
-        const inT = r.in || 0;
-        const outT = r.out || 0;
-        const cRead = r.cache_read || 0;
-        const cWrite = r.cache_write || 0;
-        const sumT = inT + outT;
-
-        // The totals count every call, before any question of what to call it:
-        // a page whose headline said 42,600 while its cards added up to 41,500
-        // was reading two different sums (the cards lost every call whose model
-        // name is unusable, and usage:day lists only twelve models per agent).
-        totalSummary.requests++;
-        totalSummary.inputTokens += inT;
-        totalSummary.outputTokens += outT;
-        totalSummary.cacheRead += cRead;
-        totalSummary.totalTokens += sumT;
-
-        // A call with no usable model name still counts, in a bucket the page
-        // can name: dropping it is what made the two sums differ.
-        const unusable = !bare ||
-          bare === 'unknown' ||
-          bare === 'probe' ||
-          bare === 'auto' ||
-          bare === 'find_tools' ||
-          bare === 'Tavily' ||
-          bare === 'web_fetch' ||
-          bare === 'never-stuck' ||
-          bare.startsWith('group/') ||
-          bare.endsWith('-model');
-        if (unusable) {
-          addBare(UNATTRIBUTED, r, inT, outT, cRead, cWrite);
-          continue;
-        }
-        const req = (!isGroupReq && r.req && r.req.includes('/') && !r.req.startsWith('group/'))
-          ? r.req
-          : (r.provider + '/' + bare);
-
-        if (!channelUsage[req]) {
-          channelUsage[req] = {
-            requests: 0,
-            inputTokens: 0,
-            outputTokens: 0,
-            cacheRead: 0,
-            cacheWrite: 0,
-            totalTokens: 0,
-            lastAt: r.t
-          };
-        }
-        channelUsage[req].requests++;
-        channelUsage[req].inputTokens += inT;
-        channelUsage[req].outputTokens += outT;
-        channelUsage[req].cacheRead += cRead;
-        channelUsage[req].cacheWrite += cWrite;
-        channelUsage[req].totalTokens += sumT;
-        if (r.t && (!channelUsage[req].lastAt || r.t > channelUsage[req].lastAt)) {
-          channelUsage[req].lastAt = r.t;
-        }
-
-        addBare(bare, r, inT, outT, cRead, cWrite);
-        // 不再把 cleanModelName 的别名也累加一遍：别名和原始名指向同一批调用，
-        // 页面按组求和时会把同族 Token 重复计算（836M 实际只有约 553M）。
-        // 需要按归一化名查找的地方，用 getUsageData 的消费方自行 cleanModelName。
-      } catch {}
+// foldUsageText folds every complete line in text. A line that does not parse
+// is skipped: a half-written last line is the caller's to keep, not an error.
+function foldUsageText(acc, text) {
+  const lines = text.split('\n');
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    let rec;
+    try {
+      rec = JSON.parse(line);
+    } catch {
+      continue;
     }
+    foldUsageRecord(acc, rec);
+  }
+}
+
+function getUsageData() {
+  const acc = newUsageAcc();
+  if (!fs.existsSync(USAGE_PATH)) return acc;
+  try {
+    foldUsageText(acc, fs.readFileSync(USAGE_PATH, 'utf8'));
   } catch (e) {
     console.warn('Failed to read usage.jsonl:', e.message);
   }
+  return acc;
+}
 
-  return { channelUsage, bareUsage, totalSummary };
+// readUsageTail folds only the bytes appended to usage.jsonl since the last
+// call, into the accumulator it is given. The host runs on magpie's one shared
+// plugin thread: reparsing the whole log there (72 MB, 150k lines) stalled
+// every plugin's request for 0.3-0.8 s after each tick. Appending is the only
+// thing magpie does to this file, so a byte offset is enough to stay correct;
+// a file that shrank or was replaced is folded again from the start.
+function readUsageTail(acc, state) {
+  const st = state && typeof state === 'object' ? state : { offset: 0, rest: '', ino: '' };
+  let stat;
+  try {
+    stat = fs.statSync(USAGE_PATH);
+  } catch {
+    // no log yet: nothing to add, and nothing to forget
+    st.offset = 0;
+    st.rest = '';
+    st.ino = '';
+    return { acc, read: 0, offset: 0, reset: false };
+  }
+  const ino = String(stat.ino || '') + ':' + String(stat.dev || '');
+  let reset = false;
+  if (ino !== st.ino || stat.size < st.offset) {
+    // a rotated or replaced log: start over, and start the totals over with it
+    acc = newUsageAcc();
+    st.offset = 0;
+    st.rest = '';
+    st.ino = ino;
+    reset = true;
+  }
+  if (stat.size === st.offset) {
+    return { acc, read: 0, offset: st.offset, reset };
+  }
+  const length = stat.size - st.offset;
+  const buf = Buffer.allocUnsafe(length);
+  let fd = null;
+  try {
+    fd = fs.openSync(USAGE_PATH, 'r');
+    let got = 0;
+    while (got < length) {
+      const n = fs.readSync(fd, buf, got, length - got, st.offset + got);
+      if (n <= 0) break;
+      got += n;
+    }
+    const chunk = st.rest + buf.subarray(0, got).toString('utf8');
+    st.offset += got;
+    const cut = chunk.lastIndexOf('\n');
+    const complete = cut >= 0 ? chunk.slice(0, cut + 1) : '';
+    st.rest = cut >= 0 ? chunk.slice(cut + 1) : chunk;
+    foldUsageText(acc, complete);
+    return { acc, read: got, offset: st.offset, reset };
+  } catch (e) {
+    console.warn('Failed to read usage.jsonl:', e.message);
+    return { acc, read: 0, offset: st.offset, reset };
+  } finally {
+    if (fd !== null) {
+      try {
+        fs.closeSync(fd);
+      } catch {}
+    }
+  }
 }
 
 function getCustomPrices() {
@@ -1322,6 +1400,10 @@ module.exports = {
   getPricingStatus,
   getProviderClassifications,
   getUsageData,
+  newUsageAcc,
+  foldUsageRecord,
+  foldUsageText,
+  readUsageTail,
   UNATTRIBUTED,
   matchModel,
   scanAll,

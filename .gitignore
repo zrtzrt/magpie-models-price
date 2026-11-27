@@ -1,4 +1,5 @@
 node_modules/
+*.tgz
 page/models-data.js
 *.log
 page/price-status.js

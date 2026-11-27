@@ -151,10 +151,13 @@ function tick() {
     // What settings.json actually holds for the prices the page saved: the page
     // says 'saved', this says whether magpie bills that price.
     try {
+      // Only priceChanges is a save; customPrices is the stored map, and
+      // verifying against it would report the whole table as "applied" even
+      // when this save changed nothing (same fallback as apply-options.js).
       const options = matcher.readPluginOptions(SELF_ROOT) || {};
       const saved = options.priceChanges && typeof options.priceChanges === 'object'
         ? options.priceChanges
-        : (options.customPrices || {});
+        : {};
       status.verify = matcher.verifyCustomPrices(saved);
       status.appliedToken = applier.readApplied().token || '';
     } catch (error) {

@@ -198,19 +198,19 @@ console.log('7. 测试保存门控：载入不写盘、一次保存只应用一�
       const plain = { s: read(settings), p: read(providers) };
       // 2. Options with a mode but no token (an older version's, or one edited by
       //    hand): still nothing, because the user made no save here.
-      applier.applySavedOptions({ mode: 'api-only', customPrices: custom });
+      applier.applySavedOptions({ mode: 'api-only', priceChanges: custom });
       const noToken = { s: read(settings), p: read(providers) };
       // 3. A save from the page: applied once, at the reload it caused.
-      applier.applySavedOptions({ mode: 'api-only', customPrices: custom, applyToken: 'test-' + 'save-1' });
+      applier.applySavedOptions({ mode: 'api-only', priceChanges: custom, applyToken: 'test-' + 'save-1' });
       const first = read(settings);
       const firstMtime = mtime(settings);
       // 4. Another reload with the same token (magpie starting, a plugin
       //    toggled): nothing is written again.
-      applier.applySavedOptions({ mode: 'api-only', customPrices: custom, applyToken: 'test-' + 'save-1' });
+      applier.applySavedOptions({ mode: 'api-only', priceChanges: custom, applyToken: 'test-' + 'save-1' });
       const sameMtime = mtime(settings) === firstMtime;
       // 5. A second save with a changed price writes again. (Changing only the
       //    display mode must not rewrite the price table.)
-      applier.applySavedOptions({ mode: 'all-equivalent', customPrices: { '*/model-a': { input: 3, output: 4, cache_read: 0, cache_write: 0 } }, applyToken: 'test-' + 'save-2' });
+      applier.applySavedOptions({ mode: 'all-equivalent', priceChanges: { '*/model-a': { input: 3, output: 4, cache_read: 0, cache_write: 0 } }, applyToken: 'test-' + 'save-2' });
       const secondMtime = mtime(settings) > firstMtime;
       process.stdout.write(JSON.stringify({
         untouchedOnLoad: plain.s === before.s && plain.p === before.p,
@@ -255,7 +255,7 @@ console.log('7b. 测试保存只应用页面改动的价格...');
     const settings = ${JSON.stringify(settingsFile)};
     const read = (f) => fs.readFileSync(f, 'utf8');
     const mtime = (f) => fs.statSync(f).mtimeMs;
-    const save = { mode: 'all-equivalent', customPrices: { 'openai/gpt-5-mini': { input: 1.25, output: 10, cache_read: 0.125, cache_write: 0 } }, applyToken: 'test-' + 'save-7b' };
+    const save = { mode: 'all-equivalent', priceChanges: { 'openai/gpt-5-mini': { input: 1.25, output: 10, cache_read: 0.125, cache_write: 0 } }, applyToken: 'test-' + 'save-7b' };
     (async () => {
       applier.applySavedOptions(save);
       const after = JSON.parse(read(settings));
@@ -973,6 +973,126 @@ console.log('19. 测试宿主部分（自动应用保存 / 生成模型列表 / 
   assert.strictEqual(usageValue.totalSummary.requests, 3, '三个请求应各算一次，被转交的那次不算');
   assert.strictEqual(usageValue.unattributed, 1, '未标模型名的调用应落进未归属桶，而不是被丢掉');
   assert.strictEqual(usageValue.bareUsage.__unattributed__.requests, 1, '未归属桶必须能在按模型求和时被找到');
+
+  // A tick must not reparse the whole call log. magpie appends to usage.jsonl on
+  // every gateway request and runs this host on its one shared thread, so a
+  // full read after each request blocked every plugin for 0.3-0.8 s on a 72 MB
+  // log (PR #1576 third review). The tail reader is given the same file twice:
+  // the second look must read the appended bytes only, never the whole file.
+  fs.writeFileSync(path.join(configDir, 'usage.jsonl'), [
+    { t: '2026-11-27T01:00:00Z', provider: 'openai', model: 'gpt-5', served: 'gpt-5', req: 'openai/gpt-5', in: 10, out: 5, status: 200 },
+    { t: '2026-11-27T01:10:00Z', provider: 'openai', model: 'gpt-5', served: 'gpt-5', req: 'openai/gpt-5', in: 20, out: 8, status: 200 },
+    { t: '2026-11-27T01:20:00Z', provider: 'openai', model: 'auto', served: 'auto', req: 'auto', in: 1, out: 1, status: 500 }
+  ].map((r) => JSON.stringify(r)).join('\n') + '\n');
+  const tailProbe = JSON.parse(execFileSync(process.execPath, ['-e', [
+    'const m = require(' + JSON.stringify(path.join(__dirname, 'matcher.js')) + ');',
+    'const fs = require("fs");',
+    'const file = m.paths.usage;',
+    'const acc = m.newUsageAcc();',
+    'const tail = { offset: 0, rest: "", ino: "" };',
+    'const a = m.readUsageTail(acc, tail);',
+    'const before = a.acc.totalSummary.requests;',
+    'fs.appendFileSync(file, JSON.stringify({ t: "2026-11-27T02:00:00Z", provider: "openai", model: "gpt-5", served: "gpt-5", req: "openai/gpt-5", in: 7, out: 3, status: 200 }) + String.fromCharCode(10));',
+    'const b = m.readUsageTail(a.acc, tail);',
+    'const size = fs.statSync(file).size;',
+    'process.stdout.write(JSON.stringify({ before, after: b.acc.totalSummary.requests, read: b.read, size }));'
+  ].join('\n')], {
+    env: { ...process.env, HOME: home, USERPROFILE: home, XDG_CONFIG_HOME: '', XDG_CACHE_HOME: '' },
+    stdio: ['ignore', 'pipe', 'pipe']
+  }).toString());
+  assert.strictEqual(tailProbe.before, 3, '首次读取应折叠整份日志，实际 ' + tailProbe.before);
+  assert.strictEqual(tailProbe.after, 4, '追加一个请求后应只多算这一条，实际 ' + tailProbe.after);
+  assert.ok(
+    tailProbe.read < tailProbe.size,
+    '第二次读取只能读新增的字节，不能整份重读：读了 ' + tailProbe.read + ' / 共 ' + tailProbe.size
+  );
+
+  // The tail reader above proves matcher's reader is incremental; this proves
+  // the host actually uses it. A 30 MB log, one appended line, and the second
+  // write must not re-read the file: this is the 0.3-0.8 s stall the review
+  // measured, so the budget here is deliberately far below it.
+  const bigLog = path.join(configDir, 'usage.jsonl');
+  const big = [];
+  for (let i = 0; i < 60000; i++) {
+    big.push(JSON.stringify({ t: '2026-11-27T00:00:00Z', provider: 'openai', model: 'gpt-5', served: 'gpt-5', req: 'openai/gpt-5', in: 100, out: 20, status: 200 }));
+  }
+  fs.writeFileSync(bigLog, big.join('\n') + '\n');
+  const bigSize = fs.statSync(bigLog).size;
+  const perfProbe = JSON.parse(execFileSync(process.execPath, ['-e', [
+    'const p = require(' + JSON.stringify(path.join(__dirname, 'page-data.js')) + ');',
+    'const fs = require("fs");',
+    'const m = require(' + JSON.stringify(path.join(__dirname, 'matcher.js')) + ');',
+    'const pageDir = process.env.MP_PAGE_DIR;',
+    'const first = p.writeUsageData(process.env.MP_PKG_DIR, { pageDir, force: false });',
+    'fs.appendFileSync(m.paths.usage, JSON.stringify({ t: "2026-11-27T02:00:00Z", provider: "openai", model: "gpt-5", served: "gpt-5", req: "openai/gpt-5", in: 5, out: 1, status: 200 }) + String.fromCharCode(10));',
+    'const t0 = process.hrtime.bigint();',
+    'const second = p.writeUsageData(process.env.MP_PKG_DIR, { pageDir, force: false });',
+    'const ms = Number(process.hrtime.bigint() - t0) / 1e6;',
+    'process.stdout.write(JSON.stringify({ firstRequests: first.requests, secondRequests: second.requests, read: second.read, ms: Math.round(ms), size: fs.statSync(m.paths.usage).size }));'
+  ].join('\n')], {
+    env: { ...process.env, HOME: home, USERPROFILE: home, XDG_CONFIG_HOME: '', XDG_CACHE_HOME: '', MP_PAGE_DIR: pageDir, MP_PKG_DIR: __dirname },
+    stdio: ['ignore', 'pipe', 'pipe']
+  }).toString());
+  assert.ok(perfProbe.firstRequests >= 60000, '首次应折叠整份日志，实际 ' + perfProbe.firstRequests);
+  assert.strictEqual(perfProbe.secondRequests, perfProbe.firstRequests + 1, '追加一个请求后总数应加一');
+  assert.ok(
+    perfProbe.read < 4096,
+    '追加一行后只能读那几个字节，不能重读整份日志：读了 ' + perfProbe.read + ' / 共 ' + bigSize
+  );
+  assert.ok(
+    perfProbe.ms < 100,
+    '追加一行后的 tick 必须远快于全量重读（评审实测 274-816ms），实际 ' + perfProbe.ms + 'ms'
+  );
+  assert.ok(
+    !/matcher\.getUsageData\(/.test(fs.readFileSync(path.join(__dirname, 'page-data.js'), 'utf8')),
+    'page-data 不能再用 getUsageData 全量重读：宿主每 2 秒一轮，会卡住所有插件的请求'
+  );
+
+  // The cached branch must not re-parse the generated script to count its rows:
+  // that was an 840 KB read plus JSON.parse on every 2 s tick, on the same
+  // shared host thread as the log parse above.
+  const cachedCount = JSON.parse(execFileSync(process.execPath, ['-e', [
+    'const p = require(' + JSON.stringify(path.join(__dirname, 'page-data.js')) + ');',
+    'const a = p.writePageData(process.env.MP_PKG_DIR, { pageDir: process.env.MP_PAGE_DIR, force: true });',
+    'const b = p.writePageData(process.env.MP_PKG_DIR, { pageDir: process.env.MP_PAGE_DIR, force: false });',
+    'const c = p.writePageData(process.env.MP_PKG_DIR, { pageDir: process.env.MP_PAGE_DIR, force: false });',
+    'process.stdout.write(JSON.stringify({ a: a.models, b: b.models, bGen: b.generated, c: c.models, cGen: c.generated }));'
+  ].join('\n')], {
+    env: { ...process.env, HOME: home, USERPROFILE: home, XDG_CONFIG_HOME: '', XDG_CACHE_HOME: '', MP_PAGE_DIR: pageDir, MP_PKG_DIR: __dirname },
+    stdio: ['ignore', 'pipe', 'pipe']
+  }).toString());
+  assert.ok(cachedCount.a > 0 && !cachedCount.bGen, '第二次调用应命中缓存，实际 ' + JSON.stringify(cachedCount));
+  assert.strictEqual(cachedCount.b, cachedCount.a, '缓存命中时行数必须与刚生成时一致');
+  assert.strictEqual(cachedCount.c, cachedCount.a, '连续命中缓存也不能把行数读成 0');
+
+  // A save without priceChanges changed no price. The old fallback read the
+  // plugin's stored customPrices as if the save had rewritten all of it, which
+  // put a 1.4.x page's whole table back over magpie's own prices.
+  const staleScript = [
+    'const host = require(' + JSON.stringify(path.join(__dirname, 'index.js')) + ');',
+    'host.__host.tick();',
+    'process.stdout.write("done");'
+  ].join('\n');
+  fs.writeFileSync(path.join(configDir, 'plugins.json'), JSON.stringify({ plugins: [
+    { spec: 'magpie-models-price', options: {
+      customPrices: { 'openai/gpt-5': { input: 1.25, output: 10, cache_read: 0.125, cache_write: 0 } },
+      // a token this machine has not applied yet: the same token would be
+      // skipped as "already applied" and the assertion below would pass
+      // without ever exercising the fallback it is meant to catch
+      applyToken: '{{SECRET_9amx4f2p}}'
+    } }
+  ] }, null, 2));
+  fs.writeFileSync(path.join(configDir, 'settings.json'), JSON.stringify({ theme: 'dark', modelPrices: { 'openai/gpt-5': { input: 0.5, output: 4, cache_read: 0, cache_write: 0 } } }, null, 2));
+  execFileSync(process.execPath, ['-e', staleScript], {
+    env: { ...process.env, HOME: home, USERPROFILE: home, XDG_CONFIG_HOME: '', XDG_CACHE_HOME: '', MAGPIE_MODELS_PRICE_PAGE_DIR: pageDir },
+    stdio: 'ignore'
+  });
+  const kept = JSON.parse(fs.readFileSync(path.join(configDir, 'settings.json'), 'utf8'));
+  assert.deepStrictEqual(
+    kept.modelPrices['openai/gpt-5'],
+    { input: 0.5, output: 4, cache_read: 0, cache_write: 0 },
+    '没有 priceChanges 的保存不得把 customPrices 整表写回：' + JSON.stringify(kept.modelPrices['openai/gpt-5'])
+  );
 
   // 同一个 applyToken 再跑一次不能重复写：宿主每 2 秒一轮，重复应用会不断改写 settings.json
   const before = fs.statSync(path.join(configDir, 'settings.json')).mtimeMs;

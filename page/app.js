@@ -957,18 +957,32 @@
     // 在 /api/usage 里是分开的。原来只查 groupKey 一个键，导致组的调用量与
     // Token 数严重偏低，默认的「用量降序」排序因此完全失真。
     for (const g of map.values()) {
-      const keys = new Set([g.bare]);
+      // 只累加「每个渠道模型自己的原始键」，不能把 cleanModelName 的别名键也加进来：
+      // matcher 为兼容查找会同时写原始键和归一化别名键，两个键指向同一批调用；一起
+      // 求和会让同族 Token 翻倍（实测 836M 实际只有约 553M）。组裸名只在所有渠道
+      // 模型名都匹配不上时兜底一次，避免和单项重复。
+      const keys = new Set();
       for (const it of g.items) {
         const bareItem = getBareModel(it.model);
         keys.add(bareItem);
         keys.add(String(bareItem).toLowerCase());
-        keys.add(cleanModelName(bareItem) || bareItem);
         if (it.id) keys.add(String(it.id).toLowerCase());
       }
       const merged = emptyUsage();
+      let matched = false;
       for (const key of keys) {
         const bu = bareUsageMap[key];
         if (!bu) continue;
+        matched = true;
+        merged.requests += bu.requests || 0;
+        merged.totalTokens += bu.totalTokens || 0;
+        merged.inputTokens += bu.inputTokens || 0;
+        merged.outputTokens += bu.outputTokens || 0;
+        merged.cacheRead += bu.cacheRead || 0;
+        merged.cacheWrite += bu.cacheWrite || 0;
+      }
+      if (!matched && bareUsageMap[g.bare]) {
+        const bu = bareUsageMap[g.bare];
         merged.requests += bu.requests || 0;
         merged.totalTokens += bu.totalTokens || 0;
         merged.inputTokens += bu.inputTokens || 0;
@@ -1015,8 +1029,8 @@
       // 默认「智能排序」：把正在用、能用的排前面。
       // 分档：① 已启用且有调用 → ② 有调用（渠道已停用）→ ③ 已启用但还没调用
       //       → ④ 有价格但未启用 → ⑤ 其他（未定价/未启用）。
-      // 档内按调用次数降序，再按 Token，最后按名称。
-      // 原来 default 与 tokens-desc 走同一分支，两个选项点了没区别，这是真 bug。
+      // 档内按 Token 消耗降序，再按调用次数，最后按名称 —— 用户看到的「836M 排在
+      // 319M 后面」就是档内先比调用次数造成的；默认用量排序应以 Token 为先。
       const rank = (g) => {
         const used = (g.usage?.requests || 0) > 0;
         const enabled = g.items.some((it) => it.enabled);
@@ -1030,12 +1044,12 @@
         const ra = rank(a);
         const rb = rank(b);
         if (ra !== rb) return ra - rb;
-        const cb = b.usage?.requests || 0;
-        const ca = a.usage?.requests || 0;
-        if (cb !== ca) return cb - ca;
         const tb = b.usage?.totalTokens || 0;
         const ta = a.usage?.totalTokens || 0;
         if (tb !== ta) return tb - ta;
+        const cb = b.usage?.requests || 0;
+        const ca = a.usage?.requests || 0;
+        if (cb !== ca) return cb - ca;
         return (a.name || a.bare).localeCompare(b.name || b.bare);
       });
     } else if (sortType === "tokens-desc") {

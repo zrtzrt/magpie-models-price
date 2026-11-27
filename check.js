@@ -544,21 +544,39 @@ console.log('12. 测试模型后缀归类、用量累加与排序...');
   assert.strictEqual(usageGroups[0].usage.requests, 15, '组用量应为两个变体之和（10+5），实际 ' + usageGroups[0].usage.requests);
   assert.strictEqual(usageGroups[0].usage.totalTokens, 1500, '组 Token 应为两个变体之和（1000+500）');
 
-  // 12d. 排序：default 与 tokens-desc 必须是两套不同语义
+  // 12c-2. 原始名和 cleanModelName 别名指向同一批调用时，组用量只能算一次
+  const aliasItems = [
+    { provider: 'trae-cn', model: 'trae-cn/deepseek-v4.1-flash-max', name: 'Alias', matched: { cost: { input: 1, output: 1 } }, enabled: true }
+  ];
+  const aliasCtx = { console, window: { __MAGPIE_BARE_USAGE__: {
+    'deepseek-v4.1-flash-max': { requests: 4, totalTokens: 400, inputTokens: 300, outputTokens: 100, cacheRead: 0, cacheWrite: 0 },
+    // matcher 旧实现会同时写这个别名键；页面不能把它和原始键相加
+    'deepseek-v4-flash-max': { requests: 4, totalTokens: 400, inputTokens: 300, outputTokens: 100, cacheRead: 0, cacheWrite: 0 }
+  } } };
+  vm.createContext(aliasCtx);
+  vm.runInContext(prefix + '\n' + block + '\nthis.__api = { buildModelGroups };', aliasCtx);
+  const aliasGroups = aliasCtx.__api.buildModelGroups(aliasItems);
+  assert.strictEqual(aliasGroups[0].usage.totalTokens, 400, '别名键不能和原始键重复相加，实际 ' + aliasGroups[0].usage.totalTokens);
+
+  // 12d. 排序：default 保留「在用优先」分档，同档按 Token 降序
   const sortable = [
     { bare: 'a', name: 'A', usage: { requests: 100, totalTokens: 100 }, items: [{ enabled: true, matched: { cost: { input: 1, output: 1 } } }] },
     { bare: 'b', name: 'B', usage: { requests: 5, totalTokens: 90000 }, items: [{ enabled: true, matched: { cost: { input: 9, output: 9 } } }] },
-    { bare: 'c', name: 'C', usage: { requests: 0, totalTokens: 0 }, items: [{ enabled: false, matched: { cost: { input: 2, output: 2 } } }] }
+    { bare: 'c', name: 'C', usage: { requests: 0, totalTokens: 0 }, items: [{ enabled: false, matched: { cost: { input: 2, output: 2 } } }] },
+    { bare: 'd', name: 'D', usage: { requests: 0, totalTokens: 1000000 }, items: [{ enabled: false, matched: { cost: { input: 3, output: 3 } } }] }
   ];
   // vm 里创建的数组原型与宿主不同，deepStrictEqual 会因跨 realm 判不等，故用字符串比较
   const order = (list, type) => api.sortGroups(list, type).map((g) => g.bare).join(',');
   const byDefault = order(sortable, 'default');
   const byTokens = order(sortable, 'tokens-desc');
-  assert.strictEqual(byDefault, 'a,b,c', '默认排序应按调用次数降序，实际 ' + byDefault);
-  assert.strictEqual(byTokens, 'b,a,c', 'Token 排序应按 Token 降序，实际 ' + byTokens);
+  assert.strictEqual(byDefault, 'b,a,d,c', '默认排序应先用优先档、档内按 Token 降序，实际 ' + byDefault);
+  assert.strictEqual(byTokens, 'd,b,a,c', 'Token 排序应按 Token 降序，实际 ' + byTokens);
   assert.notStrictEqual(byDefault, byTokens, 'default 与 tokens-desc 不能是同一套排序');
-  assert.strictEqual(order(sortable, 'price-asc'), 'a,c,b', '价格升序应按单价');
-  assert.strictEqual(order(sortable, 'price-desc'), 'b,c,a', '价格降序应按单价');
+  const i18nSrc = fs.readFileSync(path.join(__dirname, 'page/i18n.js'), 'utf8');
+  assert.ok(!i18nSrc.includes('默认用量降序'), '文案不能再说默认是纯用量降序，实际默认还有「在用优先」分档');
+  assert.strictEqual((i18nSrc.match(/sort_default:/g) || []).length, 4, 'sort_default 必须在四种语言里都给出');
+  assert.strictEqual(order(sortable, 'price-asc'), 'a,c,d,b', '价格升序应按单价');
+  assert.strictEqual(order(sortable, 'price-desc'), 'b,d,c,a', '价格降序应按单价');
   console.log('   ✓ 变体归族、正式名不误并、用量累加、三套排序语义均正确');
 }
 

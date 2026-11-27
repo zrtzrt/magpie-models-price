@@ -16258,11 +16258,11 @@
   }
 ];
   g.__MAGPIE_USAGE_SUMMARY__ = {
-  "requests": 35902,
-  "inputTokens": 546784829,
-  "outputTokens": 23676201,
-  "cacheRead": 4606367786,
-  "totalTokens": 570461030
+  "requests": 39881,
+  "inputTokens": 702851744,
+  "outputTokens": 26200253,
+  "cacheRead": 4865059242,
+  "totalTokens": 729051997
 };
   g.__MAGPIE_BARE_USAGE__ = {
   "gpt-6-luna": {
@@ -16275,22 +16275,13 @@
     "lastAt": "2026-11-18T14:30:09.571294+08:00"
   },
   "deepseek-v4.1-flash": {
-    "requests": 7802,
-    "inputTokens": 38492563,
-    "outputTokens": 5216268,
-    "cacheRead": 1346479346,
+    "requests": 9701,
+    "inputTokens": 42870991,
+    "outputTokens": 6355234,
+    "cacheRead": 1583328754,
     "cacheWrite": 0,
-    "totalTokens": 43708831,
-    "lastAt": "2026-11-25T09:34:05.886034+08:00"
-  },
-  "deepseek-v4-flash": {
-    "requests": 15276,
-    "inputTokens": 95802140,
-    "outputTokens": 11738513,
-    "cacheRead": 2675653234,
-    "cacheWrite": 0,
-    "totalTokens": 107540653,
-    "lastAt": "2026-11-26T09:14:28.684637+08:00"
+    "totalTokens": 49226225,
+    "lastAt": "2026-11-27T10:19:10.47053+08:00"
   },
   "gemini-3.8-flash-tiered": {
     "requests": 5383,
@@ -16300,15 +16291,6 @@
     "cacheWrite": 0,
     "totalTokens": 60970592,
     "lastAt": "2026-11-02T14:27:53.129928+08:00"
-  },
-  "gemini-3.8-flash": {
-    "requests": 12243,
-    "inputTokens": 135030460,
-    "outputTokens": 6221314,
-    "cacheRead": 1517619438,
-    "cacheWrite": 0,
-    "totalTokens": 141251774,
-    "lastAt": "2026-11-09T14:11:26.885251+08:00"
   },
   "gemini-3.8-flash-control": {
     "requests": 97,
@@ -16329,24 +16311,15 @@
     "lastAt": "2026-11-09T14:11:26.885251+08:00"
   },
   "deepseek-v4.1-flash-sg": {
-    "requests": 1411,
-    "inputTokens": 12023953,
-    "outputTokens": 1208802,
-    "cacheRead": 233078016,
+    "requests": 1458,
+    "inputTokens": 13180385,
+    "outputTokens": 1296304,
+    "cacheRead": 238640256,
     "cacheWrite": 0,
-    "totalTokens": 13232755,
-    "lastAt": "2026-11-25T16:40:38.148053+08:00"
+    "totalTokens": 14476689,
+    "lastAt": "2026-11-27T09:34:06.591254+08:00"
   },
   "claude-opus-4-6-thinking": {
-    "requests": 41,
-    "inputTokens": 189987,
-    "outputTokens": 18019,
-    "cacheRead": 823281,
-    "cacheWrite": 0,
-    "totalTokens": 208006,
-    "lastAt": "2026-10-28T16:15:45.870654+08:00"
-  },
-  "claude-opus-4-6": {
     "requests": 41,
     "inputTokens": 189987,
     "outputTokens": 18019,
@@ -16365,22 +16338,13 @@
     "lastAt": "2026-11-07T07:37:20.155916+08:00"
   },
   "deepseek-v4.1-flash-max": {
-    "requests": 3267,
-    "inputTokens": 278628407,
-    "outputTokens": 2265669,
+    "requests": 5057,
+    "inputTokens": 427900817,
+    "outputTokens": 3400446,
     "cacheRead": 0,
     "cacheWrite": 0,
-    "totalTokens": 280894076,
-    "lastAt": "2026-11-25T16:42:52.507046+08:00"
-  },
-  "deepseek-v4-flash-max": {
-    "requests": 3289,
-    "inputTokens": 280461436,
-    "outputTokens": 2299959,
-    "cacheRead": 0,
-    "cacheWrite": 0,
-    "totalTokens": 282761395,
-    "lastAt": "2026-11-25T16:42:52.507046+08:00"
+    "totalTokens": 431301263,
+    "lastAt": "2026-11-27T10:00:40.768921+08:00"
   },
   "mimo-v2.6-pro-max": {
     "requests": 2,
@@ -16401,13 +16365,13 @@
     "lastAt": "2026-11-10T11:26:28.583561+08:00"
   },
   "glm-5.3-flash": {
-    "requests": 7,
-    "inputTokens": 10944,
-    "outputTokens": 3740,
-    "cacheRead": 45056,
+    "requests": 2,
+    "inputTokens": 3195,
+    "outputTokens": 1154,
+    "cacheRead": 0,
     "cacheWrite": 0,
-    "totalTokens": 14684,
-    "lastAt": "2026-11-23T12:37:31.172503+08:00"
+    "totalTokens": 4349,
+    "lastAt": "2026-11-11T13:57:12.507484+08:00"
   },
   "hy4": {
     "requests": 205,
@@ -16418,14 +16382,14 @@
     "totalTokens": 2854610,
     "lastAt": "2026-11-18T16:08:27.21675+08:00"
   },
-  "hunyuan-2.0-instruct": {
-    "requests": 271,
-    "inputTokens": 2783072,
-    "outputTokens": 292234,
-    "cacheRead": 45953472,
+  "gemini-3.8-flash": {
+    "requests": 87,
+    "inputTokens": 261436,
+    "outputTokens": 40158,
+    "cacheRead": 35970,
     "cacheWrite": 0,
-    "totalTokens": 3075306,
-    "lastAt": "2026-11-18T16:08:27.21675+08:00"
+    "totalTokens": 301594,
+    "lastAt": "2026-11-07T07:37:11.068083+08:00"
   },
   "deepseek-v4-1-flash-261017": {
     "requests": 5630,
@@ -16482,13 +16446,13 @@
     "lastAt": "2026-11-18T09:13:34.098771+08:00"
   },
   "hy4-flash-free": {
-    "requests": 2594,
-    "inputTokens": 20975483,
-    "outputTokens": 1739041,
-    "cacheRead": 213786304,
+    "requests": 2638,
+    "inputTokens": 21553238,
+    "outputTokens": 1766341,
+    "cacheRead": 216290752,
     "cacheWrite": 0,
-    "totalTokens": 22714524,
-    "lastAt": "2026-11-25T15:06:14.595862+08:00"
+    "totalTokens": 23319579,
+    "lastAt": "2026-11-26T09:26:47.14531+08:00"
   },
   "hy4-flash": {
     "requests": 191,
@@ -16580,34 +16544,16 @@
     "totalTokens": 62608,
     "lastAt": "2026-11-22T09:30:18.234249+08:00"
   },
-  "longcat-2.5": {
-    "requests": 13,
-    "inputTokens": 42398,
-    "outputTokens": 20210,
-    "cacheRead": 4096,
-    "cacheWrite": 0,
-    "totalTokens": 62608,
-    "lastAt": "2026-11-22T09:30:18.234249+08:00"
-  },
   "deepseek-v4.1-flash-free": {
-    "requests": 229,
-    "inputTokens": 1772977,
-    "outputTokens": 142494,
-    "cacheRead": 13472000,
+    "requests": 428,
+    "inputTokens": 2454867,
+    "outputTokens": 278001,
+    "cacheRead": 27247360,
     "cacheWrite": 0,
-    "totalTokens": 1915471,
-    "lastAt": "2026-11-26T09:14:28.684637+08:00"
+    "totalTokens": 2732868,
+    "lastAt": "2026-11-27T09:24:08.601331+08:00"
   },
   "mimo-v2.6-flash-free": {
-    "requests": 7,
-    "inputTokens": 5277,
-    "outputTokens": 17218,
-    "cacheRead": 7680,
-    "cacheWrite": 0,
-    "totalTokens": 22495,
-    "lastAt": "2026-11-24T13:23:02.557021+08:00"
-  },
-  "mimo-v2.6-flash": {
     "requests": 7,
     "inputTokens": 5277,
     "outputTokens": 17218,

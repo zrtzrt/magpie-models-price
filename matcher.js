@@ -621,10 +621,9 @@ function getUsageData() {
         };
 
         updateBare(bare);
-        const cleaned = cleanModelName(bare);
-        if (cleaned && cleaned !== bare) {
-          updateBare(cleaned);
-        }
+        // 不再把 cleanModelName 的别名也累加一遍：别名和原始名指向同一批调用，
+        // 页面按组求和时会把同族 Token 重复计算（836M 实际只有约 553M）。
+        // 需要按归一化名查找的地方，用 getUsageData 的消费方自行 cleanModelName。
       } catch {}
     }
   } catch (e) {

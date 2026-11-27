@@ -24,9 +24,14 @@
     }, 2500);
   }
 
-  // The model list is built only from magpie.read("providers:list"): the
-  // package must not carry a snapshot of the author's machine (PR #1576 review).
-  let rawModels = [];
+  // The page cannot read files (its CSP is connect-src 'none') and
+  // providers:list carries provider ids and names only. The model rows come
+  // from page/models-data.js, generated locally by the plugin host on load
+  // (page-data.js): not a build-time snapshot, and never shipped in the npm
+  // package (PR #1576 review). An empty file still leaves the page usable.
+  let rawModels = Array.isArray(window.__MAGPIE_MODELS_DATA__)
+    ? window.__MAGPIE_MODELS_DATA__.map(normalizeModelItem).filter(Boolean)
+    : [];
   const liveProviderNames = new Map();
   let liveProviders = [];
   let isRefreshing = false;
@@ -194,6 +199,33 @@
   function getBareModel(fullName) {
     if (!fullName) return "";
     return fullName.includes("/") ? fullName.split("/").slice(1).join("/") : fullName;
+  }
+
+  // normalizeModelItem turns one row of the generated data (or of a future
+  // providers:list that carries models) into the shape renderList expects.
+  // Missing fields fall back to values that keep the row visible and priced.
+  function normalizeModelItem(item) {
+    if (!item || !item.provider || !item.model) return null;
+    const model = String(item.model);
+    const id = item.id || getBareModel(model);
+    const price = item.matched && item.matched.cost ? item.matched.cost : null;
+    return {
+      provider: String(item.provider),
+      providerName: item.providerName || item.provider,
+      providerIcon: item.providerIcon || null,
+      providerKind: item.providerKind || "subscription",
+      model,
+      id,
+      name: item.name || id,
+      enabled: item.enabled !== false,
+      providerOff: !!item.providerOff,
+      modelOn: item.modelOn !== false,
+      free: !!item.free || /(^|-)free($|-)/i.test(getBareModel(model)),
+      listPrice: item.listPrice || null,
+      currentPrice: item.currentPrice || (price ? `List: $${price.input}/${price.output}` : "未定价"),
+      matched: item.matched || null,
+      isUnpriced: item.isUnpriced !== undefined ? !!item.isUnpriced : !price
+    };
   }
 
   // 官方价目表里真正按「峰谷/分时」计价的是 DeepSeek 系模型：
@@ -539,20 +571,59 @@
   }
 
   // 2.1 动态合并 Magpie 实时供应商列表 (Live Providers & Unpriced Channels Sync)
-  // Build the full model list from the host's live provider list only. Each
-  // model carries the price magpie itself resolved (m.price or m.list); no
-  // build-time snapshot of anyone's machine is involved (PR #1576 review).
+  // A page's providers:list gives only {id,name} (Magpie page reads carry no
+  // models). The rows come from page/models-data.js; this only applies the live
+  // names and the provider/model off state to them. A future Magpie whose
+  // providers:list does carry models is still honoured: then the rows are built
+  // from that list instead, so the page never depends on a build-time snapshot.
   function mergeLiveProviders(liveList) {
     if (!Array.isArray(liveList)) return;
     liveProviders = liveList;
+    const byId = new Map();
+    for (const p of liveList) {
+      if (!p || !p.id) continue;
+      byId.set(String(p.id), p);
+      liveProviderNames.set(p.id, p.name || p.id);
+    }
 
+    const hasModelRows = liveList.some((p) => p && Array.isArray(p.models) && p.models.length > 0);
+    if (hasModelRows) {
+      rawModels = modelsFromLiveProviders(liveList);
+    } else {
+      for (const item of rawModels) {
+        const p = byId.get(String(item.provider));
+        if (!p) {
+          // A provider that is no longer in magpie stays visible with its last
+          // known price, but is marked off like a provider switched off.
+          item.providerOff = true;
+          item.enabled = false;
+          continue;
+        }
+        item.providerName = p.name || item.providerName;
+        // providers:list on a page carries no off flag; the generated rows
+        // already know their enabled state, so only a live list that really
+        // says off true/false may override it.
+        if (typeof p.off === "boolean") {
+          item.providerOff = p.off;
+          item.modelOn = item.modelOn !== false;
+          item.enabled = !p.off && item.modelOn;
+        } else {
+          item.enabled = item.enabled !== false;
+        }
+      }
+    }
+
+    // 免费渠道按同族付费模型的市场价展示（all-equivalent 语义）
+    applyFreeEquivalentPricingForRows();
+  }
+
+  function modelsFromLiveProviders(liveList) {
     const models = [];
     const seen = new Set();
     for (const p of liveList) {
       if (!p || !p.id) continue;
       const pId = p.id;
       const pName = p.name || pId;
-      liveProviderNames.set(pId, pName);
       const isProviderOn = !p.off;
       const pKind = providerKindOf(p);
       const pModels = Array.isArray(p.models) ? p.models : [];
@@ -560,24 +631,25 @@
         const mId = typeof m === "object" ? m.id : m;
         if (!mId) continue;
         const mName = (typeof m === "object" && m.name) ? m.name : mId;
-        const fullName = `${pId}/${mId}`;
+        const fullName = pId + "/" + mId;
         if (seen.has(fullName)) continue;
         seen.add(fullName);
         const isModelOn = typeof m === "object" ? m.on !== false : true;
         const bare = getBareModel(fullName);
         const isFreeModel = (typeof m === "object" && m.free) || /(^|-)free($|-)/i.test(bare);
-        const listPrice = (typeof m === "object" && (m.list || m.price)) || null;
-        const matched = listPrice ? {
+        const listPrice = (typeof m === "object" && (m.list || m.price || m.cost)) || null;
+        const priceCost = listPrice ? {
+          input: Number(listPrice.input) || 0,
+          output: Number(listPrice.output) || 0,
+          cache_read: Number(listPrice.cache_read ?? listPrice.cache?.read) || 0,
+          cache_write: Number(listPrice.cache_write ?? listPrice.cache?.write) || 0,
+          ...(Array.isArray(listPrice.tiers) && listPrice.tiers.length ? { tiers: listPrice.tiers } : {})
+        } : null;
+        const matched = priceCost ? {
           provider: pId,
           model: mId,
           name: mName,
-          cost: {
-            input: Number(listPrice.input) || 0,
-            output: Number(listPrice.output) || 0,
-            cache_read: Number(listPrice.cache_read) || 0,
-            cache_write: Number(listPrice.cache_write) || 0,
-            ...(Array.isArray(listPrice.tiers) && listPrice.tiers.length ? { tiers: listPrice.tiers } : {})
-          }
+          cost: priceCost
         } : null;
         models.push({
           provider: pId,
@@ -594,7 +666,7 @@
           listPrice,
           currentPrice: matched
             ? (matched.cost.input || matched.cost.output
-                ? `List: $${matched.cost.input}/$${matched.cost.output}`
+                ? "List: $" + matched.cost.input + "/$" + matched.cost.output
                 : "Free model ($0.00)")
             : "未定价",
           matched,
@@ -602,9 +674,11 @@
         });
       }
     }
-    rawModels = models;
+    return models;
+  }
 
-    // 免费渠道按同族付费模型的市场价展示（all-equivalent 语义）
+  // Rebuild the free-model equivalent prices over rawModels.
+  function applyFreeEquivalentPricingForRows() {
     const barePriceIndex = new Map();
     const paidPriceIndex = new Map();
     for (const item of rawModels) {

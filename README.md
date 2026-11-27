@@ -1,6 +1,6 @@
 # 价格 (Magpie Models Price)
 
-一个 Magpie 页面插件，读取 Magpie 返回的模型与官方公价（来源为 [models.dev](https://models.dev)）以及本地账单/用量系统（`usage.jsonl`），按模型自动聚合展示所有渠道价格，支持自定义设价、已启用筛选、多维排序与真实 API 花费口径切换。页面只通过 `magpie.read("providers:list")` 构建列表，不携带任何构建时的本机数据快照。
+一个 Magpie 页面插件，读取 Magpie 返回的模型与官方公价（来源为 [models.dev](https://models.dev)）以及本地账单/用量系统（`usage.jsonl`），按模型自动聚合展示所有渠道价格，支持自定义设价、已启用筛选、多维排序与真实 API 花费口径切换。页面模型清单由插件在**本机运行时**生成到 `page/models-data.js`（读取 Magpie 的 `providers-state.json` 与 models.dev 公共目录），该文件不随 npm 包发布；`magpie.read("providers:list")` 只用于合并供应商名称与启用状态。
 
 ![价格界面](docs/images/screenshot.png)
 
@@ -25,7 +25,7 @@
   - 支持指定特定渠道独立调价（如 `antigravity/claude-sonnet-4-6`）；
   - 支持全网通配调价（如 `*/claude-sonnet-4-6`）。
 - **原子写入与账单联动**：设定以临时文件 + rename 原子写入 `settings.json`，只合并 `modelPrices` 键，不覆盖其他设置，也不会让 Magpie 读到半截文件；用量看板、会话统计与托盘花费在同一份价格上重算（保存即落盘）。
-- **只在保存时写，且只写一次**：插件加载本身不写任何文件，也没有后台定时器；只有页面里的一次保存会写 `settings.json`。保存以 `applyToken` 标记，插件在「保存引起的插件重载」里应用一次，之后的重载（Magpie 启动、开关插件）一律跳过。没有 token 的选项（旧版遗留、手改 `plugins.json`）按「什么都不改」处理，绝不回落到某个默认模式覆盖用户已选口径。
+- **只在保存时写，且只写一次**：插件加载只生成本机页面数据文件 `page/models-data.js`（运行时产物，不提交、不打进 npm 包），不写任何 Magpie 配置，也没有后台定时器；只有页面里的一次保存会写 `settings.json`。保存以 `applyToken` 标记，插件在「保存引起的插件重载」里应用一次，之后的重载（Magpie 启动、开关插件）一律跳过。没有 token 的选项（旧版遗留、手改 `plugins.json`）按「什么都不改」处理，绝不回落到某个默认模式覆盖用户已选口径。
 - **流式响应式布局**：完美适配窄屏与侧边栏极窄窗口，控件与内容流式自适应排版。
 
 ## 配置目录与本地服务
@@ -49,7 +49,7 @@
 ## 开发与测试
 
 ```bash
-node check.js      # 17 组自测，覆盖目录解析、首次写入、保存只写改动、服务边界与页面 CSP 规范
+node check.js      # 21 组自测，覆盖目录解析、首次写入、保存只写改动、服务边界与页面 CSP 规范
 ```
 
 CI 在 ubuntu / macOS / Windows 三平台 × Node 20/22/24 上跑同一套测试，并检查打包产物不含任何本地配置。

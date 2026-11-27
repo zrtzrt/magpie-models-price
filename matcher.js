@@ -655,17 +655,46 @@ function isOfficialMaker(providerId, hints = []) {
   return OFFICIAL_MAKERS.some(m => p === m || p.startsWith(m + '-') || p.endsWith('-' + m));
 }
 
+// matchModel is asked once per model in scanAll (378 on a normal machine),
+// against a models.dev catalog of ~9,600 entries. Cleaning every catalog name
+// three times for each model made scanAll take 7 seconds; the index is built
+// once per catalog and reused. A WeakMap keeps the arrays it was built from
+// from being held after a caller drops them.
+const catalogIndexes = new WeakMap();
+function catalogIndex(catalog) {
+  let index = catalogIndexes.get(catalog);
+  if (index) return index;
+  const byLower = new Map();
+  const byClean = new Map();
+  const items = [];
+  for (const entry of catalog) {
+    const lower = entry.model.toLowerCase();
+    const clean = cleanModelName(entry.model);
+    items.push({ entry, lower, clean });
+    let list = byLower.get(lower);
+    if (!list) byLower.set(lower, (list = []));
+    list.push(entry);
+    list = byClean.get(clean);
+    if (!list) byClean.set(clean, (list = []));
+    list.push(entry);
+  }
+  index = { byLower, byClean, items };
+  catalogIndexes.set(catalog, index);
+  return index;
+}
+
 function matchModel(target, catalog) {
   const bare = (target.includes('/') ? target.split('/')[1] : target).toLowerCase();
   const cleaned = cleanModelName(target);
   const hints = getVendorHints(target);
+  const index = catalogIndex(catalog);
 
-  const exactCandidates = catalog.filter(c => c.model.toLowerCase() === bare);
-  const cleanedCandidates = catalog.filter(c => cleanModelName(c.model) === cleaned);
-  const fuzzyCandidates = catalog.filter(c => {
-    const cClean = cleanModelName(c.model);
-    return c.model.toLowerCase().includes(cleaned) || cleaned.includes(cClean);
-  });
+  const exactCandidates = index.byLower.get(bare) || [];
+  const cleanedCandidates = index.byClean.get(cleaned) || [];
+  const fuzzyCandidates = [];
+  for (const item of index.items) {
+    if (item.lower.includes(cleaned) || cleaned.includes(item.clean)) fuzzyCandidates.push(item.entry);
+  }
 
   function pickBest(list) {
     if (!list.length) return null;
@@ -1310,6 +1339,9 @@ module.exports = {
     cacheDir: CACHE_DIR,
     settings: SETTINGS_PATH,
     cacheModels: CACHE_MODELS_PATH,
-    providersState: PROVIDERS_STATE_PATH
+    models: CACHE_MODELS_PATH,
+    providersState: PROVIDERS_STATE_PATH,
+    providersConfig: PROVIDERS_CONFIG_PATH,
+    usage: USAGE_PATH
   }
 };

@@ -12,7 +12,9 @@ console.log('🧪 开始运行自动化单元测试...');
 // folder (as they do in magpie's appdir), and a CI runner or a developer with
 // XDG set would otherwise have the tests read and write their real config.
 function envAt(home) {
-  return { ...process.env, HOME: home, USERPROFILE: home, XDG_CONFIG_HOME: '', XDG_CACHE_HOME: '' };
+  // Loading index.js in a test must not write page/models-data.js into the
+  // checkout (the plugin host builds it on the user's machine, not here).
+  return { ...process.env, HOME: home, USERPROFILE: home, XDG_CONFIG_HOME: '', XDG_CACHE_HOME: '', MAGPIE_MODELS_PRICE_NO_PAGE_DATA: '1' };
 }
 
 // 1. 验证 catalog 加载
@@ -632,12 +634,14 @@ function testApiFilterAndPeakDefaults() {
   assert.strictEqual(matcher.providerKindOf({ id: 'workbuddy', key: '' }), 'subscription');
   assert.strictEqual(matcher.providerKindOf({ id: 'opencode-zen', key: 'sk-test' }), 'api');
 
-  // The package must not carry a snapshot of the author's machine any more:
-  // the page builds its list from magpie.read("providers:list") alone.
-  assert.ok(!fs.existsSync(path.join(__dirname, 'page/models-data.js')), 'page/models-data.js 必须从仓库与包中移除');
+  // The package must not carry a snapshot of the author's machine: the model
+  // rows are generated locally at runtime by page-data.js and must never be
+  // committed or packed. The generator itself ships; its output does not.
   assert.ok(!fs.existsSync(path.join(__dirname, 'page/generate-data.js')), 'page/generate-data.js 必须从仓库与包中移除');
   const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
   assert.ok(!/models-data|generate-data/.test(JSON.stringify(manifest.files || [])), 'package.json files 不得包含本机数据快照或生成器');
+  const ignore = fs.readFileSync(path.join(__dirname, '.gitignore'), 'utf8').split(/\r?\n/);
+  assert.ok(ignore.includes('page/models-data.js'), 'page/models-data.js 是运行时产物，必须写进 .gitignore');
   const iconFiles = fs.readdirSync(path.join(__dirname, 'page/icons'));
   assert.ok(iconFiles.length <= 2, 'page/icons 只能携带页面实际绘制的图标，实际 ' + iconFiles.length);
 
@@ -770,6 +774,42 @@ console.log('15. 测试配置目录解析与首次运行写入...');
   console.log('   ✓ XDG 优先、USERPROFILE 兜底、首次运行自建目录均正确');
 }
 
+// 17. 运行时页面数据生成器：只生成模型清单，绝不写 settings.json
+console.log('17. 测试页面模型数据生成器（运行时产物、只读配置）...');
+{
+  const os = require('os');
+  const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'magpie-price-page-'));
+  const tmpPkg = fs.mkdtempSync(path.join(os.tmpdir(), 'magpie-price-page-pkg-'));
+  fs.mkdirSync(path.join(tmpHome, '.cache', 'magpie'), { recursive: true });
+  fs.mkdirSync(path.join(tmpHome, '.config', 'magpie'), { recursive: true });
+  fs.mkdirSync(path.join(tmpPkg, 'page'), { recursive: true });
+  fs.writeFileSync(path.join(tmpHome, '.cache', 'magpie', 'providers-state.json'), JSON.stringify({
+    version: 1,
+    providers: { providers: [
+      { id: 'workbuddy', name: 'WorkBuddy', billingKind: 'plan', account: { plan: 'Pro' }, models: [{ id: 'deepseek-v4.1-flash', name: 'DeepSeek V4.1 Flash' }] },
+      { id: 'opencode-zen', name: 'OpenCode Zen', billingKind: 'payg', key: { set: true }, models: [{ id: 'deepseek-v4.1-flash' }] }
+    ] }
+  }));
+  const settingsBefore = JSON.stringify({ modelPrices: { 'keep/me': { input: 1, output: 2, cache_read: 0, cache_write: 0 } } }, null, 2);
+  fs.writeFileSync(path.join(tmpHome, '.config', 'magpie', 'settings.json'), settingsBefore);
+  const run = () => execFileSync(process.execPath, ['-e',
+    'const p = require(' + JSON.stringify(path.join(__dirname, 'page-data.js')) + ');' +
+    'const r = p.writePageData(' + JSON.stringify(tmpPkg) + ', { force: false });' +
+    'console.log(JSON.stringify(r));'
+  ], { env: envAt(tmpHome), encoding: 'utf8' }).trim().split('\n').pop();
+  const first = JSON.parse(run());
+  assert.ok(first.ok && first.generated, '首次生成应成功并真正写文件，实际 ' + JSON.stringify(first));
+  assert.ok(first.models >= 2, '应生成两个渠道的模型，实际 ' + first.models);
+  const generated = fs.readFileSync(path.join(tmpPkg, 'page', 'models-data.js'), 'utf8');
+  assert.ok(generated.includes('__MAGPIE_MODELS_DATA__'), '生成文件应导出页面读取的全局数据');
+  assert.ok(generated.includes('workbuddy/deepseek-v4.1-flash'), '生成文件应包含用户渠道的模型');
+  assert.strictEqual(fs.readFileSync(path.join(tmpHome, '.config', 'magpie', 'settings.json'), 'utf8'), settingsBefore, '生成页面数据不能改写 settings.json');
+  const second = JSON.parse(run());
+  assert.ok(second.ok && !second.generated, '未过期的数据应直接复用，实际 ' + JSON.stringify(second));
+  fs.rmSync(tmpHome, { recursive: true, force: true });
+  fs.rmSync(tmpPkg, { recursive: true, force: true });
+  console.log('   ✓ 生成器包含渠道模型、不写价格、可复用缓存');
+}
 // 16. 服务只绑回环、CORS 只回显本地来源、静态文件不越出 public/
 console.log('16. 测试本地服务边界（回环绑定 / CORS / 静态目录）...');
 {

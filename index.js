@@ -2,6 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const matcher = require('./matcher');
+const pageData = require('./page-data');
 
 const MODES = new Set(['api-only', 'all-equivalent']);
 
@@ -96,12 +97,23 @@ function applySavedOptions(options) {
 
 // OpenCode / Magpie Plugin export.
 //
-// Loading this plugin writes nothing. magpie loads it on every start, and the
-// only write it makes is the save the user made in the page, applied once at
-// the reload that save caused. No timer runs, and no price the user did not set
-// is written: the first-run DeepSeek peak windows this used to add to
-// providers.json on its own are gone.
+// Loading this plugin writes one local artifact and no Magpie settings: the
+// model list page/models-data.js (page-data.js), generated from this machine's
+// providers and the public models.dev catalog because a sandboxed page can
+// read neither files nor the network, and providers:list carries no models.
+// It is runtime-only: not tracked in git and not shipped in the npm package.
+// The only settings write remains the save the user made in the page, applied
+// once at the reload that save caused. No timer runs, and no price the user did
+// not set is written.
 async function MagpieModelPricesPlugin(input, options) {
+  if (process.env.MAGPIE_MODELS_PRICE_NO_PAGE_DATA !== '1') {
+    try {
+      const built = pageData.writePageData(__dirname);
+      if (!built.ok) console.warn('Could not build the page model list: ' + built.error);
+    } catch (err) {
+      console.warn('Could not build the page model list: ' + err.message);
+    }
+  }
   try {
     const result = applySavedOptions(options);
     if (result.applied && !result.error) {
@@ -257,6 +269,17 @@ if (require.main === module) {
       return;
     }
 
+    if (command === 'page-data') {
+      const built = pageData.writePageData(__dirname, { force: true });
+      if (!built.ok) {
+        console.error('✗ 生成页面数据失败: ' + built.error);
+        process.exitCode = 1;
+        return;
+      }
+      console.log(`✓ page/models-data.js 已生成：${built.models} 个模型，${built.ms}ms`);
+      return;
+    }
+
     if (command === 'ui' || command === 'serve') {
       const { startServer } = require('./server');
       const portArg = args.find(a => a.startsWith('--port='));
@@ -266,7 +289,7 @@ if (require.main === module) {
     }
 
     console.log('未知命令: ' + command);
-    console.log('支持的命令: list, mode, sync, set, reset, ui');
+    console.log('支持的命令: list, mode, sync, set, reset, page-data, ui');
   }
 
   main().catch(err => {

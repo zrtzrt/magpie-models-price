@@ -208,8 +208,9 @@ console.log('7. 测试保存门控：载入不写盘、一次保存只应用一�
       //    toggled): nothing is written again.
       await plugin({}, { mode: 'api-only', customPrices: custom, applyToken: 'save-1' });
       const sameMtime = mtime(settings) === firstMtime;
-      // 5. A second save writes again.
-      await plugin({}, { mode: 'all-equivalent', customPrices: custom, applyToken: 'save-2' });
+      // 5. A second save with a changed price writes again. (Changing only the
+      //    display mode must not rewrite the price table.)
+      await plugin({}, { mode: 'all-equivalent', customPrices: { '*/model-a': { input: 3, output: 4, cache_read: 0, cache_write: 0 } }, applyToken: 'save-2' });
       const secondMtime = mtime(settings) > firstMtime;
       process.stdout.write(JSON.stringify({
         untouchedOnLoad: plain.s === before.s && plain.p === before.p,
@@ -231,6 +232,49 @@ console.log('7. 测试保存门控：载入不写盘、一次保存只应用一�
   assert(out.secondMtime, '新的 applyToken 应再次应用');
   fs.rmSync(home, { recursive: true, force: true });
   console.log('   ✓ 载入零写盘、保存只应用一次、未设置项不被改写');
+}
+
+// 7b. 页面保存只写用户改动的键：settings.json 里用户自己设置的价格不能被覆盖，
+// 页面没动过的 provider 不能被添加 (PR #1576 review)。
+console.log('7b. 测试保存只应用页面改动的价格...');
+{
+  const os = require('os');
+  const { execFileSync } = require('child_process');
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'magpie-models-price-home-'));
+  const settingsDir = path.join(home, '.config/magpie');
+  const cacheDir = path.join(home, '.cache/magpie');
+  fs.mkdirSync(settingsDir, { recursive: true });
+  fs.mkdirSync(cacheDir, { recursive: true });
+  const settingsFile = path.join(settingsDir, 'settings.json');
+  const userPrice = { input: 0.5, output: 4, cache_read: 0.05, cache_write: 0 };
+  fs.writeFileSync(settingsFile, JSON.stringify({ theme: 'dark', modelPrices: { 'openai/gpt-5': userPrice } }, null, 2));
+  // No providers.json on purpose: a price-only save must still record its token.
+  const script = `
+    const fs = require('fs');
+    const plugin = require(${JSON.stringify(path.join(__dirname, 'index.js'))});
+    const settings = ${JSON.stringify(settingsFile)};
+    const read = (f) => fs.readFileSync(f, 'utf8');
+    const mtime = (f) => fs.statSync(f).mtimeMs;
+    const save = { mode: 'all-equivalent', customPrices: { 'openai/gpt-5-mini': { input: 1.25, output: 10, cache_read: 0.125, cache_write: 0 } }, applyToken: 'save-review-1' };
+    (async () => {
+      await plugin({}, save);
+      const after = JSON.parse(read(settings));
+      const firstMtime = mtime(settings);
+      await plugin({}, save);
+      process.stdout.write(JSON.stringify({
+        prices: after.modelPrices,
+        sameMtime: mtime(settings) === firstMtime
+      }));
+      process.exit(0);
+    })().catch((e) => { console.error(e); process.exit(1); });
+  `;
+  const out = JSON.parse(execFileSync(process.execPath, ['-e', script], { env: envAt(home) }).toString().trim().split('\n').pop());
+  assert.deepStrictEqual(out.prices['openai/gpt-5'], userPrice, '用户自己在 settings.json 设的价格不能被页面保存覆盖');
+  assert.deepStrictEqual(out.prices['openai/gpt-5-mini'], { input: 1.25, output: 10, cache_read: 0.125, cache_write: 0 }, '页面改动的价格应写入');
+  assert.deepStrictEqual(Object.keys(out.prices).sort(), ['openai/gpt-5', 'openai/gpt-5-mini'], '不得添加用户没有的 provider 或模型键');
+  assert.ok(out.sameMtime, '没有 providers.json 时价格保存也要记录 applyToken，重载不能再次应用');
+  fs.rmSync(home, { recursive: true, force: true });
+  console.log('   ✓ 用户价格不被覆盖、无 provider 不添加、无 providers.json 也只应用一次');
 }
 
 // 8. 页面模型级峰谷（从 page/app.js 里切出真实代码执行，避免复制一份逻辑）
@@ -588,11 +632,14 @@ function testApiFilterAndPeakDefaults() {
   assert.strictEqual(matcher.providerKindOf({ id: 'workbuddy', key: '' }), 'subscription');
   assert.strictEqual(matcher.providerKindOf({ id: 'opencode-zen', key: 'sk-test' }), 'api');
 
-  const dataText = fs.readFileSync(path.join(__dirname, 'page/models-data.js'), 'utf8');
-  const data = JSON.parse(dataText.slice(dataText.indexOf('['), dataText.lastIndexOf(']') + 1));
-  const apiProviders = [...new Set(data.filter((x) => x.providerKind === 'api').map((x) => x.provider))].sort();
-  assert.deepStrictEqual(apiProviders, ['opencode-zen', 'opencode-zen-2'], '静态数据只能把 OpenCode 标为 API，实际 ' + apiProviders.join(','));
-  assert.ok(data.some((x) => x.providerKind === 'subscription'), '静态数据必须保留订阅渠道');
+  // The package must not carry a snapshot of the author's machine any more:
+  // the page builds its list from magpie.read("providers:list") alone.
+  assert.ok(!fs.existsSync(path.join(__dirname, 'page/models-data.js')), 'page/models-data.js 必须从仓库与包中移除');
+  assert.ok(!fs.existsSync(path.join(__dirname, 'page/generate-data.js')), 'page/generate-data.js 必须从仓库与包中移除');
+  const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
+  assert.ok(!/models-data|generate-data/.test(JSON.stringify(manifest.files || [])), 'package.json files 不得包含本机数据快照或生成器');
+  const iconFiles = fs.readdirSync(path.join(__dirname, 'page/icons'));
+  assert.ok(iconFiles.length <= 2, 'page/icons 只能携带页面实际绘制的图标，实际 ' + iconFiles.length);
 
   // 峰谷目标读的是用户机器上的 Magpie 配置（providers.json / providers-state.json），
   // 直接断言会把「本机有配置」当成通过条件，CI 上必然失败。这里造一份临时配置，
@@ -643,10 +690,8 @@ console.log('14. 测试实时用量合并与 api-only 统计口径...');
   const end = app.indexOf('// 2.3 核心数据刷新控制器');
   assert(start > 0 && end > start, 'page/app.js 里应能找到用量归一化代码块');
   const block = app.slice(start, end);
-  const win = {
-    __MAGPIE_USAGE_SUMMARY__: { requests: 35902, totalTokens: 570461030, inputTokens: 546784829, outputTokens: 23676201, cacheRead: 4606367786 },
-    __MAGPIE_BARE_USAGE__: { 'deepseek-v4.1-flash': { requests: 7802, totalTokens: 43408831, inputTokens: 38492563, outputTokens: 5216268, cacheRead: 0 } }
-  };
+  // No build-time snapshot is loaded now: start from an empty page state.
+  const win = {};
   const ctx = { console, window: win };
   vm.createContext(ctx);
   vm.runInContext('let usagePeriod = "all";\n' + block + '\nthis.__api = { mergeLiveUsage, period: () => usagePeriod };', ctx);
@@ -676,7 +721,7 @@ console.log('14. 测试实时用量合并与 api-only 统计口径...');
 
   const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
   assert.ok((manifest.magpie.permissions || []).includes('usage:day'), 'manifest 必须声明 usage:day 权限');
-  console.log('   ✓ 宿主全量用量覆盖静态快照、30d 不回退、api-only 统计口径正确');
+  console.log('   ✓ 宿主全量用量覆盖初始状态、30d 不回退、api-only 统计口径正确');
 }
 
 // 15. 目录口径：与 magpie 的 appdir 一致（XDG_* 优先，其次主目录），且写盘自建目录

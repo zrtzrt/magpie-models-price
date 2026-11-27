@@ -1,6 +1,6 @@
 # 价格 (Magpie Models Price)
 
-一个 Magpie 页面插件，基于 [models.dev](https://models.dev) 官方公价数据库与 Magpie 本地账单/用量系统（`usage.jsonl`），按模型自动聚合展示所有渠道价格，支持官方公价匹配、自定义设价、已启用筛选、多维排序与真实 API 花费口径切换。
+一个 Magpie 页面插件，读取 Magpie 返回的模型与官方公价（来源为 [models.dev](https://models.dev)）以及本地账单/用量系统（`usage.jsonl`），按模型自动聚合展示所有渠道价格，支持自定义设价、已启用筛选、多维排序与真实 API 花费口径切换。页面只通过 `magpie.read("providers:list")` 构建列表，不携带任何构建时的本机数据快照。
 
 ![价格界面](docs/images/screenshot.png)
 
@@ -44,12 +44,12 @@
 
 独立 Web UI 需要手动运行 `node index.js ui`，默认只监听 `127.0.0.1:3456`，可用 `PORT` / `HOST` 覆盖。它会改写 `settings.json` 与 `providers.json`，所以每个请求都过三道闸：Host 必须是回环名字（防 DNS rebinding）、带 `Origin` 的必须是本地来源、写请求必须是 `application/json`（跨站表单发不出这种类型）。任一不满足直接 403，而不是只省略 CORS 头。
 
-**它会写哪些文件**：只有你按下保存时，才写 `settings.json` 的 `modelPrices` 与 `providers.json` 的 `rateWindows`。它不会在你没设置的情况下写入任何峰谷时段——首版曾自行给 DeepSeek 渠道写默认时段，现已移除。manifest 只声明 `usage:summary` / `usage:day` / `providers:list` 三个**读**权限，因为写入走的是你显式保存这个动作。
+**它会写哪些文件**：只有你按下保存时，才写 `settings.json` 的 `modelPrices` 与 `providers.json` 的 `rateWindows`。保存只写你在页面改动的键：其他已在 `modelPrices` 里的价格原样保留，也不会为你没有的 provider 添加价格。它不会在你没设置的情况下写入任何峰谷时段——首版曾自行给 DeepSeek 渠道写默认时段，现已移除。manifest 只声明 `usage:summary` / `usage:day` / `providers:list` 三个**读**权限，因为写入走的是你显式保存这个动作。
 
 ## 开发与测试
 
 ```bash
-node check.js      # 16 组自测，覆盖目录解析、首次写入、服务边界与页面 CSP 规范
+node check.js      # 17 组自测，覆盖目录解析、首次写入、保存只写改动、服务边界与页面 CSP 规范
 ```
 
 CI 在 ubuntu / macOS / Windows 三平台 × Node 20/22/24 上跑同一套测试，并检查打包产物不含任何本地配置。

@@ -41,9 +41,14 @@ ICONS["workbuddy-color"] = ICONS.workbuddy;
 ICONS["codex-color"] = ICONS.codex;
 ICONS["file:9bfce7ccdaaaa0fe.png"] = ICONS.mclaw;
 ICONS["file:4636929b8040eb80.png"] = ICONS.marvis;
-ICONS["file:cc6a0440158dad34.svg"] = "<img src=\"icons/cc6a0440158dad34.svg\" class=\"provider-img-icon\" alt=\"Google AI Studio\" draggable=\"false\">";
-ICONS["file:808e1ca7659cb52e.ico"] = "<img src=\"icons/808e1ca7659cb52e.ico\" class=\"provider-img-icon\" alt=\"OpenCode Zen Free\" draggable=\"false\">";
-ICONS["file:d3dbde503259f194.png"] = "<img src=\"icons/d3dbde503259f194.png\" class=\"provider-img-icon\" alt=\"QwenWork\" draggable=\"false\">";
+ICONS["file:cc6a0440158dad34.svg"] = ICONS["ai-studio"];
+ICONS["file:808e1ca7659cb52e.ico"] = ICONS["opencode-zen-free"];
+ICONS["file:d3dbde503259f194.png"] = ICONS.qwenwork;
+
+// Only these two image files are shipped with the page. Every other provider
+// icon is inline in ICONS above; a file hash from another machine falls back to
+// the semantic match / default instead of a missing asset (PR #1576 review).
+const SHIPPED_ICON_FILES = new Set(["9bfce7ccdaaaa0fe.png", "4636929b8040eb80.png"]);
 
 function getIconSvg(idOrIcon, fallbackIcon) {
   const raw = String(idOrIcon || fallbackIcon || "").trim();
@@ -66,8 +71,8 @@ function getIconSvg(idOrIcon, fallbackIcon) {
     return getIconSvg(provIcons[raw], fallbackIcon);
   }
 
-  // 3. 处理 file:<hash> 文件引用 (直接从本地 page/icons/ 相对路径加载)
-  if (raw.startsWith("file:")) {
+  // 3. 处理随包发布的 file:<hash> 文件引用；其他机器的图标不随包分发
+  if (raw.startsWith("file:") && SHIPPED_ICON_FILES.has(raw.slice(5))) {
     const file = raw.slice(5);
     return `<img src="icons/${file}" class="provider-img-icon" alt="" draggable="false" onerror="this.onerror=null;this.style.opacity='0.6';">`;
   }

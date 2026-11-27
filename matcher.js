@@ -488,34 +488,11 @@ function getMagpieModels() {
     } catch {}
   }
 
-  // Always ensure known Antigravity & popular variants are registered
-  const extraVariants = [
-    { prov: 'antigravity', id: 'gemini-3.8-flash-control' },
-    { prov: 'antigravity', id: 'gemini-3.8-flash-tiered' },
-    { prov: 'antigravity', id: 'gemini-3.8-flash-n' }
-  ];
-  for (const item of extraVariants) {
-    const full = item.prov + '/' + item.id;
-    if (!seen.has(full)) {
-      seen.add(full);
-      const pInfo = classifications[item.prov] || { kind: 'subscription', name: item.prov };
-      models.push({
-        provider: item.prov,
-        providerName: pInfo.name,
-        providerIcon: pInfo.icon || null,
-        providerKind: pInfo.kind,
-        id: item.id,
-        fullName: full,
-        name: item.id,
-        free: false,
-        listPrice: null,
-        enabled: true,
-        providerOff: false,
-        modelOn: true
-      });
-    }
-  }
-
+  // Only models the user's providers actually declare, or that appear in their
+  // usage history, are returned. A previous version added three antigravity
+  // Gemini variants here for every user: a machine with no antigravity provider
+  // then got prices for models it does not have, and a page save wrote them all
+  // into settings.json (PR #1576 review).
   return models;
 }
 
@@ -828,153 +805,40 @@ function resetPrice(model) {
 }
 
 /**
- * Apply Global Pricing Mode:
- * - 'api-only': only write real prices for 'api' providers; subscription providers have prices set to 0 or removed
- * - 'all-equivalent': write market prices for all models
- * Returns { count, changed }; settings.json is left untouched when nothing changed.
+ * Apply exactly the price changes the user made in the page.
+ *
+ * A page save is not a request to rebuild the whole price table: it carries the
+ * keys the user edited (priceChanges) and the keys they removed (removedPrices).
+ * Every other key in modelPrices is left exactly as it was, so a price the user
+ * typed in magpie's own editor is never replaced by a models.dev guess and no
+ * price is added for a provider the user does not have (PR #1576 review).
+ *
+ * mode is stored with the plugin options for the page's statistics and is not
+ * used here: it must not bulk-write prices.
  */
-function applyGlobalModeIfChanged(mode, customOverrides = {}) {
-  const report = scanAll();
-  const newPrices = { ...(readSettings().modelPrices || {}) };
-
-  if (mode === 'api-only') {
-    // Only apply prices for paid API providers or explicit custom overrides
-    for (const item of report) {
-      if (item.providerKind === 'api') {
-        if (customOverrides[item.model]) {
-          newPrices[item.model] = sanitizePrice(customOverrides[item.model]);
-        } else if (item.matched) {
-          newPrices[item.model] = {
-            input: item.matched.cost.input,
-            output: item.matched.cost.output,
-            cache_read: item.matched.cost.cache_read,
-            cache_write: item.matched.cost.cache_write
-          };
-        }
-      } else {
-        // Subscription / free accounts: explicit zero so Magpie doesn't bill them
-        newPrices[item.model] = { input: 0, output: 0, cache_read: 0, cache_write: 0 };
-      }
-    }
-  } else {
-    // all-equivalent: all providers get their market value
-    for (const item of report) {
-      if (customOverrides[item.model]) {
-        newPrices[item.model] = sanitizePrice(customOverrides[item.model]);
-      } else if (item.matched) {
-        newPrices[item.model] = {
-          input: item.matched.cost.input,
-          output: item.matched.cost.output,
-          cache_read: item.matched.cost.cache_read,
-          cache_write: item.matched.cost.cache_write
-        };
-      }
-    }
-  }
-
-  // Apply every explicit custom override, wildcard or provider/model key alike.
-  // A custom key whose model is missing from the current scan (channel disabled,
-  // model renamed, or only present in usage history) used to be skipped, so the
-  // price the user typed never reached Magpie and the row kept the old value.
-  // The price the user typed always wins.
-  for (const [k, v] of Object.entries(customOverrides)) {
-    if (v) newPrices[k] = sanitizePrice(v);
-  }
-
-  // api-only: a model no paid API provider serves has no channel left to bill,
-  // so its wildcard goes to 0 too. An exact provider/model key still wins for
-  // the API channels that do serve it, and a subscription model whose wildcard
-  // was left at the market value is what still showed a cost (#api-only).
-  if (mode === 'api-only') {
-    // Every key of a subscription provider goes to 0, including one left from a
-    // model it no longer lists: otherwise a stale provider/model key still
-    // answers before the wildcard and the row keeps a cost.
-    const kinds = getProviderClassifications();
-    for (const key of Object.keys(newPrices)) {
-      if (key.startsWith('*/')) continue;
-      const pid = key.split('/')[0];
-      if (kinds[pid] && kinds[pid].kind === 'subscription') {
-        newPrices[key] = { input: 0, output: 0, cache_read: 0, cache_write: 0 };
-      }
-    }
-    // A wildcard prices every provider with no key of its own: in this mode it
-    // must not keep the market value of a model only subscription channels
-    // serve, or a row without an exact key still shows a cost. A wildcard with
-    // any paid provider/model key under it keeps its value.
-    for (const key of Object.keys(newPrices)) {
-      if (!key.startsWith('*/')) continue;
-      const bare = key.slice(2);
-      const paid = Object.keys(newPrices).some((k) => {
-        if (k.startsWith('*/') || !k.endsWith('/' + bare)) return false;
-        const v = newPrices[k];
-        return v && (v.input > 0 || v.output > 0);
-      });
-      if (!paid) newPrices[key] = { input: 0, output: 0, cache_read: 0, cache_write: 0 };
-    }
-  }
-
-  // Add wildcard fallbacks for bare model names and cleaned names so any un-prefixed request matches
-  for (const item of report) {
-    if (newPrices[item.model]) {
-      const bare = item.model.includes('/') ? item.model.split('/')[1] : item.model;
-      if (!newPrices['*/' + bare]) {
-        newPrices['*/' + bare] = newPrices[item.model];
-      }
-      const cleaned = cleanModelName(bare);
-      if (cleaned && !newPrices['*/' + cleaned]) {
-        newPrices['*/' + cleaned] = newPrices[item.model];
-      }
-      // Explicitly map common model suffix variants
-      if (cleaned === 'gemini-3.8-flash') {
-        const variants = ['control', 'tiered', 'n'];
-        for (const v of variants) {
-          const vName = `gemini-3.8-flash-${v}`;
-          if (!newPrices['*/' + vName]) newPrices['*/' + vName] = newPrices[item.model];
-          if (item.model.includes('/')) {
-            const p = item.model.split('/')[0];
-            if (!newPrices[`${p}/${vName}`]) newPrices[`${p}/${vName}`] = newPrices[item.model];
-          }
-        }
-      }
-    }
-  }
-
-  // Universal alias fallback for any observed channel/variant whose cleaned name has a price
-  const allKnownModels = getMagpieModels();
-  for (const m of allKnownModels) {
-    const full = m.fullName;
-    const bare = m.id;
-    const cleaned = cleanModelName(bare);
-    if (!newPrices[full]) {
-      const basePrice = newPrices['*/' + cleaned] || newPrices[m.provider + '/' + cleaned];
-      if (basePrice) {
-        newPrices[full] = basePrice;
-        if (!newPrices['*/' + bare]) {
-          newPrices['*/' + bare] = basePrice;
-        }
-      }
-    }
-  }
-
-  // Remove any unknown/ invalid keys or routing groups
-  for (const k of Object.keys(newPrices)) {
-    if (
-      k.startsWith('unknown/') ||
-      k === '*/unknown' ||
-      k.includes('/unknown') ||
-      k.includes('never-stuck') ||
-      k.startsWith('group/') ||
-      k.includes('/group/') ||
-      k === '*/free'
-    ) {
-      delete newPrices[k];
-    }
-  }
-
+function applyPriceChanges(customOverrides = {}, removedKeys = []) {
   const before = readSettings().modelPrices || {};
+  const newPrices = { ...before };
+  let count = 0;
+  for (const [key, value] of Object.entries(customOverrides || {})) {
+    if (!value || typeof value !== 'object') continue;
+    newPrices[key] = sanitizePrice(value);
+    count++;
+  }
+  for (const key of Array.isArray(removedKeys) ? removedKeys : []) {
+    if (typeof key !== 'string' || !key) continue;
+    if (Object.prototype.hasOwnProperty.call(newPrices, key)) {
+      delete newPrices[key];
+      count++;
+    }
+  }
   const written = updateModelPrices(() => newPrices);
   const changed = stableStringify(before) !== stableStringify(written);
-  return { count: Object.keys(written).length, changed };
+  return { count, changed, total: Object.keys(written).length };
+}
+
+function applyGlobalModeIfChanged(mode, customOverrides = {}, options = {}) {
+  return applyPriceChanges(customOverrides, options.removedKeys || []);
 }
 
 function applyGlobalMode(mode, customOverrides = {}) {
@@ -1417,6 +1281,7 @@ module.exports = {
   resetPrice,
   applyGlobalMode,
   applyGlobalModeIfChanged,
+  applyPriceChanges,
   verifyCustomPrices,
   stableStringify,
   sanitizePrice,

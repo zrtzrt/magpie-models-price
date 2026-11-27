@@ -24,13 +24,18 @@
     }, 2500);
   }
 
-  // Load models data and options
-  let rawModels = window.__MAGPIE_MODELS_DATA__ || [];
+  // The model list is built only from magpie.read("providers:list"): the
+  // package must not carry a snapshot of the author's machine (PR #1576 review).
+  let rawModels = [];
   const liveProviderNames = new Map();
   let liveProviders = [];
   let isRefreshing = false;
   let pluginOptions = {};
   let customPrices = {};
+  // The prices the page last loaded or saved: the baseline for a save that only
+  // sends the keys the user actually changed, and the keys they removed.
+  let savedCustomPrices = {};
+  let pendingRemovals = [];
   let globalMode = "all-equivalent"; // "all-equivalent" or "api-only"
   // 统计瓦片显示的用量区间：all = usage:day 全量历史；30d = 旧版 Magpie 的 summary 回退
   let usagePeriod = "all";
@@ -167,6 +172,7 @@
       pluginOptions = (await magpie.options.get()) || {};
       applyPeakOptions(pluginOptions);
       customPrices = pluginOptions.customPrices || {};
+      savedCustomPrices = JSON.parse(JSON.stringify(customPrices));
       globalMode = pluginOptions.mode || "all-equivalent";
       // The options just read are what is already applied: a save that changes
       // nothing must not carry a new applyToken, or opening the page and
@@ -174,7 +180,9 @@
       savedSignature = optionsSignature({
         mode: globalMode,
         modelPeaks,
-        customPrices
+        customPrices,
+        priceChanges: {},
+        removedPrices: []
       });
     } catch (e) {
       console.warn("Magpie bridge ready warning:", e);
@@ -531,119 +539,81 @@
   }
 
   // 2.1 动态合并 Magpie 实时供应商列表 (Live Providers & Unpriced Channels Sync)
+  // Build the full model list from the host's live provider list only. Each
+  // model carries the price magpie itself resolved (m.price or m.list); no
+  // build-time snapshot of anyone's machine is involved (PR #1576 review).
   function mergeLiveProviders(liveList) {
     if (!Array.isArray(liveList)) return;
     liveProviders = liveList;
 
-    const modelMap = new Map();
-    for (const item of rawModels) {
-      modelMap.set(item.model, item);
-    }
-
-    // 建立“同族付费模型”市场价索引：免费渠道按等值公价展示（all-equivalent 语义）
-    const paidPriceIndex = new Map(); // cleanModelName -> cost
-    const barePriceIndex = new Map(); // bare id -> cost
-    for (const p of liveList) {
-      if (!p || !Array.isArray(p.models)) continue;
-      for (const pm of p.models) {
-        if (!pm || typeof pm !== "object") continue;
-        const id = pm.id || pm.model || pm.name;
-        if (!id || pm.free) continue;
-        const pr = pm.price || pm.list;
-        if (!pr) continue;
-        if ((Number(pr.input) || 0) > 0 || (Number(pr.output) || 0) > 0) {
-          barePriceIndex.set(String(id).toLowerCase(), pr);
-          paidPriceIndex.set(cleanModelName(String(id)), pr);
-        }
-      }
-    }
-    // 同时纳入静态基准数据中已匹配的市场公价（如 hy4 -> tencent-tokenhub/hy4）
-    for (const it of rawModels) {
-      if (!it.matched || !it.matched.cost || it.free) continue;
-      const c = it.matched.cost;
-      if ((Number(c.input) || 0) > 0 || (Number(c.output) || 0) > 0) {
-        const b = getBareModel(it.model);
-        if (b) barePriceIndex.set(String(b).toLowerCase(), c);
-        paidPriceIndex.set(cleanModelName(it.model), c);
-      }
-    }
-    const findEquivalentCost = (bare, cleaned) => {
-      const noFree = String(bare || "").toLowerCase().replace(/-?free$/, "");
-      return barePriceIndex.get(noFree)
-        || barePriceIndex.get(String(bare).toLowerCase())
-        || paidPriceIndex.get(cleaned)
-        || paidPriceIndex.get(noFree)
-        || null;
-    };
-
+    const models = [];
+    const seen = new Set();
     for (const p of liveList) {
       if (!p || !p.id) continue;
       const pId = p.id;
       const pName = p.name || pId;
       liveProviderNames.set(pId, pName);
-
       const isProviderOn = !p.off;
       const pKind = providerKindOf(p);
-
       const pModels = Array.isArray(p.models) ? p.models : [];
       for (const m of pModels) {
         const mId = typeof m === "object" ? m.id : m;
         if (!mId) continue;
         const mName = (typeof m === "object" && m.name) ? m.name : mId;
         const fullName = `${pId}/${mId}`;
+        if (seen.has(fullName)) continue;
+        seen.add(fullName);
         const isModelOn = typeof m === "object" ? m.on !== false : true;
-        const isEnabled = isProviderOn && isModelOn;
-
-        if (modelMap.has(fullName)) {
-          const item = modelMap.get(fullName);
-          item.enabled = isEnabled;
-          item.providerName = pName;
-          if (p.icon && !item.providerIcon) item.providerIcon = p.icon;
-          if (mName && mName !== mId && (!item.name || item.name === mId)) {
-            item.name = mName;
+        const bare = getBareModel(fullName);
+        const isFreeModel = (typeof m === "object" && m.free) || /(^|-)free($|-)/i.test(bare);
+        const listPrice = (typeof m === "object" && (m.list || m.price)) || null;
+        const matched = listPrice ? {
+          provider: pId,
+          model: mId,
+          name: mName,
+          cost: {
+            input: Number(listPrice.input) || 0,
+            output: Number(listPrice.output) || 0,
+            cache_read: Number(listPrice.cache_read) || 0,
+            cache_write: Number(listPrice.cache_write) || 0,
+            ...(Array.isArray(listPrice.tiers) && listPrice.tiers.length ? { tiers: listPrice.tiers } : {})
           }
-        } else {
-          // 新添加的供应商模型（尚未包含在静态基准数据中）
-          const bare = getBareModel(fullName);
-          const cleaned = cleanModelName(fullName);
-          const sibling = rawModels.find(
-            (it) => it.matched && (getBareModel(it.model) === bare || cleanModelName(it.model) === cleaned)
-          );
-          const isFreeModel = (typeof m === 'object' && m.free) || /(^|-)free($|-)/i.test(bare);
-          let matched = sibling?.matched || null;
-          if (!matched && isFreeModel) {
-            const eqCost = findEquivalentCost(bare, cleaned);
-            matched = eqCost
-              ? { name: "等值公价 (免费)", cost: eqCost, equivalent: true }
-              : { name: "Free model", cost: { input: 0, output: 0 } };
-          }
-
-          const newItem = {
-            provider: pId,
-            providerName: pName,
-            providerIcon: p.icon || null,
-            providerKind: pKind,
-            model: fullName,
-            id: mId,
-            name: mName,
-            enabled: isEnabled,
-            free: isFreeModel,
-            listPrice: (typeof m === "object" && m.list) || null,
-            currentPrice: matched
-              ? (matched.cost?.input || matched.cost?.output
-                  ? `List: $${matched.cost.input}/$${matched.cost.output}`
-                  : "Free model ($0.00)")
-              : "未定价",
-            matched: matched,
-            isUnpriced: !matched,
-            };
-          rawModels.push(newItem);
-          modelMap.set(fullName, newItem);
-        }
+        } : null;
+        models.push({
+          provider: pId,
+          providerName: pName,
+          providerIcon: p.icon || null,
+          providerKind: pKind,
+          model: fullName,
+          id: mId,
+          name: mName,
+          enabled: isProviderOn && isModelOn,
+          providerOff: !!p.off,
+          modelOn: isModelOn,
+          free: isFreeModel,
+          listPrice,
+          currentPrice: matched
+            ? (matched.cost.input || matched.cost.output
+                ? `List: $${matched.cost.input}/$${matched.cost.output}`
+                : "Free model ($0.00)")
+            : "未定价",
+          matched,
+          isUnpriced: !matched
+        });
       }
     }
+    rawModels = models;
 
-    // 免费模型统一按同族付费公价计价（覆盖静态基准数据分支）；无同族付费版则保持 $0
+    // 免费渠道按同族付费模型的市场价展示（all-equivalent 语义）
+    const barePriceIndex = new Map();
+    const paidPriceIndex = new Map();
+    for (const item of rawModels) {
+      const c = item.matched && item.matched.cost;
+      if (!c || item.free) continue;
+      if ((Number(c.input) || 0) <= 0 && (Number(c.output) || 0) <= 0) continue;
+      barePriceIndex.set(String(getBareModel(item.model)).toLowerCase(), c);
+      paidPriceIndex.set(cleanModelName(item.model), c);
+    }
     applyFreeEquivalentPricing(barePriceIndex, paidPriceIndex);
   }
 
@@ -699,7 +669,7 @@
   //  - Magpie 宿主 usage:summary：{ period, calls, errors, input, output, cacheRead, cost, models:[...] }
   //  - Magpie 宿主 usage:day from:"all"：{ calls, ..., agents:[{ models:[...] }] }
   // 以前只认第一种的 liveUsage.summary，Magpie 窗口里读到的宿主数据全被丢掉，
-  // 「历史调用总数」就永远停在 models-data.js 构建时的静态快照上。
+  // 「历史调用总数」就永远停在页面打开时的那份快照上。
   function usageEntryFrom(raw, fallbackCache = 0) {
     const s = raw && typeof raw === "object" ? raw : {};
     const input = Number(s.inputTokens ?? s.input ?? 0) || 0;
@@ -850,7 +820,15 @@
           pluginOptions = (await magpie.options.get()) || {};
           applyPeakOptions(pluginOptions);
           customPrices = pluginOptions.customPrices || {};
+          savedCustomPrices = JSON.parse(JSON.stringify(customPrices));
           globalMode = pluginOptions.mode || "all-equivalent";
+          savedSignature = optionsSignature({
+            mode: globalMode,
+            modelPeaks,
+            customPrices,
+            priceChanges: {},
+            removedPrices: []
+          });
         } catch (e) {
           console.warn("Failed to get magpie options:", e);
         }
@@ -2240,9 +2218,11 @@
     };
 
     customPrices[targetKey] = priceObj;
+    pendingRemovals = pendingRemovals.filter((key) => key !== targetKey);
 
     if (selectedScope === "wildcard" && customPrices[editingModel.model]) {
       delete customPrices[editingModel.model];
+      if (!pendingRemovals.includes(editingModel.model)) pendingRemovals.push(editingModel.model);
     }
 
     const synced = await persistOptions();
@@ -2263,6 +2243,8 @@
     const bare = getBareModel(model);
     delete customPrices[model];
     delete customPrices["*/" + bare];
+    if (!pendingRemovals.includes(model)) pendingRemovals.push(model);
+    if (!pendingRemovals.includes("*/" + bare)) pendingRemovals.push("*/" + bare);
 
     await persistOptions();
     renderStats();
@@ -2300,12 +2282,34 @@
     return JSON.stringify(keys.map((k) => [k, payload[k]]));
   }
 
+  function clonePriceMap(prices) {
+    return JSON.parse(JSON.stringify(prices || {}));
+  }
+
+  // Only the keys whose value differs from the prices the page last loaded or
+  // saved are sent to the plugin. A key deleted in the page becomes removed.
+  function diffPriceChanges(current, baseline) {
+    const changes = {};
+    for (const [key, value] of Object.entries(current || {})) {
+      if (JSON.stringify(value) !== JSON.stringify((baseline || {})[key])) changes[key] = value;
+    }
+    const removed = Object.keys(baseline || {}).filter((key) => !(key in (current || {})));
+    for (const key of pendingRemovals) {
+      if (!removed.includes(key)) removed.push(key);
+    }
+    return { changes, removed };
+  }
+
   async function persistOptions() {
+    const { changes, removed } = diffPriceChanges(customPrices, savedCustomPrices);
     const payload = {
       mode: globalMode,
       // 每个模型的峰谷配置：{ enabled, rate, windows:[{days,start,end}] }
       modelPeaks,
-      customPrices
+      // Full map kept for the page state; the plugin applies priceChanges only.
+      customPrices,
+      priceChanges: changes,
+      removedPrices: removed
     };
     try {
       localStorage.setItem("magpie_models_price_options", JSON.stringify(payload));
@@ -2341,7 +2345,11 @@
       } catch (e) {}
     }
 
-    if (saved && changed) savedSignature = signature;
+    if (saved && changed) {
+      savedSignature = signature;
+      savedCustomPrices = clonePriceMap(customPrices);
+      pendingRemovals = [];
+    }
     return saved;
   }
 

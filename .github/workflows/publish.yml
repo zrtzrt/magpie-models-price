@@ -39,6 +39,13 @@ jobs:
           if grep -E 'settings\.json|plugins\.json|providers\.json|usage\.jsonl|\.env$' /tmp/pack-list.txt; then
             echo 'tarball must not carry user configuration'; exit 1
           fi
+          if grep -E 'page/(models-data|generate-data)\.js' /tmp/pack-list.txt; then
+            echo 'tarball must not carry a machine snapshot or its generator'; exit 1
+          fi
+          icon_count=$(grep -c '^package/page/icons/' /tmp/pack-list.txt || true)
+          if [ "$icon_count" -gt 2 ]; then
+            echo "tarball carries $icon_count page icons; only the ones the page draws may ship"; exit 1
+          fi
           grep -q 'package/page/index.html' /tmp/pack-list.txt
           grep -q 'package/matcher.js' /tmp/pack-list.txt
 

@@ -53,24 +53,44 @@ function applySavedOptions(options) {
   if (!token) return { applied: false, reason: 'no save to apply' };
   if (token === readApplied().token) return { applied: false, reason: 'already applied' };
 
-  const out = { applied: true, token, mode: '', prices: 0, peakProviders: 0, conflicts: [], error: '' };
-  if (MODES.has(opts.mode)) {
-    const result = matcher.applyGlobalModeIfChanged(opts.mode, opts.customPrices || {});
-    out.mode = opts.mode;
+  const out = { applied: true, token, mode: '', prices: 0, peakProviders: 0, conflicts: [], error: '', peakError: '' };
+  try {
+    if (MODES.has(opts.mode)) out.mode = opts.mode;
+    // Only the keys this save changed are written. A page save used to call
+    // applyGlobalModeIfChanged, whose scan rewrote the whole price table and
+    // replaced prices the user had set in magpie's own editor (PR #1576 review).
+    const priceChanges = opts.priceChanges && typeof opts.priceChanges === 'object'
+      ? opts.priceChanges
+      : (opts.customPrices || {});
+    const removedPrices = Array.isArray(opts.removedPrices) ? opts.removedPrices : [];
+    const result = matcher.applyPriceChanges(priceChanges, removedPrices);
     out.prices = result.count;
-  }
-  if (opts.modelPeaks && typeof opts.modelPeaks === 'object') {
-    const result = matcher.syncModelPeakWindows(opts.modelPeaks);
-    if (!result.ok) {
-      out.error = result.error;
-    } else {
-      out.peakProviders = result.results.filter((x) => x.status === 'written').length;
-      out.conflicts = result.results.filter((x) => x.status === 'conflict').map((x) => x.provider);
+
+    // An empty modelPeaks is the normal page payload for a price-only save; do
+    // not try to sync it (a missing providers.json used to make that fail and
+    // kept the token unrecorded, so the same save ran again on every reload).
+    if (opts.modelPeaks && typeof opts.modelPeaks === 'object' && Object.keys(opts.modelPeaks).length > 0) {
+      const peak = matcher.syncModelPeakWindows(opts.modelPeaks);
+      if (!peak.ok) {
+        out.peakError = peak.error || 'peak sync failed';
+      } else {
+        out.peakProviders = peak.results.filter((x) => x.status === 'written').length;
+        out.conflicts = peak.results.filter((x) => x.status === 'conflict').map((x) => x.provider);
+      }
     }
+  } catch (err) {
+    out.error = err.message;
+    return out;
   }
-  // Recorded only when the write went through: a save that failed stays pending,
-  // so the next reload tries it again instead of dropping it.
-  if (!out.error) writeApplied({ token, at: new Date().toISOString(), mode: out.mode, prices: out.prices });
+  // The price write went through, so record the token even when the optional
+  // peak sync had nowhere to write: otherwise every reload retries this save.
+  writeApplied({
+    token,
+    at: new Date().toISOString(),
+    mode: out.mode,
+    prices: out.prices,
+    peakError: out.peakError || undefined
+  });
   return out;
 }
 
@@ -87,9 +107,10 @@ async function MagpieModelPricesPlugin(input, options) {
     if (result.applied && !result.error) {
       console.log(
         'Applied the save from the page: ' + (result.mode ? 'mode ' + result.mode : 'no mode') +
-          ', ' + result.prices + ' priced model(s)' +
+          ', ' + result.prices + ' changed price(s)' +
           (result.peakProviders ? ', peak windows on ' + result.peakProviders + ' provider(s)' : '')
       );
+      if (result.peakError) console.warn('Peak settings not applied: ' + result.peakError);
     } else if (result.error) {
       console.error('Could not apply the save from the page: ' + result.error);
     }

@@ -1,8 +1,7 @@
 // page-data.js - Builds the model list the page draws, on this machine.
 //
-// The page is sandboxed with connect-src 'none' and magpie's page reads give
-// provider ids and names only (providers:list carries no models). The model
-// list therefore has to be generated here, where the plugin's host part can
+// The page is sandboxed with connect-src 'none': it cannot read files or call
+// any API. The model list therefore has to be generated here, where Node can
 // read magpie's own providers-state.json and the models.dev catalog. It is
 // written as page/models-data.js next to the page and loaded by index.html:
 // a local, runtime artifact, never part of the npm package (package.json's
@@ -40,10 +39,11 @@ function sourceMtime(packageDir) {
 
 // writePageData builds page/models-data.js from this machine's Magpie
 // providers and the public models.dev catalog. It writes only that file.
-// Returns { ok, file, models, generated, ms, error }.
+// opts.pageDir writes it into another page folder (the copy magpie loads when
+// this runs from an npx cache). Returns { ok, file, models, generated, ms, error }.
 function writePageData(packageDir, opts = {}) {
   const started = Date.now();
-  const targetDir = path.join(packageDir, 'page');
+  const targetDir = opts.pageDir ? path.resolve(opts.pageDir) : path.join(packageDir, 'page');
   const target = path.join(targetDir, OUTPUT);
   try {
     if (!opts.force && fs.existsSync(target)) {

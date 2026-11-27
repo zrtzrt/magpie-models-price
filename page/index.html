@@ -31,13 +31,14 @@
   </div>
 </header>
 <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 3px 0 14px; flex-wrap: wrap;">
-  <p class="sub-desc" style="margin: 0;" data-i18n="sub_desc">基于 models.dev 与 Magpie 账单系统，按模型聚合展示所有渠道价格，自定义定价即时生效。</p>
+  <p class="sub-desc" style="margin: 0;" data-i18n="sub_desc">基于 models.dev 与 Magpie 账单系统，自动匹配公价；自定义价格保存后运行 magpie-models-price apply 生效。</p>
   <div class="peak-status-bar" id="peak-status-bar" title="本机时区分时峰谷时段">
     <span class="peak-dot" id="peak-dot"></span>
     <span class="peak-text" id="peak-text" data-i18n="peak_badge_live">⚡ 当前高峰时段</span>
     <span class="peak-time" id="peak-time"></span>
   </div>
 </div>
+<p class="sub-desc" data-i18n="page_only_notice" style="margin: 0 0 10px;">纯页面插件：价格修改保存在插件选项中，运行 npx magpie-models-price apply 后写入 Magpie。</p>
 
 <!-- Master Mode Switch Card (总开关) -->
 <section class="mode-card">
@@ -111,7 +112,7 @@
         <option value="name-asc" data-i18n="sort_name_asc">🔤 模型名称：A - Z</option>
       </select>
       <input type="search" class="search-input" id="search-input" placeholder="搜索模型、渠道或厂商..." data-i18n-placeholder="search_placeholder" autocomplete="off">
-      <button type="button" class="btn btn-sync" id="btn-sync-all" data-i18n="btn_sync_all">✨ 全部应用公价</button>
+      <button type="button" class="btn btn-sync" id="btn-sync-all" data-i18n="btn_sync_all">✨ 全部匹配公价</button>
       <button type="button" class="btn btn-expand-all" id="btn-expand-all" data-i18n="btn_expand_all">🔽 全部展开</button>
       <button type="button" class="btn btn-collapse-all" id="btn-collapse-all" data-i18n="btn_collapse_all">🔼 全部收起</button>
     </div>
@@ -205,7 +206,7 @@
     <div class="modal-foot">
       <button type="button" class="btn" id="modal-btn-cancel" data-i18n="btn_cancel">取消</button>
       <button type="button" class="btn" id="modal-btn-match" style="margin-right: auto;" data-i18n="btn_match">填充公价</button>
-      <button type="button" class="btn btn-primary" id="modal-btn-save" data-i18n="btn_save">保存生效</button>
+      <button type="button" class="btn btn-primary" id="modal-btn-save" data-i18n="btn_save">保存</button>
     </div>
   </div>
 </div>

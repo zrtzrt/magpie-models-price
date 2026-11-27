@@ -12,9 +12,7 @@ console.log('🧪 开始运行自动化单元测试...');
 // folder (as they do in magpie's appdir), and a CI runner or a developer with
 // XDG set would otherwise have the tests read and write their real config.
 function envAt(home) {
-  // Loading index.js in a test must not write page/models-data.js into the
-  // checkout (the plugin host builds it on the user's machine, not here).
-  return { ...process.env, HOME: home, USERPROFILE: home, XDG_CONFIG_HOME: '', XDG_CACHE_HOME: '', MAGPIE_MODELS_PRICE_NO_PAGE_DATA: '1' };
+  return { ...process.env, HOME: home, USERPROFILE: home, XDG_CONFIG_HOME: '', XDG_CACHE_HOME: '' };
 }
 
 // 1. 验证 catalog 加载
@@ -187,7 +185,7 @@ console.log('7. 测试保存门控：载入不写盘、一次保存只应用一�
   const custom = { '*/model-a': { input: 1, output: 2, cache_read: 0, cache_write: 0 } };
   const script = `
     const fs = require('fs');
-    const plugin = require(${JSON.stringify(path.join(__dirname, 'index.js'))});
+    const applier = require(${JSON.stringify(path.join(__dirname, 'apply-options.js'))});
     const settings = ${JSON.stringify(settingsFile)};
     const providers = ${JSON.stringify(providersFile)};
     const custom = ${JSON.stringify(custom)};
@@ -196,23 +194,23 @@ console.log('7. 测试保存门控：载入不写盘、一次保存只应用一�
     (async () => {
       const before = { s: read(settings), p: read(providers) };
       // 1. Loading with no options at all: a fresh install writes nothing.
-      await plugin({ magpie: { options: async () => null } }, {});
+      applier.applySavedOptions({});
       const plain = { s: read(settings), p: read(providers) };
       // 2. Options with a mode but no token (an older version's, or one edited by
       //    hand): still nothing, because the user made no save here.
-      await plugin({}, { mode: 'api-only', customPrices: custom });
+      applier.applySavedOptions({ mode: 'api-only', customPrices: custom });
       const noToken = { s: read(settings), p: read(providers) };
       // 3. A save from the page: applied once, at the reload it caused.
-      await plugin({}, { mode: 'api-only', customPrices: custom, applyToken: 'save-1' });
+      applier.applySavedOptions({ mode: 'api-only', customPrices: custom, applyToken: 'test-' + 'save-1' });
       const first = read(settings);
       const firstMtime = mtime(settings);
       // 4. Another reload with the same token (magpie starting, a plugin
       //    toggled): nothing is written again.
-      await plugin({}, { mode: 'api-only', customPrices: custom, applyToken: 'save-1' });
+      applier.applySavedOptions({ mode: 'api-only', customPrices: custom, applyToken: 'test-' + 'save-1' });
       const sameMtime = mtime(settings) === firstMtime;
       // 5. A second save with a changed price writes again. (Changing only the
       //    display mode must not rewrite the price table.)
-      await plugin({}, { mode: 'all-equivalent', customPrices: { '*/model-a': { input: 3, output: 4, cache_read: 0, cache_write: 0 } }, applyToken: 'save-2' });
+      applier.applySavedOptions({ mode: 'all-equivalent', customPrices: { '*/model-a': { input: 3, output: 4, cache_read: 0, cache_write: 0 } }, applyToken: 'test-' + 'save-2' });
       const secondMtime = mtime(settings) > firstMtime;
       process.stdout.write(JSON.stringify({
         untouchedOnLoad: plain.s === before.s && plain.p === before.p,
@@ -253,16 +251,16 @@ console.log('7b. 测试保存只应用页面改动的价格...');
   // No providers.json on purpose: a price-only save must still record its token.
   const script = `
     const fs = require('fs');
-    const plugin = require(${JSON.stringify(path.join(__dirname, 'index.js'))});
+    const applier = require(${JSON.stringify(path.join(__dirname, 'apply-options.js'))});
     const settings = ${JSON.stringify(settingsFile)};
     const read = (f) => fs.readFileSync(f, 'utf8');
     const mtime = (f) => fs.statSync(f).mtimeMs;
-    const save = { mode: 'all-equivalent', customPrices: { 'openai/gpt-5-mini': { input: 1.25, output: 10, cache_read: 0.125, cache_write: 0 } }, applyToken: 'save-review-1' };
+    const save = { mode: 'all-equivalent', customPrices: { 'openai/gpt-5-mini': { input: 1.25, output: 10, cache_read: 0.125, cache_write: 0 } }, applyToken: 'test-' + 'save-7b' };
     (async () => {
-      await plugin({}, save);
+      applier.applySavedOptions(save);
       const after = JSON.parse(read(settings));
       const firstMtime = mtime(settings);
-      await plugin({}, save);
+      applier.applySavedOptions(save);
       process.stdout.write(JSON.stringify({
         prices: after.modelPrices,
         sameMtime: mtime(settings) === firstMtime
@@ -285,7 +283,7 @@ console.log('8. 测试模型级峰谷状态与倍率...');
   const vm = require('vm');
   const code = fs.readFileSync(path.join(__dirname, 'page/app.js'), 'utf8');
   const start = code.indexOf('const PEAK_BILLS = [');
-  const end = code.indexOf('function mergeLiveProviders(');
+  const end = code.indexOf('// 2.2 动态合并用量数据');
   assert(start > 0 && end > start, 'page/app.js 里应能找到峰谷模型族判定代码块');
   const block = code.slice(start, end);
   const prefix = [
@@ -664,11 +662,11 @@ function testApiFilterAndPeakDefaults() {
   const peakProbe = execFileSync(process.execPath, ['-e', `
     const m = require(${JSON.stringify(path.join(__dirname, 'matcher.js'))});
     const before = m.listRateWindowTargets().providers || [];
-    // Loading the plugin must not write peak windows the user never set: the
+    // Applying no save must not write peak windows the user never set: the
     // first-run DeepSeek default this used to apply is gone (PR #1576 review).
-    const plugin = require(${JSON.stringify(path.join(__dirname, 'index.js'))});
+    const applier = require(${JSON.stringify(path.join(__dirname, 'apply-options.js'))});
     (async () => {
-      await plugin({ magpie: { options: async () => null } }, {});
+      applier.applySavedOptions({});
       const after = m.listRateWindowTargets().providers || [];
       console.log(JSON.stringify({ before, after }));
       process.exit(0);
@@ -810,6 +808,49 @@ console.log('17. 测试页面模型数据生成器（运行时产物、只读配
   fs.rmSync(tmpPkg, { recursive: true, force: true });
   console.log('   ✓ 生成器包含渠道模型、不写价格、可复用缓存');
 }
+// 18. 纯页面插件清单与 CLI：没有 main/index.js，sync 生成数据，apply 应用页面保存
+console.log('18. 测试纯页面清单与 CLI 通道...');
+{
+  const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
+  assert.ok(!('main' in pkg), '纯页面插件不能有 main：有 main 就会按供应商插件加载');
+  assert.ok(!('exports' in pkg), '纯页面插件不能有 exports 入口');
+  assert.ok(!fs.existsSync(path.join(__dirname, 'index.js')), 'index.js 必须删除：magpie 会把它当服务端入口');
+  assert.strictEqual(pkg.kind, 'page', 'package.json 顶层 kind 必须是 page');
+  assert.ok(pkg.magpie && pkg.magpie.page && pkg.magpie.page.file === 'page/index.html', '必须声明 magpie.page');
+  assert.ok(Array.isArray(pkg.magpie.permissions) && !pkg.magpie.permissions.includes('providers:list'), '纯页面插件不能申请 providers:list 权限');
+  assert.ok((pkg.files || []).includes('bin/magpie-models-price.js'), 'npm files 必须包含 CLI');
+  assert.ok(!(pkg.files || []).includes('page/models-data.js'), '页面数据不能打进 npm 包（含本机渠道信息）');
+
+  const os = require('os');
+  const { execFileSync } = require('child_process');
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'magpie-price-cli-'));
+  const configDir = path.join(home, '.config/magpie');
+  fs.mkdirSync(configDir, { recursive: true });
+  fs.writeFileSync(path.join(configDir, 'settings.json'), JSON.stringify({ theme: 'dark' }, null, 2));
+  fs.writeFileSync(path.join(configDir, 'plugins.json'), JSON.stringify({ plugins: [
+    { spec: 'magpie-models-price', options: {
+      priceChanges: { 'openai/gpt-5': { input: 1, output: 2, cache_read: 0, cache_write: 0 } },
+      applyToken: 'test-' + 'save-18'
+    } }
+  ] }, null, 2));
+  const pageDir = path.join(home, 'page');
+  const cli = path.join(__dirname, 'bin', 'magpie-models-price.js');
+  const env = { ...process.env, HOME: home, USERPROFILE: home, XDG_CONFIG_HOME: '', XDG_CACHE_HOME: '', MAGPIE_MODELS_PRICE_PAGE_DIR: pageDir };
+  execFileSync(process.execPath, [cli, 'sync'], { env, stdio: 'ignore' });
+  assert.ok(fs.existsSync(path.join(pageDir, 'models-data.js')), 'sync 必须在目标页面目录生成 models-data.js');
+  const generated = fs.readFileSync(path.join(pageDir, 'models-data.js'), 'utf8');
+  assert.ok(generated.includes('__MAGPIE_MODELS_DATA__'), '生成文件必须导出页面读取的全局数据');
+
+  execFileSync(process.execPath, [cli, 'apply'], { env, stdio: 'ignore' });
+  const settings = JSON.parse(fs.readFileSync(path.join(configDir, 'settings.json'), 'utf8'));
+  assert.deepStrictEqual(settings.modelPrices['openai/gpt-5'], { input: 1, output: 2, cache_read: 0, cache_write: 0 }, 'apply 应把页面保存的价格写入 settings.json');
+  const firstMtime = fs.statSync(path.join(configDir, 'settings.json')).mtimeMs;
+  execFileSync(process.execPath, [cli, 'apply'], { env, stdio: 'ignore' });
+  assert.strictEqual(fs.statSync(path.join(configDir, 'settings.json')).mtimeMs, firstMtime, '同一个 applyToken 只能应用一次');
+  fs.rmSync(home, { recursive: true, force: true });
+  console.log('   ✓ 无 main/index.js、无 providers:list；sync 生成数据、apply 只应用一次');
+}
+
 // 16. 服务只绑回环、CORS 只回显本地来源、静态文件不越出 public/
 console.log('16. 测试本地服务边界（回环绑定 / CORS / 静态目录）...');
 {

@@ -24,11 +24,11 @@
     }, 2500);
   }
 
-  // The page cannot read files (its CSP is connect-src 'none') and
-  // providers:list carries provider ids and names only. The model rows come
-  // from page/models-data.js, generated locally by the plugin host on load
-  // (page-data.js): not a build-time snapshot, and never shipped in the npm
-  // package (PR #1576 review). An empty file still leaves the page usable.
+  // The page cannot read files (its CSP is connect-src 'none'). The model
+  // rows come from page/models-data.js, generated locally by the
+  // `magpie-models-price sync` command: not a build-time snapshot, and never
+  // shipped in the npm package (PR #1576 review). A missing file still leaves
+  // the page usable, with a hint to run sync.
   let rawModels = Array.isArray(window.__MAGPIE_MODELS_DATA__)
     ? window.__MAGPIE_MODELS_DATA__.map(normalizeModelItem).filter(Boolean)
     : [];
@@ -570,173 +570,6 @@
     return "subscription";
   }
 
-  // 2.1 动态合并 Magpie 实时供应商列表 (Live Providers & Unpriced Channels Sync)
-  // A page's providers:list gives only {id,name} (Magpie page reads carry no
-  // models). The rows come from page/models-data.js; this only applies the live
-  // names and the provider/model off state to them. A future Magpie whose
-  // providers:list does carry models is still honoured: then the rows are built
-  // from that list instead, so the page never depends on a build-time snapshot.
-  function mergeLiveProviders(liveList) {
-    if (!Array.isArray(liveList)) return;
-    liveProviders = liveList;
-    const byId = new Map();
-    for (const p of liveList) {
-      if (!p || !p.id) continue;
-      byId.set(String(p.id), p);
-      liveProviderNames.set(p.id, p.name || p.id);
-    }
-
-    const hasModelRows = liveList.some((p) => p && Array.isArray(p.models) && p.models.length > 0);
-    if (hasModelRows) {
-      rawModels = modelsFromLiveProviders(liveList);
-    } else {
-      for (const item of rawModels) {
-        const p = byId.get(String(item.provider));
-        if (!p) {
-          // A provider that is no longer in magpie stays visible with its last
-          // known price, but is marked off like a provider switched off.
-          item.providerOff = true;
-          item.enabled = false;
-          continue;
-        }
-        item.providerName = p.name || item.providerName;
-        // providers:list on a page carries no off flag; the generated rows
-        // already know their enabled state, so only a live list that really
-        // says off true/false may override it.
-        if (typeof p.off === "boolean") {
-          item.providerOff = p.off;
-          item.modelOn = item.modelOn !== false;
-          item.enabled = !p.off && item.modelOn;
-        } else {
-          item.enabled = item.enabled !== false;
-        }
-      }
-    }
-
-    // 免费渠道按同族付费模型的市场价展示（all-equivalent 语义）
-    applyFreeEquivalentPricingForRows();
-  }
-
-  function modelsFromLiveProviders(liveList) {
-    const models = [];
-    const seen = new Set();
-    for (const p of liveList) {
-      if (!p || !p.id) continue;
-      const pId = p.id;
-      const pName = p.name || pId;
-      const isProviderOn = !p.off;
-      const pKind = providerKindOf(p);
-      const pModels = Array.isArray(p.models) ? p.models : [];
-      for (const m of pModels) {
-        const mId = typeof m === "object" ? m.id : m;
-        if (!mId) continue;
-        const mName = (typeof m === "object" && m.name) ? m.name : mId;
-        const fullName = pId + "/" + mId;
-        if (seen.has(fullName)) continue;
-        seen.add(fullName);
-        const isModelOn = typeof m === "object" ? m.on !== false : true;
-        const bare = getBareModel(fullName);
-        const isFreeModel = (typeof m === "object" && m.free) || /(^|-)free($|-)/i.test(bare);
-        const listPrice = (typeof m === "object" && (m.list || m.price || m.cost)) || null;
-        const priceCost = listPrice ? {
-          input: Number(listPrice.input) || 0,
-          output: Number(listPrice.output) || 0,
-          cache_read: Number(listPrice.cache_read ?? listPrice.cache?.read) || 0,
-          cache_write: Number(listPrice.cache_write ?? listPrice.cache?.write) || 0,
-          ...(Array.isArray(listPrice.tiers) && listPrice.tiers.length ? { tiers: listPrice.tiers } : {})
-        } : null;
-        const matched = priceCost ? {
-          provider: pId,
-          model: mId,
-          name: mName,
-          cost: priceCost
-        } : null;
-        models.push({
-          provider: pId,
-          providerName: pName,
-          providerIcon: p.icon || null,
-          providerKind: pKind,
-          model: fullName,
-          id: mId,
-          name: mName,
-          enabled: isProviderOn && isModelOn,
-          providerOff: !!p.off,
-          modelOn: isModelOn,
-          free: isFreeModel,
-          listPrice,
-          currentPrice: matched
-            ? (matched.cost.input || matched.cost.output
-                ? "List: $" + matched.cost.input + "/$" + matched.cost.output
-                : "Free model ($0.00)")
-            : "未定价",
-          matched,
-          isUnpriced: !matched
-        });
-      }
-    }
-    return models;
-  }
-
-  // Rebuild the free-model equivalent prices over rawModels.
-  function applyFreeEquivalentPricingForRows() {
-    const barePriceIndex = new Map();
-    const paidPriceIndex = new Map();
-    for (const item of rawModels) {
-      const c = item.matched && item.matched.cost;
-      if (!c || item.free) continue;
-      if ((Number(c.input) || 0) <= 0 && (Number(c.output) || 0) <= 0) continue;
-      barePriceIndex.set(String(getBareModel(item.model)).toLowerCase(), c);
-      paidPriceIndex.set(cleanModelName(item.model), c);
-    }
-    applyFreeEquivalentPricing(barePriceIndex, paidPriceIndex);
-  }
-
-  // 免费模型（hy4flash-free / hy4-flash-free / *-free）也要按同族付费模型的公价计价，
-  // 而不是显示 $0/$0 —— 账单口径是「所有提供商等值公价」，免费只是不额外收费，
-  // 它消耗的等价市值仍然要算进统计。无同族付费版时才保持 $0。
-  // 这个函数同时覆盖两种情况：实时渠道合并出来的条目、以及静态基准数据里的条目
-  // （没有 Magpie bridge 时只走静态数据，免费模型原本会一直是 $0）。
-  function applyFreeEquivalentPricing(bareIndex, cleanIndex) {
-    const barePriceIndex = bareIndex || new Map();
-    const paidPriceIndex = cleanIndex || new Map();
-    if (!bareIndex) {
-      // 静态数据里自建索引
-      for (const it of rawModels) {
-        const c = it.matched && it.matched.cost;
-        if (!c) continue;
-        if ((Number(c.input) || 0) <= 0 && (Number(c.output) || 0) <= 0) continue;
-        const b = getBareModel(it.model);
-        if (b) barePriceIndex.set(String(b).toLowerCase(), c);
-        paidPriceIndex.set(cleanModelName(it.model), c);
-      }
-    }
-    const lookup = (bare) => {
-      const noFree = String(bare || "").toLowerCase().replace(/-?free$/, "");
-      return barePriceIndex.get(noFree)
-        || barePriceIndex.get(String(bare).toLowerCase())
-        || paidPriceIndex.get(noFree)
-        || null;
-    };
-
-    for (const item of rawModels) {
-      if (!isFreeModelItem(item)) continue;
-      const c = item.matched && item.matched.cost;
-      const alreadyPaid = c && ((Number(c.input) || 0) > 0 || (Number(c.output) || 0) > 0);
-      if (alreadyPaid) continue;
-      const bare = getBareModel(item.model);
-      const eq = lookup(bare);
-      if (!eq || ((Number(eq.input) || 0) <= 0 && (Number(eq.output) || 0) <= 0)) continue;
-      item.matched = {
-        ...(item.matched || {}),
-        name: (item.matched && item.matched.name) || "等值公价 (免费)",
-        cost: eq,
-        equivalent: true
-      };
-      item.currentPrice = `List: $${eq.input}/$${eq.output}`;
-      item.isUnpriced = false;
-    }
-  }
-
   // 2.2 动态合并用量数据 (Live Usage Summary Sync)
   // 三个来源结构并不一样：
   //  - 插件自建 /api/usage：{ summary:{...}, models:{bare:{...}}, channels }
@@ -854,7 +687,7 @@
   // 2.3 核心数据刷新控制器 (Manual & Auto-Refresh)
   //
   // 页面只通过宿主 bridge 读写。插件不再自己起 HTTP 服务（那套只在
-  // `node index.js ui` 的独立 Web UI 里用，由 public/index.html 自己驱动），
+  // `node bin/magpie-models-price.js ui` 的独立 Web UI 里用，由 public/index.html 自己驱动），
   // 而插件页的 CSP 是 connect-src 'none'，任何 fetch 都会被拦下、只在控制台
   // 留一行 "Refused to connect"。所以这里没有任何服务探测，只有 magpie.read。
   async function fetchLiveUsage() {
@@ -907,17 +740,6 @@
           console.warn("Failed to get magpie options:", e);
         }
 
-        // 读取实时供应商与模型列表
-        if (magpie.read) {
-          try {
-            const liveList = await magpie.read("providers:list");
-            if (Array.isArray(liveList) && liveList.length > 0) {
-              mergeLiveProviders(liveList);
-            }
-          } catch (e) {
-            console.warn("Failed to read providers:list:", e);
-          }
-        }
       }
 
       // 实时用量统计：浏览器走本地服务，Magpie 窗口走 bridge。
@@ -1669,7 +1491,9 @@
     listContainer.innerHTML = "";
 
     if (list.length === 0) {
-      $("empty-hint").hidden = false;
+      const hint = $("empty-hint");
+      hint.textContent = rawModels.length === 0 ? t("empty_no_data") : t("empty_hint");
+      hint.hidden = false;
       return;
     }
     $("empty-hint").hidden = true;
@@ -2340,17 +2164,16 @@
   }
 
   // persistOptions hands one save to magpie, which stores it as this plugin's
-  // options and reloads the plugin host; the plugin applies that save once, at
-  // the reload, and writes settings.json itself.
+  // options. This plugin is page-only: it has no host part, so nothing applies
+  // the save here. The `magpie-models-price apply` command (or a running
+  // watch) reads these options and writes settings.json on the user's behalf.
   //
   // A page in magpie's window cannot write the file: its CSP is connect-src
-  // 'none', so the fetch to a local service this used to try never left the
-  // frame. It has no need to either — the bridge reaches magpie.
+  // 'none'. That is why the apply step lives in the CLI.
   //
-  // applyToken marks the save as new. The plugin applies a token once and skips
-  // it afterwards, so a reload for another reason (magpie starting, a plugin
-  // toggled) writes nothing. The token is only fresh when something changed:
-  // re-saving an unchanged page must not make magpie reload the host.
+  // applyToken marks the save as new. apply records the token once and skips it
+  // afterwards, so opening the page or a watch tick with no new save writes
+  // nothing. The token is only fresh when something changed.
   function optionsSignature(payload) {
     const keys = Object.keys(payload).sort();
     return JSON.stringify(keys.map((k) => [k, payload[k]]));

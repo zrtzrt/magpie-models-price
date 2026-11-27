@@ -809,17 +809,23 @@ console.log('17. 测试页面模型数据生成器（运行时产物、只读配
   console.log('   ✓ 生成器包含渠道模型、不写价格、可复用缓存');
 }
 // 18. 纯页面插件清单与 CLI：没有 main/index.js，sync 生成数据，apply 应用页面保存
-console.log('18. 测试纯页面清单与 CLI 通道...');
+console.log('18. 测试页面清单、宿主部分与 CLI 兜底通道...');
 {
   const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
-  assert.ok(!('main' in pkg), '纯页面插件不能有 main：有 main 就会按供应商插件加载');
-  assert.ok(!('exports' in pkg), '纯页面插件不能有 exports 入口');
-  assert.ok(!fs.existsSync(path.join(__dirname, 'index.js')), 'index.js 必须删除：magpie 会把它当服务端入口');
+  // A main is what gives the plugin a host part: magpie only runs a
+  // magpie.page.service, and only starts the host for a page, when the package
+  // names a file to load (internal/plugin/page.go: hosted = main or exports).
+  // The page cannot reach settings.json itself (connect-src 'none'), so the
+  // host part is what applies a save; without it every price needs the CLI.
+  assert.strictEqual(pkg.main, 'index.js', '必须有 main：否则 magpie 不启动宿主，页面保存的价格没人落盘');
+  assert.ok(fs.existsSync(path.join(__dirname, 'index.js')), 'main 指向的文件必须存在');
+  assert.ok((pkg.files || []).includes('index.js'), 'main 必须列入 files，否则装完没有宿主');
   assert.strictEqual(pkg.kind, 'page', 'package.json 顶层 kind 必须是 page');
   assert.ok(pkg.magpie && pkg.magpie.page && pkg.magpie.page.file === 'page/index.html', '必须声明 magpie.page');
-  assert.ok(Array.isArray(pkg.magpie.permissions) && !pkg.magpie.permissions.includes('providers:list'), '纯页面插件不能申请 providers:list 权限');
+  assert.ok(Array.isArray(pkg.magpie.permissions) && !pkg.magpie.permissions.includes('providers:list'), '页面插件不能申请 providers:list 权限');
   assert.ok((pkg.files || []).includes('bin/magpie-models-price.js'), 'npm files 必须包含 CLI');
   assert.ok(!(pkg.files || []).includes('page/models-data.js'), '页面数据不能打进 npm 包（含本机渠道信息）');
+  assert.ok(!(pkg.files || []).includes('page/price-status.js'), '宿主写出的状态文件不能打进 npm 包（含本机价格与保存记录）');
 
   const os = require('os');
   const { execFileSync } = require('child_process');
@@ -848,7 +854,81 @@ console.log('18. 测试纯页面清单与 CLI 通道...');
   execFileSync(process.execPath, [cli, 'apply'], { env, stdio: 'ignore' });
   assert.strictEqual(fs.statSync(path.join(configDir, 'settings.json')).mtimeMs, firstMtime, '同一个 applyToken 只能应用一次');
   fs.rmSync(home, { recursive: true, force: true });
-  console.log('   ✓ 无 main/index.js、无 providers:list；sync 生成数据、apply 只应用一次');
+  console.log('   ✓ 有 main 且列入 files、无 providers:list；CLI sync 生成数据、apply 只应用一次');
+}
+
+// 19. 宿主部分：magpie 启动它以后，页面保存自己就落盘，页面也能读到真实回读结果
+console.log('19. 测试宿主部分（自动应用保存 / 生成模型列表 / 写状态文件）...');
+{
+  const os = require('os');
+  const { execFileSync } = require('child_process');
+  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'magpie-price-host-'));
+  const configDir = path.join(home, '.config/magpie');
+  fs.mkdirSync(configDir, { recursive: true });
+  fs.writeFileSync(path.join(configDir, 'settings.json'), JSON.stringify({ theme: 'dark' }, null, 2));
+  fs.writeFileSync(path.join(configDir, 'plugins.json'), JSON.stringify({ plugins: [
+    { spec: 'magpie-models-price', options: {
+      priceChanges: { 'openai/gpt-5': { input: 3, output: 4, cache_read: 0, cache_write: 0 } },
+      applyToken: 'host-save-19'
+    } }
+  ] }, null, 2));
+  const pageDir = path.join(home, 'page');
+  fs.mkdirSync(pageDir, { recursive: true });
+  // The host runs in the plugin host process; this runs the same module in a
+  // child so it reads the temp home, exactly as the host reads the user's.
+  const script = [
+    'const host = require(' + JSON.stringify(path.join(__dirname, 'index.js')) + ');',
+    'const status = host.__host.tick();',
+    "process.stdout.write(JSON.stringify({ status, files: host.__host.STATUS_FILE }));"
+  ].join('\n');
+  const out = execFileSync(process.execPath, ['-e', script], {
+    env: { ...process.env, HOME: home, USERPROFILE: home, XDG_CONFIG_HOME: '', XDG_CACHE_HOME: '', MAGPIE_MODELS_PRICE_PAGE_DIR: pageDir },
+    stdio: ['ignore', 'pipe', 'pipe']
+  }).toString();
+  const parsed = JSON.parse(out);
+  assert.ok(parsed.status && parsed.status.applies.length === 1, '宿主应看到这一个待应用的保存');
+  assert.strictEqual(parsed.status.applies[0].applied, true, '宿主应把它应用掉：' + JSON.stringify(parsed.status.applies[0]));
+  assert.ok(parsed.status.applies[0].prices >= 1, '宿主应至少写入 1 条价格');
+
+  const settings = JSON.parse(fs.readFileSync(path.join(configDir, 'settings.json'), 'utf8'));
+  assert.deepStrictEqual(settings.modelPrices['openai/gpt-5'], { input: 3, output: 4, cache_read: 0, cache_write: 0 }, '宿主必须把页面保存的价格写进 settings.json');
+
+  const statusFile = path.join(pageDir, 'price-status.js');
+  assert.ok(fs.existsSync(statusFile), '宿主必须写出页面可加载的状态脚本');
+  const statusCode = fs.readFileSync(statusFile, 'utf8');
+  assert.ok(statusCode.includes('__MAGPIE_PRICE_STATUS__'), '状态脚本必须导出页面读取的全局变量');
+  const statusValue = JSON.parse(statusCode.slice(statusCode.indexOf('= ') + 2).replace(/;\s*$/, ''));
+  assert.ok(statusValue.verify && statusValue.verify.checked >= 1, '状态脚本必须带上回读结果：' + JSON.stringify(statusValue.verify));
+  assert.strictEqual(statusValue.verify.mismatches.length, 0, '刚写入的价格回读应完全一致：' + JSON.stringify(statusValue.verify.mismatches));
+  assert.strictEqual(statusValue.appliedToken, 'host-save-19', '状态脚本必须记下已应用的 applyToken');
+
+  assert.ok(fs.existsSync(path.join(pageDir, 'models-data.js')), '宿主必须生成页面要画的模型列表');
+
+  // 同一个 applyToken 再跑一次不能重复写：宿主每 2 秒一轮，重复应用会不断改写 settings.json
+  const before = fs.statSync(path.join(configDir, 'settings.json')).mtimeMs;
+  execFileSync(process.execPath, ['-e', script], {
+    env: { ...process.env, HOME: home, USERPROFILE: home, XDG_CONFIG_HOME: '', XDG_CACHE_HOME: '', MAGPIE_MODELS_PRICE_PAGE_DIR: pageDir },
+    stdio: 'ignore'
+  });
+  assert.strictEqual(fs.statSync(path.join(configDir, 'settings.json')).mtimeMs, before, '同一个 applyToken 只能应用一次');
+
+  // 插件函数本身只回答 config：不能注册供应商、模型或中间件。它是 async，
+  // 所以要 await 之后再看它返回的钩子表（直接 Object.keys(promise) 永远是空）。
+  const hookScript = [
+    'const mod = require(' + JSON.stringify(path.join(__dirname, 'index.js')) + ');',
+    'mod({}, {}).then((hooks) => {',
+    "  process.stdout.write(JSON.stringify(Object.keys(hooks || {})));",
+    '  mod.__host.stop();',
+    '});'
+  ].join('\n');
+  const hookKeys = JSON.parse(execFileSync(process.execPath, ['-e', hookScript], {
+    env: { ...process.env, HOME: home, USERPROFILE: home, XDG_CONFIG_HOME: '', XDG_CACHE_HOME: '', MAGPIE_MODELS_PRICE_PAGE_DIR: pageDir },
+    stdio: ['ignore', 'pipe', 'pipe']
+  }).toString());
+  assert.deepStrictEqual(hookKeys, ['config'], '插件只能回答 config 钩子，不能注册供应商/中间件');
+
+  fs.rmSync(home, { recursive: true, force: true });
+  console.log('   ✓ 宿主自动落盘、回读一致、状态可读、模型列表已生成、同一 token 不重复写、只答 config');
 }
 
 // 16. 服务只绑回环、CORS 只回显本地来源、静态文件不越出 public/

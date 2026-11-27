@@ -48,6 +48,16 @@ jobs:
           fi
           grep -q 'package/page/index.html' /tmp/pack-list.txt
           grep -q 'package/matcher.js' /tmp/pack-list.txt
+          # the host part is what applies a page save: a tarball without it
+          # installs a page whose prices never reach settings.json
+          grep -q 'package/index.js' /tmp/pack-list.txt
+          grep -q 'package/page-data.js' /tmp/pack-list.txt
+          grep -q 'package/apply-options.js' /tmp/pack-list.txt
+          node -e '
+            const pkg = require("./package.json");
+            if (pkg.main !== "index.js") { console.error("main must point at the host part"); process.exit(1); }
+            if (!(pkg.files || []).includes("index.js")) { console.error("index.js must be in files"); process.exit(1); }
+          '
 
   publish-npm:
     name: Publish to NPM

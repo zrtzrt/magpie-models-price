@@ -1,3 +1,4 @@
 node_modules/
 page/models-data.js
 *.log
+page/price-status.js

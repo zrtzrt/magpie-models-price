@@ -25,13 +25,67 @@
   }
 
   // The page cannot read files (its CSP is connect-src 'none'). The model
-  // rows come from page/models-data.js, generated locally by the
-  // `magpie-models-price sync` command: not a build-time snapshot, and never
-  // shipped in the npm package (PR #1576 review). A missing file still leaves
-  // the page usable, with a hint to run sync.
-  let rawModels = Array.isArray(window.__MAGPIE_MODELS_DATA__)
-    ? window.__MAGPIE_MODELS_DATA__.map(normalizeModelItem).filter(Boolean)
-    : [];
+  // rows come from page/models-data.js, which the plugin's own host part writes
+  // next to this page (index.js, page-data.js): not a build-time snapshot, and
+  // never shipped in the npm package (PR #1576 review). The host starts when
+  // this page is opened, so the first load can happen before the file exists;
+  // loadModelData retries rather than leaving a page that says there is no data.
+  let rawModels = [];
+  function loadModelData() {
+    const rows = Array.isArray(window.__MAGPIE_MODELS_DATA__) ? window.__MAGPIE_MODELS_DATA__ : null;
+    if (!rows) return false;
+    rawModels = rows.map(normalizeModelItem).filter(Boolean);
+    return true;
+  }
+  loadModelData();
+
+  // loadScript re-runs one of this page's own scripts, cache-busted. It is the
+  // only way to see a file again: the page's CSP is connect-src 'none', so
+  // there is no fetch and no XHR — a <script src> is the whole channel. The
+  // plugin's host part rewrites these files while the page is open, so a page
+  // that read them once would show what they held when it opened.
+  function loadScript(src, timeoutMs) {
+    return new Promise((resolve) => {
+      const el = document.createElement("script");
+      const done = (ok) => {
+        el.onload = el.onerror = null;
+        resolve(ok);
+      };
+      el.onload = () => done(true);
+      el.onerror = () => done(false);
+      el.src = src + "?t=" + Date.now();
+      document.head.appendChild(el);
+      setTimeout(() => done(false), timeoutMs || 5000);
+    });
+  }
+
+  // modelDataReady waits for the host's first model list. The host starts when
+  // this page is opened, so on a cold start the file is written a moment after
+  // the page is: retry a few times, then leave the hint that says so.
+  let modelRetryTimer = null;
+  async function waitForModelData(tries = 10, delayMs = 1500) {
+    if (loadModelData() && rawModels.length > 0) return true;
+    for (let i = 0; i < tries; i++) {
+      await new Promise((r) => setTimeout(r, delayMs));
+      await loadScript("models-data.js");
+      if (loadModelData() && rawModels.length > 0) {
+        renderProviderFilter();
+        renderStats();
+        renderList();
+        return true;
+      }
+    }
+    renderList();
+    return false;
+  }
+  if (rawModels.length === 0) {
+    modelRetryTimer = setTimeout(() => {
+      waitForModelData().catch(() => {});
+    }, 400);
+    setTimeout(() => {
+      if (modelRetryTimer) clearTimeout(modelRetryTimer);
+    }, 60000);
+  }
   const liveProviderNames = new Map();
   let liveProviders = [];
   let isRefreshing = false;
@@ -2253,10 +2307,24 @@
   // 保存后回读 settings.json 自检：页面说「已保存」不算数，Magpie 真正拿来计费的
   // 那份价格里有没有这个键、四个单价对不对，才是价格生效的判据。
   //
-  // 这个自检要有本地服务才能做（GET /api/verify 读的就是 settings.json），而插件页
-  // 的 CSP 是 connect-src 'none'，在窗口里连不出去。所以这里恒返回 null，调用方
-  // 只提示「已提交」，不会谎称「已验证」——一句假的「已验证」比不提示更糟。
+  // 页面自己读不到 settings.json（CSP 是 connect-src 'none'，没有 fetch），所以由
+  // 插件自带的宿主部分（index.js）在后台把保存写进 settings.json、回读一遍，再把
+  // 结果写进 page/price-status.js；页面重新加载这个脚本就能拿到真实结果。
+  // 宿主还没写（刚装好、或宿主没起来）时返回 null，调用方只提示「已提交」——
+  // 一句假的「已验证」比不提示更糟。
   async function verifyPrices() {
+    for (let i = 0; i < 8; i++) {
+      await loadScript("price-status.js", 3000);
+      const status = window.__MAGPIE_PRICE_STATUS__;
+      if (status && status.verify && status.verify.checked > 0) {
+        // 宿主的写入是异步的：先看到的是上一次的保存，等到它认了这次 applyToken
+        const token = (pluginOptions && pluginOptions.applyToken) || "";
+        if (!token || status.appliedToken === token || status.applies.some((a) => a.token === token && a.applied)) {
+          return status.verify;
+        }
+      }
+      await new Promise((r) => setTimeout(r, 1200));
+    }
     return null;
   }
 

@@ -15,6 +15,10 @@ const path = require('path');
 const matcher = require('./matcher');
 
 const OUTPUT = 'models-data.js';
+// The usage snapshot is its own file: it changes every time a call is logged,
+// the model list only when providers or the catalog do. Keeping them apart lets
+// the host refresh the numbers without paying for a catalog scan.
+const USAGE_OUTPUT = 'usage-data.js';
 
 function sourceMtime(packageDir) {
   const paths = [
@@ -84,4 +88,53 @@ function writePageData(packageDir, opts = {}) {
   }
 }
 
-module.exports = { writePageData, OUTPUT };
+// usageSourceKey changes whenever a call is logged: the host rebuilds the
+// snapshot only then, so a quiet machine costs one stat per tick.
+function usageSourceKey() {
+  try {
+    const st = fs.statSync(matcher.paths.usage);
+    return st.size + ':' + Math.round(st.mtimeMs);
+  } catch {
+    return '';
+  }
+}
+
+let usageCache = null;
+
+// writeUsageData writes page/usage-data.js: every call this machine logged,
+// counted the way magpie counts them, by model name. The page used to take its
+// per-model numbers from usage:day, which lists only twelve models per agent
+// and so could never add up to the total it showed beside them.
+function writeUsageData(packageDir, opts = {}) {
+  const targetDir = opts.pageDir ? path.resolve(opts.pageDir) : path.join(packageDir, 'page');
+  const target = path.join(targetDir, USAGE_OUTPUT);
+  const key = usageSourceKey();
+  try {
+    if (!opts.force && usageCache && usageCache.key === key && usageCache.file === target) {
+      return { ok: true, file: target, requests: usageCache.payload.totalSummary.requests, generated: false };
+    }
+    const u = matcher.getUsageData();
+    const unattributed = (u.bareUsage[matcher.UNATTRIBUTED] || {}).requests || 0;
+    const payload = {
+      v: 1,
+      generatedAt: new Date().toISOString(),
+      totalSummary: u.totalSummary,
+      bareUsage: u.bareUsage,
+      unattributed: unattributed
+    };
+    const js =
+      ';(function(g){\n' +
+      '  g.__MAGPIE_USAGE_DATA__ = ' + JSON.stringify(payload) + ';\n' +
+      '})(typeof window !== "undefined" ? window : globalThis);\n';
+    fs.mkdirSync(targetDir, { recursive: true });
+    const tmp = path.join(targetDir, '.' + USAGE_OUTPUT + '.' + process.pid + '.tmp');
+    fs.writeFileSync(tmp, js, 'utf8');
+    fs.renameSync(tmp, target);
+    usageCache = { key: key, file: target, payload: payload };
+    return { ok: true, file: target, requests: payload.totalSummary.requests, generated: true };
+  } catch (err) {
+    return { ok: false, file: target, requests: 0, generated: false, error: err.message };
+  }
+}
+
+module.exports = { writePageData, writeUsageData, OUTPUT, USAGE_OUTPUT };

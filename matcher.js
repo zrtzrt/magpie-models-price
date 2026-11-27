@@ -496,9 +496,39 @@ function getMagpieModels() {
   return models;
 }
 
+// UNATTRIBUTED is the bucket for a call whose model name says nothing usable
+// (none, "auto", a routing group, a tool). Magpie counts those calls; a page
+// that dropped them showed a total its own cards could not add up to.
+const UNATTRIBUTED = '__unattributed__';
+
+function emptyUsageEntry(lastAt) {
+  return {
+    requests: 0,
+    inputTokens: 0,
+    outputTokens: 0,
+    cacheRead: 0,
+    cacheWrite: 0,
+    totalTokens: 0,
+    lastAt: lastAt
+  };
+}
+
 function getUsageData() {
   const channelUsage = {};
   const bareUsage = {};
+
+  const addBare = (key, r, inT, outT, cRead, cWrite) => {
+    if (!bareUsage[key]) bareUsage[key] = emptyUsageEntry(r.t);
+    const e = bareUsage[key];
+    e.requests++;
+    e.inputTokens += inT;
+    e.outputTokens += outT;
+    e.cacheRead += cRead;
+    e.cacheWrite += cWrite;
+    e.totalTokens += inT + outT;
+    if (r.t && (!e.lastAt || r.t > e.lastAt)) e.lastAt = r.t;
+  };
+
   const totalSummary = {
     requests: 0,
     inputTokens: 0,
@@ -518,14 +548,35 @@ function getUsageData() {
       if (!line.trim()) continue;
       try {
         const r = JSON.parse(line);
-        // 严格排除测试请求与健康探针 (Magpie 自身健康探针、curl 手动测试、0 Token 请求、错误状态等)
-        if (isTestOrProbeRequest(r)) continue;
+        // 与 Magpie 自己的账本同口径（internal/usage/usage.go 的 Totals.count）：
+        // 一个请求算一次，失败的算（Errors 另计）、agent 取消的算（Canceled 另计），
+        // 只有失败后被转交重试的那一次（HandedOn）不算。
+        // 以前这里用 isTestOrProbeRequest 剔掉非 200、0 Token、探针请求，于是本插件
+        // 的「历史调用」永远比 Magpie 用量页少一截，同一个词两个数字。
+        if (r.handedOn === true) continue;
 
         const isGroupReq = r.req && (r.req.startsWith('group/') || r.req.startsWith('group:'));
         const actualModel = (r.served && r.served !== 'auto') ? r.served : (r.model !== 'auto' ? r.model : null);
         const bare = actualModel || (!isGroupReq && r.req ? (r.req.includes('/') ? r.req.split('/')[1] : r.req) : null);
-        if (
-          !bare ||
+        const inT = r.in || 0;
+        const outT = r.out || 0;
+        const cRead = r.cache_read || 0;
+        const cWrite = r.cache_write || 0;
+        const sumT = inT + outT;
+
+        // The totals count every call, before any question of what to call it:
+        // a page whose headline said 42,600 while its cards added up to 41,500
+        // was reading two different sums (the cards lost every call whose model
+        // name is unusable, and usage:day lists only twelve models per agent).
+        totalSummary.requests++;
+        totalSummary.inputTokens += inT;
+        totalSummary.outputTokens += outT;
+        totalSummary.cacheRead += cRead;
+        totalSummary.totalTokens += sumT;
+
+        // A call with no usable model name still counts, in a bucket the page
+        // can name: dropping it is what made the two sums differ.
+        const unusable = !bare ||
           bare === 'unknown' ||
           bare === 'probe' ||
           bare === 'auto' ||
@@ -534,24 +585,14 @@ function getUsageData() {
           bare === 'web_fetch' ||
           bare === 'never-stuck' ||
           bare.startsWith('group/') ||
-          bare.endsWith('-model')
-        ) {
+          bare.endsWith('-model');
+        if (unusable) {
+          addBare(UNATTRIBUTED, r, inT, outT, cRead, cWrite);
           continue;
         }
         const req = (!isGroupReq && r.req && r.req.includes('/') && !r.req.startsWith('group/'))
           ? r.req
           : (r.provider + '/' + bare);
-        const inT = r.in || 0;
-        const outT = r.out || 0;
-        const cRead = r.cache_read || 0;
-        const cWrite = r.cache_write || 0;
-        const sumT = inT + outT;
-
-        totalSummary.requests++;
-        totalSummary.inputTokens += inT;
-        totalSummary.outputTokens += outT;
-        totalSummary.cacheRead += cRead;
-        totalSummary.totalTokens += sumT;
 
         if (!channelUsage[req]) {
           channelUsage[req] = {
@@ -574,30 +615,7 @@ function getUsageData() {
           channelUsage[req].lastAt = r.t;
         }
 
-        const updateBare = (bKey) => {
-          if (!bareUsage[bKey]) {
-            bareUsage[bKey] = {
-              requests: 0,
-              inputTokens: 0,
-              outputTokens: 0,
-              cacheRead: 0,
-              cacheWrite: 0,
-              totalTokens: 0,
-              lastAt: r.t
-            };
-          }
-          bareUsage[bKey].requests++;
-          bareUsage[bKey].inputTokens += inT;
-          bareUsage[bKey].outputTokens += outT;
-          bareUsage[bKey].cacheRead += cRead;
-          bareUsage[bKey].cacheWrite += cWrite;
-          bareUsage[bKey].totalTokens += sumT;
-          if (r.t && (!bareUsage[bKey].lastAt || r.t > bareUsage[bKey].lastAt)) {
-            bareUsage[bKey].lastAt = r.t;
-          }
-        };
-
-        updateBare(bare);
+        addBare(bare, r, inT, outT, cRead, cWrite);
         // 不再把 cleanModelName 的别名也累加一遍：别名和原始名指向同一批调用，
         // 页面按组求和时会把同族 Token 重复计算（836M 实际只有约 553M）。
         // 需要按归一化名查找的地方，用 getUsageData 的消费方自行 cleanModelName。
@@ -1304,6 +1322,7 @@ module.exports = {
   getPricingStatus,
   getProviderClassifications,
   getUsageData,
+  UNATTRIBUTED,
   matchModel,
   scanAll,
   applyPrice,

@@ -39,6 +39,10 @@ const PAGE_DIR = process.env.MAGPIE_MODELS_PRICE_PAGE_DIR
   : path.join(SELF_ROOT, 'page');
 const STATUS_FILE = path.join(PAGE_DIR, 'price-status.js');
 const MODELS_FILE = path.join(PAGE_DIR, 'models-data.js');
+// The usage snapshot the page reads instead of usage:day: that read lists only
+// twelve models per agent, so its per-model numbers never added up to its own
+// total (see page-data.js).
+const USAGE_FILE = path.join(PAGE_DIR, 'usage-data.js');
 
 // How often the host looks for a save to apply and for a stale model list.
 // A page save causes no event here (magpie keeps plugins.json to itself), so
@@ -101,6 +105,19 @@ function refreshModels(force) {
   }
 }
 
+// refreshUsage rewrites the page's usage snapshot when this machine logged a
+// call since the last tick. page-data.js keeps the last one in memory and
+// compares the file's size and mtime, so a quiet machine reads nothing.
+function refreshUsage() {
+  try {
+    const built = pageData.writeUsageData(SELF_ROOT, { pageDir: PAGE_DIR });
+    if (built && built.ok) return { ok: true, requests: built.requests, generated: !!built.generated };
+    return { ok: false, error: (built && built.error) || 'usage snapshot failed' };
+  } catch (error) {
+    return { ok: false, error: error.message };
+  }
+}
+
 // tick applies every save this machine has not applied yet, refreshes the model
 // list, and writes the page's status script. It never throws: a host that dies
 // on one bad file stops applying every later save.
@@ -129,6 +146,8 @@ function tick() {
     }
     const models = refreshModels(false);
     status.models = { ok: !!models.ok, count: models.models || 0, generated: !!models.generated, ageSec: modelsAge(), error: models.error || '' };
+    const usage = refreshUsage();
+    status.usage = { ok: !!usage.ok, requests: usage.requests || 0, generated: !!usage.generated, error: usage.error || '' };
     // What settings.json actually holds for the prices the page saved: the page
     // says 'saved', this says whether magpie bills that price.
     try {
@@ -187,4 +206,4 @@ async function MagpieModelsPricePlugin(_input, _options) {
 module.exports = MagpieModelsPricePlugin;
 module.exports.default = { id: 'models-price', server: MagpieModelsPricePlugin };
 module.exports.server = MagpieModelsPricePlugin;
-module.exports.__host = { tick, stop, refreshModels, statusScript, STATUS_FILE, MODELS_FILE, PAGE_DIR, TICK_MS };
+module.exports.__host = { tick, stop, refreshModels, refreshUsage, statusScript, STATUS_FILE, MODELS_FILE, USAGE_FILE, PAGE_DIR, TICK_MS };

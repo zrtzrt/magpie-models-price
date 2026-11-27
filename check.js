@@ -638,8 +638,15 @@ function testApiFilterAndPeakDefaults() {
   assert.ok(!fs.existsSync(path.join(__dirname, 'page/generate-data.js')), 'page/generate-data.js 必须从仓库与包中移除');
   const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
   assert.ok(!/models-data|generate-data/.test(JSON.stringify(manifest.files || [])), 'package.json files 不得包含本机数据快照或生成器');
-  const ignore = fs.readFileSync(path.join(__dirname, '.gitignore'), 'utf8').split(/\r?\n/);
-  assert.ok(ignore.includes('page/models-data.js'), 'page/models-data.js 是运行时产物，必须写进 .gitignore');
+  // .gitignore is a repository file, not part of the package: a checkout has
+  // it, a copy installed from the tarball does not. Reading it unconditionally
+  // made "node check.js" die with ENOENT on every installed copy.
+  const ignoreFile = path.join(__dirname, '.gitignore');
+  if (fs.existsSync(ignoreFile)) {
+    const ignore = fs.readFileSync(ignoreFile, 'utf8').split(/\r?\n/);
+    assert.ok(ignore.includes('page/models-data.js'), 'page/models-data.js 是运行时产物，必须写进 .gitignore');
+    assert.ok(ignore.includes('page/usage-data.js'), 'page/usage-data.js 是运行时产物，必须写进 .gitignore');
+  }
   const iconFiles = fs.readdirSync(path.join(__dirname, 'page/icons'));
   assert.ok(iconFiles.length <= 2, 'page/icons 只能携带页面实际绘制的图标，实际 ' + iconFiles.length);
 
@@ -696,13 +703,27 @@ console.log('14. 测试实时用量合并与 api-only 统计口径...');
   const win = {};
   const ctx = { console, window: win };
   vm.createContext(ctx);
-  vm.runInContext('let usagePeriod = "all";\n' + block + '\nthis.__api = { mergeLiveUsage, period: () => usagePeriod };', ctx);
+  vm.runInContext('let usagePeriod = "all"; let usageFromSnapshot = false;\n' + block + '\nthis.__api = { mergeLiveUsage, mergeUsageSnapshot, state: () => [usagePeriod, usageFromSnapshot] };', ctx);
   const api = ctx.__api;
+  // The snapshot the host writes wins: it counts every call, so the total and
+  // the cards are the same sum. usage:day stays as the fallback only.
+  const snapOk = api.mergeUsageSnapshot({
+    totalSummary: { requests: 38660, inputTokens: 600000000, outputTokens: 30000000, totalTokens: 630000000 },
+    bareUsage: { 'deepseek-v4.1-flash': { requests: 38419, totalTokens: 630000000, inputTokens: 600000000, outputTokens: 30000000 }, __unattributed__: { requests: 241 } },
+    unattributed: 241
+  });
+  assert.strictEqual(snapOk, true, '页面应接受宿主写出的用量快照');
+  assert.strictEqual(win.__MAGPIE_USAGE_SUMMARY__.requests, 38660, '总数应取快照');
+  assert.strictEqual(win.__MAGPIE_USAGE_UNATTRIBUTED__, 241, '未归属调用数应带到页面');
+  const snapSum = Object.values(win.__MAGPIE_BARE_USAGE__).reduce((s, e) => s + (e.requests || 0), 0);
+  assert.strictEqual(snapSum, win.__MAGPIE_USAGE_SUMMARY__.requests, '页面按模型求和必须等于它自己显示的总数');
+  assert.strictEqual(api.state()[1], true, '读过快照后应记下来源');
+
   api.mergeLiveUsage({ period: 'all', calls: 38660, errors: 5, input: 600000000, output: 30000000, cacheRead: 5000000000, cost: 82.46, agents: [{ models: [{ model: 'deepseek-v4.1-flash', calls: 38000, input: 590000000, output: 29000000, cacheRead: 4900000000 }] }] });
   assert.strictEqual(win.__MAGPIE_USAGE_SUMMARY__.requests, 38660, '宿主 usage:day 全量调用数应覆盖静态快照');
   assert.strictEqual(win.__MAGPIE_USAGE_SUMMARY__.totalTokens, 630000000, '总 Token 应按 input+output 计算');
   assert.strictEqual(win.__MAGPIE_BARE_USAGE__['deepseek-v4.1-flash'].requests, 38000, '模型用量徽标应使用宿主实时值');
-  assert.strictEqual(api.period(), 'all', 'usage:day 的区间应为全量');
+  assert.strictEqual(api.state()[0], 'all', 'usage:day 的区间应为全量');
   api.mergeLiveUsage({ period: '30d', calls: 30000, input: 500000000, output: 20000000, cacheRead: 0, models: [] });
   assert.strictEqual(win.__MAGPIE_USAGE_SUMMARY__.requests, 38660, '30 天 fallback 不能把全量历史改小');
   api.mergeLiveUsage({ summary: { requests: 123, totalTokens: 456, inputTokens: 300, outputTokens: 156, cacheRead: 0 }, models: { foo: { requests: 7, totalTokens: 70, inputTokens: 50, outputTokens: 20, cacheRead: 0 } } });
@@ -804,9 +825,27 @@ console.log('17. 测试页面模型数据生成器（运行时产物、只读配
   assert.strictEqual(fs.readFileSync(path.join(tmpHome, '.config', 'magpie', 'settings.json'), 'utf8'), settingsBefore, '生成页面数据不能改写 settings.json');
   const second = JSON.parse(run());
   assert.ok(second.ok && !second.generated, '未过期的数据应直接复用，实际 ' + JSON.stringify(second));
+
+  // The usage snapshot is a second, separate file: it changes on every call, so
+  // it is built on its own (and, like the model list, never shipped).
+  // Both calls in one process: the host is one long-lived process, and that is
+  // where the in-memory key matters. A second process would re-read the log.
+  const usageOut = execFileSync(process.execPath, ['-e',
+    'const p = require(' + JSON.stringify(path.join(__dirname, 'page-data.js')) + ');' +
+    'const a = p.writeUsageData(' + JSON.stringify(tmpPkg) + ', { force: false });' +
+    'const b = p.writeUsageData(' + JSON.stringify(tmpPkg) + ', { force: false });' +
+    'console.log(JSON.stringify({ a: a, b: b }));'
+  ], { env: envAt(tmpHome), encoding: 'utf8' }).trim().split('\n').pop();
+  const usageBoth = JSON.parse(usageOut);
+  assert.ok(usageBoth.a.ok && usageBoth.a.generated, '首次应生成用量快照，实际 ' + JSON.stringify(usageBoth.a));
+  assert.ok(usageBoth.b.ok && !usageBoth.b.generated, '调用日志没变时不应重算用量快照，实际 ' + JSON.stringify(usageBoth.b));
+  const usageText = fs.readFileSync(path.join(tmpPkg, 'page', 'usage-data.js'), 'utf8');
+  assert.ok(usageText.includes('__MAGPIE_USAGE_DATA__'), '用量快照应导出页面读取的全局变量');
+  assert.strictEqual(fs.readFileSync(path.join(tmpHome, '.config', 'magpie', 'settings.json'), 'utf8'), settingsBefore, '生成用量快照也不能改写 settings.json');
+
   fs.rmSync(tmpHome, { recursive: true, force: true });
   fs.rmSync(tmpPkg, { recursive: true, force: true });
-  console.log('   ✓ 生成器包含渠道模型、不写价格、可复用缓存');
+  console.log('   ✓ 生成器包含渠道模型、不写价格、可复用缓存；用量快照独立生成且不写配置');
 }
 // 18. 纯页面插件清单与 CLI：没有 main/index.js，sync 生成数据，apply 应用页面保存
 console.log('18. 测试页面清单、宿主部分与 CLI 兜底通道...');
@@ -826,6 +865,7 @@ console.log('18. 测试页面清单、宿主部分与 CLI 兜底通道...');
   assert.ok((pkg.files || []).includes('bin/magpie-models-price.js'), 'npm files 必须包含 CLI');
   assert.ok(!(pkg.files || []).includes('page/models-data.js'), '页面数据不能打进 npm 包（含本机渠道信息）');
   assert.ok(!(pkg.files || []).includes('page/price-status.js'), '宿主写出的状态文件不能打进 npm 包（含本机价格与保存记录）');
+  assert.ok(!(pkg.files || []).includes('page/usage-data.js'), '宿主写出的用量快照不能打进 npm 包（含本机每次调用的模型与 Token）');
 
   const os = require('os');
   const { execFileSync } = require('child_process');
@@ -872,6 +912,15 @@ console.log('19. 测试宿主部分（自动应用保存 / 生成模型列表 / 
       applyToken: 'host-save-19'
     } }
   ] }, null, 2));
+  // A call log with the three shapes that made the two sums disagree: a normal
+  // call, a call that failed (magpie counts it), and a call that named no model
+  // (magpie counts it, a page has no card for it).
+  fs.writeFileSync(path.join(configDir, 'usage.jsonl'), [
+    JSON.stringify({ t: '2026-11-27T01:00:00Z', provider: 'openai', model: 'gpt-5', served: 'gpt-5', req: 'openai/gpt-5', in: 100, out: 50, status: 200 }),
+    JSON.stringify({ t: '2026-11-27T01:01:00Z', provider: 'openai', model: 'gpt-5', served: 'gpt-5', req: 'openai/gpt-5', in: 10, out: 0, status: 500, error: 'boom' }),
+    JSON.stringify({ t: '2026-11-27T01:02:00Z', provider: 'openai', model: null, served: null, req: 'openai/auto', in: 5, out: 0, status: 200 }),
+    JSON.stringify({ t: '2026-11-27T01:03:00Z', provider: 'openai', model: 'gpt-5', served: 'gpt-5', in: 0, out: 0, status: 200, handedOn: true })
+  ].join('\n') + '\n');
   const pageDir = path.join(home, 'page');
   fs.mkdirSync(pageDir, { recursive: true });
   // The host runs in the plugin host process; this runs the same module in a
@@ -903,6 +952,27 @@ console.log('19. 测试宿主部分（自动应用保存 / 生成模型列表 / 
   assert.strictEqual(statusValue.appliedToken, 'host-save-19', '状态脚本必须记下已应用的 applyToken');
 
   assert.ok(fs.existsSync(path.join(pageDir, 'models-data.js')), '宿主必须生成页面要画的模型列表');
+
+  // The usage snapshot: the page's headline total and the sum of its cards must
+  // be the same sum. They were not — the cards took their numbers from
+  // usage:day, which lists twelve models per agent, and every call whose model
+  // name was unusable was dropped from the cards but kept in the total.
+  const usageFile = path.join(pageDir, 'usage-data.js');
+  assert.ok(fs.existsSync(usageFile), '宿主必须写出页面读取的用量快照');
+  const usageCode = fs.readFileSync(usageFile, 'utf8');
+  assert.ok(usageCode.includes('__MAGPIE_USAGE_DATA__'), '用量快照必须导出页面读取的全局变量');
+  const usageValue = JSON.parse(usageCode.slice(usageCode.indexOf('= ') + 2).match(/^([\s\S]*?);\n\}\)/)[1]);
+  const bareSum = Object.values(usageValue.bareUsage || {}).reduce((s, e) => s + (e.requests || 0), 0);
+  assert.strictEqual(
+    bareSum,
+    usageValue.totalSummary.requests,
+    '按模型求和必须等于总数：' + bareSum + ' vs ' + usageValue.totalSummary.requests
+  );
+  // 3 counted calls (the handed-on try is no request of its own), one of them
+  // with no model name: the bucket is what keeps the two sums equal.
+  assert.strictEqual(usageValue.totalSummary.requests, 3, '三个请求应各算一次，被转交的那次不算');
+  assert.strictEqual(usageValue.unattributed, 1, '未标模型名的调用应落进未归属桶，而不是被丢掉');
+  assert.strictEqual(usageValue.bareUsage.__unattributed__.requests, 1, '未归属桶必须能在按模型求和时被找到');
 
   // 同一个 applyToken 再跑一次不能重复写：宿主每 2 秒一轮，重复应用会不断改写 settings.json
   const before = fs.statSync(path.join(configDir, 'settings.json')).mtimeMs;
@@ -938,7 +1008,14 @@ console.log('16. 测试本地服务边界（回环绑定 / CORS / 静态目录�
   const http = require('http');
   const { spawn } = require('child_process');
   const tmpHome = fs.mkdtempSync(path.join(os.tmpdir(), 'magpie-price-srv-'));
-  const port = 3400 + Math.floor(Math.random() * 200);
+  // A port the system says is free, rather than a random guess: a guess can land
+  // on something the machine already listens on, and then startServer resolves
+  // with the EADDRINUSE message instead of binding, which looks like a failed
+  // loopback check rather than a taken port.
+  const port = Number(execFileSync(process.execPath, ['-e',
+    'const s = require("net").createServer();' +
+    's.listen(0, "127.0.0.1", () => { process.stdout.write(String(s.address().port)); s.close(); });'
+  ], { encoding: 'utf8' }).trim());
   // The server is started here rather than by running server.js, so the test can
   // read the address it actually bound: connecting from the machine's own
   // non-loopback address proves nothing on Windows, where such a connection

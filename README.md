@@ -29,6 +29,17 @@ magpie plugin add magpie-models-price
 2. 改价保存后，宿主在 2 秒内把改动写进 `settings.json`，并把「真实回读结果」写进 `page/price-status.js`；
 3. 页面读回该状态，告诉你价格是否真的生效——不是「已保存」这种一厢情愿的提示。
 
+## 调用次数口径（和 Magpie 用量页对得上）
+
+「历史调用总数」和每张卡片的调用次数现在是**同一个和**。以前不是，原因有两个，都已修：
+
+1. **本插件自己剔过请求。** `matcher.getUsageData` 曾用「探针/测试请求」规则丢掉非 200、0 Token、curl/magpie 探针，而 Magpie 的账本（`internal/usage/usage.go` 的 `Totals.count`）**每个请求算一次**：失败的算（另计入 `Errors`）、agent 取消的算（另计入 `Canceled`），只有失败后被转交重试的那一次（`HandedOn`）不算。两套规则下同一个词是两个数字。现在本插件按 Magpie 的规则计数。
+2. **页面曾按 `usage:day` 求和。** 那个 read 为了画卡片，每个 agent 只列前 12 个模型（`DayModels = 12`），超出的只进 agent 合计、不进明细。于是卡片求和永远小于它旁边的总数。现在宿主把整份调用日志聚合成 `page/usage-data.js`，页面读它；`usage:day` 只在拿不到该文件时兜底。
+
+**没有可用模型名的调用**（`model` 为空、`auto`、路由组、工具名）仍然计入总数，落在 `__unattributed__` 桶里，统计卡副标题会写明「其中 N 次未标模型名」。这类调用本来就没有卡片可归，丢掉它们才是错的 —— 那正是两个数字对不上的另一半原因。
+
+`page/usage-data.js` 与 `page/models-data.js` 一样是**本机运行时产物**：gitignore、不进 npm 包、CI 会拦。
+
 ## 功能特性
 
 - **按模型聚合展示**：同一原生模型（如 `gemini-3.8-flash`）自动归并为一张卡片，展示所有供应商渠道与重叠图标。
@@ -80,7 +91,7 @@ magpie-models-price ui               # 可选独立 Web 控制台（127.0.0.1:34
 ## 开发与测试
 
 ```bash
-node check.js      # 19 组自测：目录解析、保存只写改动、清单与宿主、CLI、服务边界、页面 CSP
+node check.js      # 19 组自测：目录解析、保存只写改动、清单与宿主、用量口径、CLI、服务边界、页面 CSP
 ```
 
 CI 在 ubuntu / macOS / Windows 三平台 × Node 20/22/24 跑同一套测试，并检查打包产物不含任何本地配置。

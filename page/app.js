@@ -624,6 +624,10 @@
     return "subscription";
   }
 
+  // usageFromSnapshot says the numbers came from the host's own call log rather
+  // than usage:day, whose model list is capped: the card sums then add up.
+  let usageFromSnapshot = false;
+
   // 2.2 动态合并用量数据 (Live Usage Summary Sync)
   // 三个来源结构并不一样：
   //  - 插件自建 /api/usage：{ summary:{...}, models:{bare:{...}}, channels }
@@ -644,6 +648,29 @@
       totalTokens: Number(s.totalTokens ?? s.tokens ?? input + output) || 0,
       lastAt: s.lastAt || s.last || undefined
     };
+  }
+
+  // The host writes this machine's whole call log to page/usage-data.js, counted
+  // the way magpie counts it (index.js, page-data.js). The page reads it before
+  // usage:day, whose per-model list stops at twelve models per agent: that cap
+  // is why the headline total and the sum of the cards disagreed.
+  function mergeUsageSnapshot(snapshot) {
+    if (!snapshot || typeof snapshot !== "object") return false;
+    if (!snapshot.totalSummary || !snapshot.bareUsage) return false;
+    const t = snapshot.totalSummary;
+    window.__MAGPIE_USAGE_SUMMARY__ = {
+      requests: Number(t.requests) || 0,
+      inputTokens: Number(t.inputTokens) || 0,
+      outputTokens: Number(t.outputTokens) || 0,
+      cacheRead: Number(t.cacheRead) || 0,
+      cacheWrite: Number(t.cacheWrite) || 0,
+      totalTokens: Number(t.totalTokens) || 0
+    };
+    window.__MAGPIE_BARE_USAGE__ = { ...(snapshot.bareUsage || {}) };
+    window.__MAGPIE_USAGE_UNATTRIBUTED__ = Number(snapshot.unattributed) || 0;
+    usagePeriod = "all";
+    usageFromSnapshot = true;
+    return true;
   }
 
   function mergeLiveUsage(liveUsage) {
@@ -798,10 +825,19 @@
 
       // 实时用量统计：浏览器走本地服务，Magpie 窗口走 bridge。
       // 以前只放在 if (globalThis.magpie) 里，独立打开的 Web UI 永远不刷新。
+      //
+      // 顺序是有意的：先读宿主写的全量快照（usage-data.js），它和 Magpie 用量页
+      // 同一口径、不截断模型；只有拿不到时才退回 usage:day —— 那个 read 每个 agent
+      // 只列 12 个模型，按它求和永远对不上它自己给的总数。
       try {
-        const liveUsage = await fetchLiveUsage();
-        if (liveUsage && typeof liveUsage === "object") {
-          mergeLiveUsage(liveUsage);
+        const ok = await loadScript("usage-data.js", 3000);
+        if (ok && mergeUsageSnapshot(window.__MAGPIE_USAGE_DATA__)) {
+          // the snapshot is the whole story; nothing to merge from usage:day
+        } else {
+          const liveUsage = await fetchLiveUsage();
+          if (liveUsage && typeof liveUsage === "object") {
+            mergeLiveUsage(liveUsage);
+          }
         }
       } catch (e) {
         console.warn("Failed to read live usage:", e);
@@ -1421,7 +1457,16 @@
     if ($("stat-custom")) $("stat-custom").textContent = customCount;
     if ($("stat-unpriced")) $("stat-unpriced").textContent = unpricedCount;
     if ($("stat-usage")) $("stat-usage").textContent = formatNumber(usageSummary.requests);
-    if ($("stat-usage-sub")) $("stat-usage-sub").textContent = `${formatTokens(usageSummary.totalTokens)} Tokens`;
+    if ($("stat-usage-sub")) {
+      // The calls that named no usable model are still in the total, and the
+      // cards cannot show them: say so, rather than leave a gap the reader has
+      // to guess at (the gap used to be invisible, and large).
+      const unattributed = Number(window.__MAGPIE_USAGE_UNATTRIBUTED__) || 0;
+      const base = `${formatTokens(usageSummary.totalTokens)} Tokens`;
+      $("stat-usage-sub").textContent = unattributed > 0
+        ? `${base} · ${t("usage_unattributed").replace("{n}", formatNumber(unattributed))}`
+        : base;
+    }
     if ($("stat-usage-k")) {
       $("stat-usage-k").textContent = usagePeriod === "all" ? t("tile_usage_k") : t("tile_usage_k_30d");
     }

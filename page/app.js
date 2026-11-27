@@ -9,6 +9,10 @@
   };
 
   let toastTimer = null;
+  // The options the page last saved (or loaded), so a save that changes nothing
+  // carries no new applyToken. Declared here because the bridge init below reads
+  // the options it loaded and takes that as the baseline.
+  let savedSignature = "";
   function showToast(msg) {
     const tEl = $("toast");
     if (!tEl) return;
@@ -164,6 +168,14 @@
       applyPeakOptions(pluginOptions);
       customPrices = pluginOptions.customPrices || {};
       globalMode = pluginOptions.mode || "all-equivalent";
+      // The options just read are what is already applied: a save that changes
+      // nothing must not carry a new applyToken, or opening the page and
+      // touching nothing would write settings.json again.
+      savedSignature = optionsSignature({
+        mode: globalMode,
+        modelPeaks,
+        customPrices
+      });
     } catch (e) {
       console.warn("Magpie bridge ready warning:", e);
     }
@@ -2269,7 +2281,6 @@
   // it afterwards, so a reload for another reason (magpie starting, a plugin
   // toggled) writes nothing. The token is only fresh when something changed:
   // re-saving an unchanged page must not make magpie reload the host.
-  let savedSignature = "";
   function optionsSignature(payload) {
     const keys = Object.keys(payload).sort();
     return JSON.stringify(keys.map((k) => [k, payload[k]]));

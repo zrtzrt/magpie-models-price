@@ -1251,25 +1251,6 @@ function listRateWindowTargets() {
   };
 }
 
-// First-run default: give every active pay-as-you-go channel that resells a
-// DeepSeek model the vendor's recommended windows. The marker is stored in
-// the plugin options so clearing all windows later is not undone on restart.
-function applyDefaultRateWindows() {
-  const opts = readPluginOptions() || {};
-  if (Number(opts.rateDefaultsVersion || 0) >= 1) return { ok: true, skipped: true, applied: [] };
-  const targets = listRateWindowTargets().providers || [];
-  const applied = [];
-  for (const target of targets) {
-    if (!target || !target.peak) continue;
-    if (Array.isArray(target.rateWindows) && target.rateWindows.length > 0) continue;
-    const windows = Array.isArray(target.recommended) ? target.recommended : [];
-    if (!windows.length) continue;
-    const result = setRateWindows(target.id, windows);
-    if (result.ok) applied.push({ id: target.id, windows: result.windows });
-  }
-  return { ok: true, skipped: false, applied };
-}
-
 // ---- 模型级峰谷设置（插件 options.modelPeaks） ----
 // 页面按模型族保存 { enabled, rate, windows }；Magpie 只有渠道级 rateWindows，
 // 因此这里把渠道内显式配置的模型汇总：配置一致才写渠道，冲突时报告并保持原样。
@@ -1451,7 +1432,6 @@ module.exports = {
   setRateWindows,
   normalizeRateWindows,
   recommendedRateWindows,
-  applyDefaultRateWindows,
   normalizeModelPeaks,
   syncModelPeakWindows,
   modelPeakKeyFor,

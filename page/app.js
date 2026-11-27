@@ -796,75 +796,13 @@
   }
 
   // 2.3 核心数据刷新控制器 (Manual & Auto-Refresh)
-  // 插件自带的 HTTP 服务端口，与 package.json 的 magpie.page.service.port 一致。
-  const SERVICE_PORT = (typeof window !== "undefined" && window.__MAGPIE_SERVICE_PORT__) || 3456;
-
-  // 页面拿到本地服务的地址：bridge 的 magpie.service 只在 magpie web（浏览器打开）时非空，
-  // 桌面 App 窗口里它是 ""，表示服务就在本机 127.0.0.1 的这个端口上。
-  // 之前这里读的是不存在的 globalThis.MAG.service，永远拿到 ""，于是用量只能读到宿主缓存，
-  // 价格同步也只能等 index.js 的 60 秒定时器。
-  // 候选地址：bridge 给的、页面同源（magpie 可能把服务代理到自己名下）、以及
-  // 桌面 App 窗口里直连本机端口（此时 magpie.service 是 ""）。
-  function serviceCandidates() {
-    const list = [];
-    const fromBridge = globalThis.magpie && typeof magpie.service === "string" ? magpie.service : "";
-    if (fromBridge) list.push(fromBridge.replace(/\/$/, ""));
-    const legacy = globalThis.MAG && typeof globalThis.MAG.service === "string" ? globalThis.MAG.service : "";
-    if (legacy) list.push(legacy.replace(/\/$/, ""));
-    list.push("");
-    list.push("http://127.0.0.1:" + SERVICE_PORT);
-    return [...new Set(list)];
-  }
-
-  // 插件页的 CSP 固定是 connect-src 'none'（magpie 的页面沙盒这么写，声明 page.service 也不放宽），
-  // 所以在 magpie 窗口里任何 fetch 都会被拦，只在控制台留下 "Refused to connect" 的噪音。
-  // 判据很直接：有 bridge 的页面就是窗口里这份，一律走 magpie.read；
-  // 只有独立打开的 web UI（public/index.html，没有 bridge）才直连本机服务。
-  function serviceReachable() {
-    return !(globalThis.magpie && typeof globalThis.magpie.read === "function");
-  }
-
-  let resolvedServiceBase = null;
-  let serviceProbeFailedAt = 0;
-  const SERVICE_PROBE_RETRY_MS = 15000;
-
-  // 逐个探测 /api/usage，哪个能通就用哪个；全部失败才退回宿主缓存。
-  // 失败不永久记住：服务可能比页面晚起，过一会儿允许再探一次。
-  async function resolveServiceBase() {
-    if (resolvedServiceBase) return resolvedServiceBase;
-    if (!serviceReachable()) return "";
-    if (serviceProbeFailedAt && Date.now() - serviceProbeFailedAt < SERVICE_PROBE_RETRY_MS) return "";
-    for (const base of serviceCandidates()) {
-      try {
-        const res = await fetch(base + "/api/usage", { cache: "no-store" });
-        if (!res.ok) continue;
-        const data = await res.json();
-        if (data && typeof data === "object" && !data.error) {
-          resolvedServiceBase = base;
-          serviceProbeFailedAt = 0;
-          return base;
-        }
-      } catch (e) {}
-    }
-    serviceProbeFailedAt = Date.now();
-    return "";
-  }
-
+  //
+  // 页面只通过宿主 bridge 读写。插件不再自己起 HTTP 服务（那套只在
+  // `node index.js ui` 的独立 Web UI 里用，由 public/index.html 自己驱动），
+  // 而插件页的 CSP 是 connect-src 'none'，任何 fetch 都会被拦下、只在控制台
+  // 留一行 "Refused to connect"。所以这里没有任何服务探测，只有 magpie.read。
   async function fetchLiveUsage() {
-    // 独立 Web UI：本地 HTTP 服务可用，直接读 /api/usage 全量统计。
-    if (serviceReachable()) {
-      try {
-        const base = await resolveServiceBase();
-        const res = base ? await fetch(base + "/api/usage", { cache: "no-store" }) : null;
-        if (res && res.ok) {
-          const data = await res.json();
-          if (data && typeof data === "object" && !data.error) return data;
-        }
-      } catch (e) {
-        console.warn("Failed to fetch /api/usage:", e);
-      }
-    }
-    // Magpie 窗口：页面沙箱 connect-src 'none'，只能走宿主 bridge。
+    // 宿主 bridge：
     // usage:day from:"all" 给全量历史；旧版 Magpie 没有这个 read 时退回 30 天 summary。
     if (globalThis.magpie && typeof magpie.read === "function") {
       try {
@@ -2319,6 +2257,24 @@
     persistOptions().catch((e) => console.warn("Failed to persist options:", e));
   }
 
+  // persistOptions hands one save to magpie, which stores it as this plugin's
+  // options and reloads the plugin host; the plugin applies that save once, at
+  // the reload, and writes settings.json itself.
+  //
+  // A page in magpie's window cannot write the file: its CSP is connect-src
+  // 'none', so the fetch to a local service this used to try never left the
+  // frame. It has no need to either — the bridge reaches magpie.
+  //
+  // applyToken marks the save as new. The plugin applies a token once and skips
+  // it afterwards, so a reload for another reason (magpie starting, a plugin
+  // toggled) writes nothing. The token is only fresh when something changed:
+  // re-saving an unchanged page must not make magpie reload the host.
+  let savedSignature = "";
+  function optionsSignature(payload) {
+    const keys = Object.keys(payload).sort();
+    return JSON.stringify(keys.map((k) => [k, payload[k]]));
+  }
+
   async function persistOptions() {
     const payload = {
       mode: globalMode,
@@ -2331,64 +2287,47 @@
       localStorage.setItem("magpie_models_price_mode", globalMode);
     } catch (e) {}
 
-    // 1. Magpie 插件 bridge
+    const signature = optionsSignature(payload);
+    const changed = signature !== savedSignature;
+    if (changed) {
+      payload.applyToken = Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
+    }
+
+    let saved = false;
     if (globalThis.magpie && magpie.options) {
       try {
         pluginOptions = await magpie.options.set({
           ...pluginOptions,
           ...payload
         });
+        saved = true;
       } catch (e) {
         console.warn("Failed to save options via magpie bridge:", e);
       }
     }
 
-    // 2. Magpie host postMessage 通信
-    try {
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage({ magpie: 1, method: "options:set", params: payload }, "*");
-      }
-    } catch (e) {}
+    // Magpie host postMessage 通信（窗口里没有 bridge 时的兜底）
+    if (!saved) {
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ magpie: 1, method: "options:set", params: payload }, "*");
+          saved = true;
+        }
+      } catch (e) {}
+    }
 
-    // 3. 立刻把价格写进 Magpie settings.json：走本地服务的 /api/mode，
-    //    由后端 matcher.applyGlobalMode 落盘。相对路径在插件页里会打到宿主，
-    //    所以优先用桥上注入的 service 地址。
-    //    峰谷开关同时写回插件自己的 options：localStorage 在 magpie 窗口里是
-    //    随时可能重建的沙箱，只有 plugins.json 能跨重启留住这两个开关。
-    let synced = false;
-    try {
-      const base = await resolveServiceBase();
-      if (base) {
-        await fetch(base + "/api/mode", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ mode: globalMode, customPrices }),
-          cache: "no-store"
-        }).then((res) => { synced = !!(res && res.ok); }).catch(() => {});
-        await fetch(base + "/api/options", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ modelPeaks }),
-          cache: "no-store"
-        }).catch(() => {});
-      }
-    } catch (e) {}
-    return synced;
+    if (saved && changed) savedSignature = signature;
+    return saved;
   }
 
   // 保存后回读 settings.json 自检：页面说「已保存」不算数，Magpie 真正拿来计费的
   // 那份价格里有没有这个键、四个单价对不对，才是价格生效的判据。
+  //
+  // 这个自检要有本地服务才能做（GET /api/verify 读的就是 settings.json），而插件页
+  // 的 CSP 是 connect-src 'none'，在窗口里连不出去。所以这里恒返回 null，调用方
+  // 只提示「已提交」，不会谎称「已验证」——一句假的「已验证」比不提示更糟。
   async function verifyPrices() {
-    try {
-      const base = await resolveServiceBase();
-      if (!base) return null;
-      const res = await fetch(base + "/api/verify", { cache: "no-store" });
-      if (!res.ok) return null;
-      const data = await res.json();
-      return data && typeof data === "object" && !data.error ? data : null;
-    } catch (e) {
-      return null;
-    }
+    return null;
   }
 
   // 把自检结果翻译成一句人话：生效 / 部分没生效（列出第一个不一致的键）

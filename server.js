@@ -28,6 +28,37 @@ function corsOrigin(req) {
   return host === 'localhost' || host === '127.0.0.1' || host === '[::1]' || host === '::1' ? origin : null;
 }
 
+// loopbackHost is whether the request names this service, not some name a
+// rebinding page resolved to 127.0.0.1: a browser sends "127.0.0.1:3456" for
+// this service and "evil.example:3456" for a page that resolves there, so the
+// Host header tells them apart where the socket address cannot.
+function loopbackHost(req) {
+  const host = String(req.headers.host || '');
+  const name = host.replace(/:\d+$/, '').replace(/^\[/, '').replace(/\]$/, '');
+  return name === '127.0.0.1' || name === 'localhost' || name === '::1';
+}
+
+// refusal is why this request may not touch the user's files, or "" when it
+// may. Binding to loopback is not enough on its own: a page the user has open
+// in another tab can still POST here, and a text/plain POST needs no preflight,
+// so it arrives and is answered unless the Origin is checked too. What these
+// routes write is magpie's settings.json and providers.json, so every write is
+// gated on all three:
+//
+//   - the Host must name loopback (a rebinding page sends its own name);
+//   - a request carrying an Origin must carry a local one;
+//   - a write must be application/json, which a cross-site page cannot send
+//     without the preflight this service answers for local origins only.
+function refusal(req) {
+  if (!loopbackHost(req)) return 'this service answers 127.0.0.1 only';
+  if (req.headers.origin && !corsOrigin(req)) return 'a page of another origin cannot change prices';
+  if (req.method !== 'GET' && req.method !== 'HEAD' && req.method !== 'OPTIONS') {
+    const type = String(req.headers['content-type'] || '').split(';')[0].trim().toLowerCase();
+    if (type !== 'application/json') return 'a write must be application/json';
+  }
+  return '';
+}
+
 function sendJson(res, data, status = 200) {
   const headers = { 'Content-Type': 'application/json; charset=utf-8' };
   const origin = corsOrigin(res.req);
@@ -63,6 +94,13 @@ const server = http.createServer((req, res) => {
       : { Vary: 'Origin' };
     res.writeHead(204, headers);
     return res.end();
+  }
+
+  // A request this service must not answer never reaches a route.
+  const denied = refusal(req);
+  if (denied) {
+    res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
+    return res.end(denied);
   }
 
   const parsedUrl = new URL(req.url, 'http://' + req.headers.host);

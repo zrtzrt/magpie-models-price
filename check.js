@@ -161,55 +161,76 @@ const geminiGroup = groups.find(g => g.bare === 'gemini-3.8-flash');
 assert(geminiGroup && geminiGroup.items.length === 3, 'gemini-3.8-flash 应包含 3 个供应商渠道');
 console.log('   ✓ 模型按标识分组聚合校验通过 (151 款唯一模型聚合 187 渠道)');
 
-// 7. settings.json 只在 modelPrices 真正变化时写盘；缺省 mode 不覆盖用户价格
-console.log('7. 测试 settings.json 幂等写入与缺省模式保护...');
+// 7. 插件加载不写任何文件；只应用页面保存过的那一次（applyToken 门控）
+console.log('7. 测试保存门控：载入不写盘、一次保存只应用一次...');
 {
   const os = require('os');
   const { execFileSync } = require('child_process');
   const home = fs.mkdtempSync(path.join(os.tmpdir(), 'magpie-models-price-home-'));
   const settingsDir = path.join(home, '.config/magpie');
+  const cacheDir = path.join(home, '.cache/magpie');
   fs.mkdirSync(settingsDir, { recursive: true });
+  fs.mkdirSync(cacheDir, { recursive: true });
   const settingsFile = path.join(settingsDir, 'settings.json');
+  const providersFile = path.join(settingsDir, 'providers.json');
   fs.writeFileSync(settingsFile, JSON.stringify({ theme: 'dark' }, null, 2));
+  // A pay-as-you-go DeepSeek channel with no rateWindows: what the old first-run
+  // default would have written to on its own.
+  fs.writeFileSync(providersFile, JSON.stringify({ providers: [
+    { id: 'opencode-zen-2', name: 'OpenCode Zen 2', models: [{ id: 'deepseek-v4.1-flash' }] }
+  ] }, null, 2));
+  fs.writeFileSync(path.join(cacheDir, 'providers-state.json'), JSON.stringify({ version: 1, providers: { providers: [
+    { id: 'opencode-zen-2', name: 'OpenCode Zen 2', billingKind: 'payg', key: { set: true }, models: [{ id: 'deepseek-v4.1-flash' }] }
+  ] } }, null, 2));
   const custom = { '*/model-a': { input: 1, output: 2, cache_read: 0, cache_write: 0 } };
   const script = `
     const fs = require('fs');
     const plugin = require(${JSON.stringify(path.join(__dirname, 'index.js'))});
-    const file = ${JSON.stringify(settingsFile)};
+    const settings = ${JSON.stringify(settingsFile)};
+    const providers = ${JSON.stringify(providersFile)};
     const custom = ${JSON.stringify(custom)};
-    const read = () => fs.readFileSync(file, 'utf8');
-    const mtime = () => fs.statSync(file).mtimeMs;
+    const read = (f) => fs.readFileSync(f, 'utf8');
+    const mtime = (f) => fs.statSync(f).mtimeMs;
     (async () => {
-      // host options arrive as a Promise, as magpie's own do
-      const hooks = await plugin({ magpie: { options: async () => ({ mode: 'api-only', customPrices: custom }) } }, {});
-      await new Promise((r) => setTimeout(r, 60));
-      await hooks.config({});
-      const afterFirst = read();
-      const m1 = mtime();
-      await new Promise((r) => setTimeout(r, 20));
-      await hooks.config({});
-      const m2 = mtime();
-      // options with no mode at all must not fall back to a default
-      const noMode = await plugin({ magpie: { options: async () => ({ customPrices: {} }) } }, {});
-      await new Promise((r) => setTimeout(r, 60));
-      await noMode.config({});
+      const before = { s: read(settings), p: read(providers) };
+      // 1. Loading with no options at all: a fresh install writes nothing.
+      await plugin({ magpie: { options: async () => null } }, {});
+      const plain = { s: read(settings), p: read(providers) };
+      // 2. Options with a mode but no token (an older version's, or one edited by
+      //    hand): still nothing, because the user made no save here.
+      await plugin({}, { mode: 'api-only', customPrices: custom });
+      const noToken = { s: read(settings), p: read(providers) };
+      // 3. A save from the page: applied once, at the reload it caused.
+      await plugin({}, { mode: 'api-only', customPrices: custom, applyToken: 'save-1' });
+      const first = read(settings);
+      const firstMtime = mtime(settings);
+      // 4. Another reload with the same token (magpie starting, a plugin
+      //    toggled): nothing is written again.
+      await plugin({}, { mode: 'api-only', customPrices: custom, applyToken: 'save-1' });
+      const sameMtime = mtime(settings) === firstMtime;
+      // 5. A second save writes again.
+      await plugin({}, { mode: 'all-equivalent', customPrices: custom, applyToken: 'save-2' });
+      const secondMtime = mtime(settings) > firstMtime;
       process.stdout.write(JSON.stringify({
-        wrote: afterFirst.includes('*/model-a'),
-        sameMtime: m1 === m2,
-        untouchedByNoMode: read() === afterFirst
+        untouchedOnLoad: plain.s === before.s && plain.p === before.p,
+        untouchedWithoutToken: noToken.s === before.s && noToken.p === before.p,
+        wrote: first.includes('*/model-a'),
+        peakUntouched: read(providers) === before.p,
+        sameMtime,
+        secondMtime
       }));
       process.exit(0);
     })().catch((e) => { console.error(e); process.exit(1); });
   `;
   const out = JSON.parse(execFileSync(process.execPath, ['-e', script], { env: envAt(home) }).toString().trim().split('\n').pop());
-  assert(out.wrote, '显式 mode 时应写入 modelPrices');
-  assert(out.sameMtime, '配置未变时不应重复改写 settings.json');
-  assert(out.untouchedByNoMode, '缺少 mode 时不应回落到默认模式改写 settings.json');
-  const mtime = fs.statSync(settingsFile).mtimeMs;
-  execFileSync(process.execPath, ['-e', `require(${JSON.stringify(path.join(__dirname, 'matcher.js'))}).applyGlobalModeIfChanged('api-only', ${JSON.stringify(custom)})`], { env: envAt(home) });
-  assert.strictEqual(fs.statSync(settingsFile).mtimeMs, mtime, '新进程重复应用同一配置时不应写盘');
+  assert(out.untouchedOnLoad, '插件载入本身不应写 settings.json 或 providers.json');
+  assert(out.untouchedWithoutToken, '没有 applyToken 的选项（旧版遗留/手改）不应触发写盘');
+  assert(out.wrote, '页面保存后应把价格写进 settings.json');
+  assert(out.peakUntouched, '未经用户设置的渠道峰谷时段不应被自动写入 providers.json');
+  assert(out.sameMtime, '同一个 applyToken 只应应用一次，重载不应重复写盘');
+  assert(out.secondMtime, '新的 applyToken 应再次应用');
   fs.rmSync(home, { recursive: true, force: true });
-  console.log('   ✓ 相同配置不写盘、缺省模式不覆盖用户价格');
+  console.log('   ✓ 载入零写盘、保存只应用一次、未设置项不被改写');
 }
 
 // 8. 页面模型级峰谷（从 page/app.js 里切出真实代码执行，避免复制一份逻辑）
@@ -314,17 +335,36 @@ console.log('9. 测试页面插件 CSP 规范（magpie 页面沙盒）...');
   assert.ok(/dataset\.theme/.test(boot), 'theme-boot.js 负责先设好 data-theme');
 
   const app = fs.readFileSync(path.join(pageDir, 'app.js'), 'utf8');
-  assert.ok(
-    /function serviceReachable\(/.test(app),
-    'app.js 必须有 serviceReachable()：页面里 fetch 会被 connect-src \'none\' 拦掉'
+  // The page cannot reach any program of its own: its CSP is connect-src 'none',
+  // so a fetch is blocked before it leaves the frame and only leaves a
+  // "Refused to connect" line in the console. Every read goes through the host
+  // bridge, and a save goes back through it too. There is nothing to probe.
+  const fetches = [...app.matchAll(/\bfetch\s*\(/g)];
+  assert.strictEqual(
+    fetches.length,
+    0,
+    'app.js 不能有 fetch：插件页 CSP 是 connect-src \'none\'，只能走 magpie.read'
   );
   assert.ok(
-    /if \(!serviceReachable\(\)\) return "";/.test(app),
-    'resolveServiceBase() 必须先用 serviceReachable() 挡掉窗口内的 fetch'
+    /magpie\.read\("usage:day"/.test(app),
+    'app.js 必须通过 magpie.read("usage:day") 读全量用量'
   );
   assert.ok(
-    /const res = base \? await fetch\(/.test(app),
-    '取用量时 base 为空就不该再发 fetch，否则控制台全是 CSP 拒绝'
+    /magpie\.options\.set\(/.test(app),
+    'app.js 必须通过 magpie.options.set() 保存，页面自己写不了文件'
+  );
+  assert.ok(
+    /applyToken/.test(app),
+    'app.js 保存时必须带 applyToken：插件只应用一次，别的重载不重复写盘'
+  );
+  const server = fs.readFileSync(path.join(__dirname, 'server.js'), 'utf8');
+  assert.ok(
+    /function refusal\(req\)/.test(server) && /if \(denied\)/.test(server),
+    'server.js 必须在路由之前拒绝 Host/Origin/Content-Type 不合规的请求'
+  );
+  assert.ok(
+    !/Access-Control-Allow-Origin': '\*'|Access-Control-Allow-Origin": "\*/.test(server),
+    'server.js 不能回放通配 CORS 头'
   );
 
   const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
@@ -554,24 +594,25 @@ function testApiFilterAndPeakDefaults() {
   ] } }, null, 2));
   const peakProbe = execFileSync(process.execPath, ['-e', `
     const m = require(${JSON.stringify(path.join(__dirname, 'matcher.js'))});
-    const targets = m.listRateWindowTargets().providers || [];
-    const first = m.applyDefaultRateWindows();
-    const second = m.applyDefaultRateWindows();
-    const after = m.listRateWindowTargets().providers || [];
-    console.log(JSON.stringify({ targets, first, second, after }));
+    const before = m.listRateWindowTargets().providers || [];
+    // Loading the plugin must not write peak windows the user never set: the
+    // first-run DeepSeek default this used to apply is gone (PR #1576 review).
+    const plugin = require(${JSON.stringify(path.join(__dirname, 'index.js'))});
+    (async () => {
+      await plugin({ magpie: { options: async () => null } }, {});
+      const after = m.listRateWindowTargets().providers || [];
+      console.log(JSON.stringify({ before, after }));
+      process.exit(0);
+    })().catch((e) => { console.error(e); process.exit(1); });
   `], { env: envAt(tmpHome3), encoding: 'utf8' });
-  const probe = JSON.parse(peakProbe.trim());
-  const peaks = probe.targets.filter((x) => x.peak).map((x) => x.id).sort();
+  const probe = JSON.parse(peakProbe.trim().split('\n').pop());
+  const peaks = probe.before.filter((x) => x.peak).map((x) => x.id).sort();
   assert.deepStrictEqual(peaks, ['opencode-zen-2'], '只有按小时计费的 API 渠道才是峰谷目标，实际 ' + peaks.join(','));
   assert.ok(!peaks.includes('opencode-zen-free'), '免费订阅渠道不能误标为峰谷 API 渠道');
   assert.ok(!peaks.includes('trae-cn'), '包月订阅渠道不能误标为峰谷 API 渠道');
-  const zenWindows = probe.first.applied.find((x) => x.id === 'opencode-zen-2');
-  assert.ok(zenWindows && zenWindows.windows.length === 2, '首次运行应为峰谷渠道写入两条默认时段');
-  assert.strictEqual(zenWindows.windows[0].rate, matcher.PEAK_FACTOR, '默认时段倍率应为 PeakFactor');
-  const written = probe.after.find((x) => x.id === 'opencode-zen-2').rateWindows;
-  assert.strictEqual(written.length, 2, '默认时段应真的写进 providers.json 的 rateWindows');
-  assert.strictEqual(probe.first.applied.length, 1, '只有峰谷渠道会被写入默认时段');
-  console.log('   ✓ API 筛选仅命中 OpenCode，DeepSeek 默认峰谷目标正确');
+  const untouched = probe.after.every((x) => (x.rateWindows || []).length === 0);
+  assert.ok(untouched, '插件载入不应把任何渠道的 rateWindows 写进 providers.json');
+  console.log('   ✓ API 筛选仅命中 OpenCode，且载入不再自动写入默认峰谷时段');
 }
 testApiFilterAndPeakDefaults();
 
@@ -717,8 +758,20 @@ console.log('16. 测试本地服务边界（回环绑定 / CORS / 静态目录�
     const local = await request({ method: 'OPTIONS', path: '/api/options', headers: { Origin: 'http://localhost:5173' } });
     assert.strictEqual(local.headers['access-control-allow-origin'], 'http://localhost:5173', '本地来源应被放行');
     assert.ok(String(local.headers.vary || '').toLowerCase().includes('origin'), 'CORS 响应应带 Vary: Origin');
+    // The reviewer's own request: a text/plain POST from another origin needs no
+    // preflight, so it arrives here and was answered before. It must be refused
+    // outright now, not merely left without a CORS header.
     const evilPost = await request({ method: 'POST', path: '/api/options', headers: { Origin: 'https://evil.example', 'Content-Type': 'application/json' } }, '{}');
+    assert.strictEqual(evilPost.status, 403, '外部来源的写请求必须被拒绝，实际 ' + evilPost.status);
     assert.strictEqual(evilPost.headers['access-control-allow-origin'], undefined, '外部来源的写请求不应带放行头');
+    const plainPost = await request({ method: 'POST', path: '/api/mode', headers: { Origin: 'https://evil.example', 'Content-Type': 'text/plain' } }, '{"mode":"all-equivalent"}');
+    assert.strictEqual(plainPost.status, 403, '外部来源的 text/plain POST（无需预检）必须被拒绝，实际 ' + plainPost.status);
+    const noOriginPlain = await request({ method: 'POST', path: '/api/mode', headers: { 'Content-Type': 'text/plain' } }, '{"mode":"all-equivalent"}');
+    assert.strictEqual(noOriginPlain.status, 403, '非 JSON 的写请求必须被拒绝（跨站表单就是这样发的）');
+    const rebind = await request({ method: 'GET', path: '/api/status', headers: { Host: 'evil.example:' + port } });
+    assert.strictEqual(rebind.status, 403, 'Host 不是回环名字时应拒绝（DNS rebinding），实际 ' + rebind.status);
+    const localJson = await request({ method: 'POST', path: '/api/options', headers: { Origin: 'http://127.0.0.1:' + port, 'Content-Type': 'application/json' }, host: '127.0.0.1', port }, '{"peakEnabled":false}');
+    assert.notStrictEqual(localJson.status, 403, '本地来源的 JSON 写请求应放行，实际 ' + localJson.status);
     const traversal = await request({ path: '/..%2f..%2fmatcher.js' });
     assert.notStrictEqual(traversal.status, 200, '编码的 ../ 不应读到 public/ 之外的文件');
     const ok = await request({ path: '/index.html' });

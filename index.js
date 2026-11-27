@@ -4,130 +4,102 @@ const path = require('path');
 const matcher = require('./matcher');
 
 const MODES = new Set(['api-only', 'all-equivalent']);
-// Inputs the sync result depends on; when none changed, skip the ~3s scan.
-// The folders come from matcher, which resolves them the way magpie's own
-// appdir does (XDG_CONFIG_HOME / XDG_CACHE_HOME, then the home folder): building
-// them here from process.env.HOME alone pointed the signature at a different
-// folder than the one matcher writes, so on Windows and for an XDG user the
-// scan was re-run on every tick and the prices it wrote were never read back.
-const SYNC_INPUTS = [matcher.paths.cacheModels, matcher.paths.providersState];
-let lastSignature = '';
 
-function inputsSignature(mode, customPrices) {
-  const files = SYNC_INPUTS.map((file) => {
-    try {
-      const st = fs.statSync(file);
-      return st.mtimeMs + ':' + st.size;
-    } catch {
-      return 'missing';
-    }
-  });
-  let prices = 'unreadable';
-  try {
-    prices = matcher.stableStringify(matcher.readSettings().modelPrices || {});
-  } catch {}
-  return matcher.stableStringify({ mode, customPrices, files, prices });
+// What this plugin has already applied, kept in its own cache file rather than
+// in magpie's plugins.json: writing that file from here makes magpie reload the
+// plugin host, so recording a save would itself look like another save.
+function appliedFile() {
+  return matcher.paths.cacheDir ? path.join(matcher.paths.cacheDir, 'models-price-applied.json') : '';
 }
 
-// Sync only what the user actually saved. A missing or unknown mode must not
-// fall back to a default: the host can call us before options are available,
-// and a silent 'all-equivalent' would overwrite an 'api-only' user's prices.
-async function syncModeAndPrices(resolveOptions) {
+function readApplied() {
   try {
-    const options = await (typeof resolveOptions === 'function' ? resolveOptions() : resolveOptions);
-    if (!options || typeof options !== 'object' || !MODES.has(options.mode)) return;
-    const customPrices = options.customPrices || {};
-    const signature = inputsSignature(options.mode, customPrices);
-    if (signature === lastSignature) return;
-    const { changed } = matcher.applyGlobalModeIfChanged(options.mode, customPrices);
-    lastSignature = inputsSignature(options.mode, customPrices);
-    if (changed) {
-      console.log(`Synchronized mode [${options.mode}] and custom prices to Magpie settings.json`);
-    }
-  } catch (err) {
-    console.error('Failed to sync mode and prices:', err.message);
+    const file = appliedFile();
+    if (!file || !fs.existsSync(file)) return {};
+    const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+    return data && typeof data === 'object' ? data : {};
+  } catch {
+    return {};
   }
 }
 
-// Apply the page's rateWindows map (and the one-time DeepSeek default) to
-// providers.json. The page cannot call the local HTTP service in the Magpie
-// desktop window, so it saves the windows in this plugin's options and this
-// loop is the writer.
-async function syncRateWindows(resolveOptions) {
+function writeApplied(state) {
+  const file = appliedFile();
+  if (!file) return false;
   try {
-    const options = await (typeof resolveOptions === 'function' ? resolveOptions() : resolveOptions);
-    if (!options || typeof options !== 'object') return;
-    // 新格式：按模型保存的峰谷设置。Magpie 只有渠道级 rateWindows，由 matcher 汇总。
-    if (options.modelPeaks && typeof options.modelPeaks === 'object') {
-      const result = matcher.syncModelPeakWindows(options.modelPeaks);
-      if (!result.ok) {
-        console.error('Failed to sync model peak windows:', result.error);
-        return;
-      }
-      const written = result.results.filter((x) => x.status === 'written');
-      const conflicts = result.results.filter((x) => x.status === 'conflict');
-      if (written.length) console.log('Synchronized model peak windows for ' + written.length + ' provider(s) to Magpie providers.json');
-      if (conflicts.length) console.warn('Model peak conflicts (provider left unchanged): ' + conflicts.map((x) => x.provider).join(', '));
-      return;
-    }
-    // 旧格式兼容：options.rateWindows 直接按渠道写。
-    const map = options.rateWindows && typeof options.rateWindows === 'object' ? options.rateWindows : {};
-    let written = 0;
-    for (const [id, windows] of Object.entries(map)) {
-      const result = matcher.setRateWindows(id, windows);
-      if (result.ok && result.written) written += 1;
-    }
-    if (!options.rateDefaultsVersion && Object.keys(map).length === 0) {
-      const result = matcher.applyDefaultRateWindows();
-      if (result.ok && result.applied.length > 0) {
-        const nextMap = { ...map };
-        for (const item of result.applied) nextMap[item.id] = item.windows;
-        matcher.writePluginOptions({ rateDefaultsVersion: 1, rateWindows: nextMap }, __dirname);
-        written += result.applied.length;
-      } else if (result.ok) {
-        matcher.writePluginOptions({ rateDefaultsVersion: 1 }, __dirname);
-      }
-    }
-    if (written) console.log('Synchronized rateWindows for ' + written + ' provider(s) to Magpie providers.json');
+    fs.mkdirSync(path.dirname(file), { recursive: true, mode: 0o700 });
+    const tmp = file + '.' + process.pid + '.tmp';
+    fs.writeFileSync(tmp, JSON.stringify(state, null, 2));
+    fs.renameSync(tmp, file);
+    return true;
   } catch (err) {
-    console.error('Failed to sync rate windows:', err.message);
+    console.error('Failed to record the applied save:', err.message);
+    return false;
   }
 }
 
-// OpenCode / Magpie Plugin export
-let serviceStarted = false;
+// applySavedOptions applies one save made in the page, and nothing else.
+//
+// The page cannot reach a program of its own in magpie's window (a page's CSP is
+// connect-src 'none'), so a save there is stored by magpie as this plugin's
+// options, and magpie reloads the plugin host when those change: that reload is
+// where the save is applied. The page adds a fresh applyToken to each save, and
+// a token already applied is skipped, so a reload for any other reason writes
+// nothing. Options with no token (a fresh install, an older version's options)
+// are left alone: nothing is written that the user did not set.
+function applySavedOptions(options) {
+  const opts = options && typeof options === 'object' ? options : {};
+  const token = typeof opts.applyToken === 'string' ? opts.applyToken : '';
+  if (!token) return { applied: false, reason: 'no save to apply' };
+  if (token === readApplied().token) return { applied: false, reason: 'already applied' };
+
+  const out = { applied: true, token, mode: '', prices: 0, peakProviders: 0, conflicts: [], error: '' };
+  if (MODES.has(opts.mode)) {
+    const result = matcher.applyGlobalModeIfChanged(opts.mode, opts.customPrices || {});
+    out.mode = opts.mode;
+    out.prices = result.count;
+  }
+  if (opts.modelPeaks && typeof opts.modelPeaks === 'object') {
+    const result = matcher.syncModelPeakWindows(opts.modelPeaks);
+    if (!result.ok) {
+      out.error = result.error;
+    } else {
+      out.peakProviders = result.results.filter((x) => x.status === 'written').length;
+      out.conflicts = result.results.filter((x) => x.status === 'conflict').map((x) => x.provider);
+    }
+  }
+  // Recorded only when the write went through: a save that failed stays pending,
+  // so the next reload tries it again instead of dropping it.
+  if (!out.error) writeApplied({ token, at: new Date().toISOString(), mode: out.mode, prices: out.prices });
+  return out;
+}
+
+// OpenCode / Magpie Plugin export.
+//
+// Loading this plugin writes nothing. magpie loads it on every start, and the
+// only write it makes is the save the user made in the page, applied once at
+// the reload that save caused. No timer runs, and no price the user did not set
+// is written: the first-run DeepSeek peak windows this used to add to
+// providers.json on its own are gone.
 async function MagpieModelPricesPlugin(input, options) {
-  if (!serviceStarted) {
-    serviceStarted = true;
-    require('./server').startServer();
-  }
-  // input.magpie.options() is a provider auth plugin's options, keyed by
-  // provider, not a page plugin's: the page's own options (mode, custom
-  // prices) are the ones magpie keeps in plugins.json, read here each time
-  // they are wanted so a change in the page reaches this running server.
-  const getOpts = async () => {
-    let host = null;
-    try {
-      const raw = typeof input?.magpie?.options === 'function' ? await input.magpie.options() : null;
-      if (raw && typeof raw === 'object' && !Array.isArray(raw)) host = raw;
-    } catch {}
-    const saved = matcher.readPluginOptions(__dirname) || null;
-    return { ...(options || {}), ...(host || {}), ...(saved || {}) };
-  };
-  // Keep the scan off the plugin's load path so the host finishes starting.
-  setTimeout(() => { syncModeAndPrices(getOpts); syncRateWindows(getOpts); }, 0);
-
-  // Periodically check and synchronize new models from providers-state.json to settings.json
-  if (typeof setInterval === 'function') {
-    const timer = setInterval(() => { syncModeAndPrices(getOpts); syncRateWindows(getOpts); }, 60000);
-    timer.unref?.();
-  }
-
-  return {
-    async config(cfg) {
-      await syncModeAndPrices(getOpts);
+  try {
+    const result = applySavedOptions(options);
+    if (result.applied && !result.error) {
+      console.log(
+        'Applied the save from the page: ' + (result.mode ? 'mode ' + result.mode : 'no mode') +
+          ', ' + result.prices + ' priced model(s)' +
+          (result.peakProviders ? ', peak windows on ' + result.peakProviders + ' provider(s)' : '')
+      );
+    } else if (result.error) {
+      console.error('Could not apply the save from the page: ' + result.error);
     }
-  };
+    if (result.conflicts && result.conflicts.length) {
+      console.warn('Model peak conflicts (provider left unchanged): ' + result.conflicts.join(', '));
+    }
+  } catch (err) {
+    console.error('Failed to apply the save from the page:', err.message);
+  }
+  return {};
 }
 
 module.exports = MagpieModelPricesPlugin;
